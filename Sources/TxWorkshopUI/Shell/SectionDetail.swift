@@ -19,6 +19,8 @@ struct SectionDetail: View {
             ScriptsView(inspection: inspection)
         case .metadata:
             MetadataView(inspection: inspection)
+        case .build:
+            BuildView(document: document)
         case .validate:
             ValidateView(document: document)
         case .cddl:

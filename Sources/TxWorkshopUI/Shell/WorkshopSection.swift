@@ -48,8 +48,7 @@ enum WorkshopSection: String, CaseIterable, Identifiable, Hashable {
     /// The build phase that brings the section, for sections not built yet.
     var comingInPhase: Int? {
         switch self {
-        case .overview, .inputsOutputs, .body, .scripts, .metadata, .cbor, .cddl, .validate: nil
-        case .build: 5
+        case .overview, .inputsOutputs, .body, .scripts, .metadata, .cbor, .cddl, .validate, .build: nil
         case .sign: 6
         }
     }

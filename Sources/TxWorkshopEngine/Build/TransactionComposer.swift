@@ -270,3 +270,25 @@ private extension Dictionary {
         Dictionary<T, Value>(uniqueKeysWithValues: map { (transform($0.key), $0.value) })
     }
 }
+
+extension TransactionComposer {
+    /// The UTxOs at `addresses`, from `provider`, as CBOR hex: for a recipe
+    /// to keep, so it builds offline later.
+    @concurrent
+    public func utxos(at addresses: [String], provider: ProviderConfiguration, apiKey: String?) async throws -> [String] {
+        let chain = try await ChainContextFactory().makeContext(for: provider, apiKey: apiKey)
+        var found: [String] = []
+        for text in addresses where !text.trimmingCharacters(in: .whitespaces).isEmpty {
+            for utxo in try await chain.utxos(address: try Self.address(text)) {
+                found.append(try utxo.toCBORData().hex)
+            }
+        }
+        return found
+    }
+
+    /// A UTxO's reference and lovelace, for listing pasted UTxOs.
+    public static func describe(utxoHex: String) -> (id: String, lovelace: Int64, assetCount: Int)? {
+        guard let utxo = try? utxo(utxoHex) else { return nil }
+        return (InputResolver.id(utxo.input), utxo.output.amount.coin, utxo.output.amount.multiAsset.data.values.reduce(0) { $0 + $1.data.count })
+    }
+}
