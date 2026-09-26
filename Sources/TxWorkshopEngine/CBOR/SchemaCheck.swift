@@ -60,10 +60,12 @@ public struct SchemaCheck: Sendable {
 
 public enum SchemaCheckError: Error, Sendable, Equatable, CustomStringConvertible {
     case unknownEra(String)
+    case schemaDoesNotParse
 
     public var description: String {
         switch self {
         case .unknownEra(let name): "There is no schema for the \(name) era."
+        case .schemaDoesNotParse: "The schema does not parse; fix it in the CDDL section first."
         }
     }
 }

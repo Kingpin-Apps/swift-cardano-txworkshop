@@ -143,3 +143,61 @@ struct SchemaCheckTests {
         #expect(asWitnesses.issues.allSatisfy { $0.itemPath.map { Array($0.prefix(body.path.count)) == body.path } ?? true })
     }
 }
+
+@Suite("CDDL source")
+struct CDDLSourceTests {
+    static let schema = """
+        ; A toy schema.
+        tx = [body, ? note]
+        body = { 0 => fee, ? 1 => memo }
+        fee = uint
+        memo = tstr ; says "fee" in a comment
+        note = "note-text"
+        """
+
+    @Test("Rules come with their lines and the rules they use")
+    func rules() async throws {
+        let source = await CDDLSource.parse(Self.schema)
+        #expect(source.problem == nil)
+        #expect(source.rules.map(\.name) == ["tx", "body", "fee", "memo", "note"])
+        #expect(source.definition(of: "fee")?.line == 4)
+        #expect(source.definition(of: "tx")?.uses == ["body", "note"])
+        #expect(source.definition(of: "body")?.uses == ["fee", "memo"])
+        // Neither comments nor strings count as uses.
+        #expect(source.definition(of: "memo")?.uses == [])
+        #expect(source.usedBy("fee").map(\.name) == ["body"])
+        let formatted = try #require(source.formatted)
+        #expect(formatted.contains("fee = uint"))
+        #expect(formatted.contains("; A toy schema."))
+    }
+
+    @Test("A schema that does not parse says where")
+    func problem() async {
+        let source = await CDDLSource.parse("tx = [\nbody = uint\n")
+        let problem = source.problem
+        #expect(problem != nil)
+        #expect((problem?.line ?? 0) >= 1)
+        #expect(source.rules.isEmpty)
+    }
+
+    @Test("A bundled era parses, and its transaction rule uses the body")
+    func bundled() async throws {
+        let text = try CDDLSource.bundled(era: "conway")
+        let source = await CDDLSource.parse(text, bundledEra: "conway")
+        #expect(source.definition(of: "transaction")?.uses.contains("transaction_body") == true)
+        #expect(source.rules.count > 100)
+    }
+
+    @Test("An item checks against a document's own schema")
+    func customCheck() async throws {
+        let source = await CDDLSource.parse("fee = uint\nmemo = tstr\n")
+        let bytes = try TxDocumentCodec.bytes(fromHex: "82 1a0005311c 6461626364".replacingOccurrences(of: " ", with: ""))
+        let exploration = CBORExploration(bytes: bytes)
+        let fee = try #require(exploration.root?.children?.first)
+        #expect(try await SchemaCheck().check(bytes, range: fee.range, path: fee.path, rule: "fee", schema: source).isValid)
+        let memo = try #require(exploration.root?.children?.last)
+        let report = try await SchemaCheck().check(bytes, range: memo.range, path: memo.path, rule: "fee", schema: source)
+        #expect(!report.isValid)
+        #expect(report.issues.first?.itemPath == memo.path)
+    }
+}
