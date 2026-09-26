@@ -101,3 +101,45 @@ struct CBORExplorationDepthTests {
         #expect(item?.childrenOmitted == true)
     }
 }
+
+@Suite("Schema check")
+struct SchemaCheckTests {
+    @Test("The default era is the latest the transaction allows")
+    func defaultEra() {
+        #expect(SchemaCheck.defaultEra(possibleEras: "babbage…conway") == "conway")
+        #expect(SchemaCheck.defaultEra(possibleEras: "shelley…mary") == "mary")
+        #expect(SchemaCheck.defaultEra(possibleEras: "") == "conway")
+    }
+
+    @Test("A ledger-accepted transaction passes its era's schema")
+    func valid() async throws {
+        let bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let report = try await SchemaCheck().checkTransaction(bytes, era: "conway")
+        #expect(report.isValid, "\(report.issues)")
+        #expect(try SchemaCheck().ruleNames(era: "conway").contains("transaction_body"))
+    }
+
+    @Test("A broken fee is reported, linked to the fee")
+    func brokenFee() async throws {
+        var bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let exploration = CBORExploration(bytes: bytes)
+        let fee = try #require(exploration.root?.children?.first?.children?.first { $0.name == "fee" })
+        // The fee becomes a text string of the same length: 0x64 + "abcd".
+        bytes.replaceSubrange(fee.start..<fee.end, with: Data([0x64]) + Data("abcd".utf8))
+        let report = try await SchemaCheck().checkTransaction(bytes, era: "conway")
+        #expect(!report.isValid)
+        #expect(report.issues.contains { $0.itemPath == fee.path }, "\(report.issues)")
+    }
+
+    @Test("An item checks against a chosen rule, with issues under its path")
+    func chosenRule() async throws {
+        let bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let exploration = CBORExploration(bytes: bytes)
+        let body = try #require(exploration.root?.children?.first)
+        let asBody = try await SchemaCheck().check(bytes, range: body.range, path: body.path, rule: "transaction_body", era: "conway")
+        #expect(asBody.isValid, "\(asBody.issues)")
+        let asWitnesses = try await SchemaCheck().check(bytes, range: body.range, path: body.path, rule: "transaction_witness_set", era: "conway")
+        #expect(!asWitnesses.isValid)
+        #expect(asWitnesses.issues.allSatisfy { $0.itemPath.map { Array($0.prefix(body.path.count)) == body.path } ?? true })
+    }
+}
