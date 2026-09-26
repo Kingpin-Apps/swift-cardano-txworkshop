@@ -184,7 +184,10 @@ private struct CBORWorkspace: View {
     }
 
     private var schema: some View {
-        SchemaPanel(exploration: exploration, selectedItem: selectedItem, onSelectPath: select(path:), era: $era)
+        SchemaPanel(
+            exploration: exploration, selectedItem: selectedItem, onSelectPath: select(path:),
+            customSchema: document.content.schema, era: $era
+        )
     }
 
     /// Selects the item a byte belongs to, opening the tree down to it.

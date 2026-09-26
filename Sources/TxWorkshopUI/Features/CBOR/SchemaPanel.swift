@@ -8,11 +8,18 @@ struct SchemaPanel: View {
     let exploration: CBORExploration
     let selectedItem: CBORItem?
     let onSelectPath: ([Int]) -> Void
+    /// The document's own schema, if it has one.
+    let customSchema: String?
     @Binding var era: String
     @State private var target = Target.transaction
     @State private var rule = ""
     @State private var rules: [String] = []
     @State private var report: LoadState<SchemaReport> = .idle
+    @State private var custom: CDDLSource?
+
+    /// The era picker's tag for the document's own schema.
+    static let customTag = "custom"
+    private var isCustom: Bool { era == Self.customTag }
 
     enum Target: Hashable { case transaction, selection }
 
@@ -23,8 +30,11 @@ struct SchemaPanel: View {
                     ForEach(SchemaCheck.eras, id: \.self) { era in
                         Text(verbatim: era.capitalized).tag(era)
                     }
+                    if customSchema != nil {
+                        Text("This Document's Schema", bundle: #bundle).tag(Self.customTag)
+                    }
                 } label: {
-                    Text("Era", bundle: #bundle)
+                    Text("Schema", bundle: #bundle)
                 }
                 Picker(selection: $target) {
                     Text("Whole transaction", bundle: #bundle).tag(Target.transaction)
@@ -32,7 +42,7 @@ struct SchemaPanel: View {
                 } label: {
                     Text("Check", bundle: #bundle)
                 }
-                if target == .selection {
+                if target == .selection || isCustom {
                     Picker(selection: $rule) {
                         ForEach(rules, id: \.self) { rule in
                             Text(verbatim: rule).tag(rule)
@@ -46,10 +56,16 @@ struct SchemaPanel: View {
                         .opacity(report.isLoading ? 0 : 1)
                         .overlay { if report.isLoading { ProgressView() } }
                 }
-                .disabled(report.isLoading || (target == .selection && (selectedItem == nil || rule.isEmpty)))
+                .disabled(report.isLoading || ((target == .selection || isCustom) && rule.isEmpty) || (target == .selection && selectedItem == nil))
             } footer: {
                 if target == .selection, selectedItem == nil {
                     Text("Select an item in the tree first.", bundle: #bundle)
+                } else if isCustom {
+                    if let problem = custom?.problem {
+                        Text("The document's schema does not parse (line \(problem.line)). Fix it in the CDDL section.", bundle: #bundle)
+                    } else {
+                        Text("Uses the schema written in the CDDL section.", bundle: #bundle)
+                    }
                 } else {
                     Text("Uses the Cardano ledger's own CDDL for the era.", bundle: #bundle)
                 }
@@ -71,8 +87,14 @@ struct SchemaPanel: View {
             }
         }
         .formStyle(.grouped)
-        .task(id: era) {
-            rules = (try? SchemaCheck().ruleNames(era: era)) ?? []
+        .task(id: [era, customSchema ?? ""]) {
+            if isCustom {
+                let parsed = await CDDLSource.parse(customSchema ?? "")
+                custom = parsed
+                rules = Array(Set(parsed.rules.map(\.name))).sorted()
+            } else {
+                rules = (try? SchemaCheck().ruleNames(era: era)) ?? []
+            }
             if !rules.contains(rule) {
                 rule = rules.contains("transaction_body") ? "transaction_body" : rules.first ?? ""
             }
@@ -85,10 +107,17 @@ struct SchemaPanel: View {
         let era = era
         let rule = rule
         let item = target == .selection ? selectedItem : nil
+        let root = exploration.root
+        let custom = isCustom ? custom : nil
         report = .loading
         Task {
             do {
-                if let item {
+                if let custom {
+                    // A schema of the document's own has no set root rule:
+                    // the whole transaction is checked against the chosen one.
+                    guard let target = item ?? root else { return }
+                    report = .loaded(try await SchemaCheck().check(bytes, range: target.range, path: target.path, rule: rule, schema: custom))
+                } else if let item {
                     report = .loaded(try await SchemaCheck().check(bytes, range: item.range, path: item.path, rule: rule, era: era))
                 } else {
                     report = .loaded(try await SchemaCheck().checkTransaction(bytes, era: era))

@@ -19,6 +19,11 @@ struct SectionDetail: View {
             ScriptsView(inspection: inspection)
         case .metadata:
             MetadataView(inspection: inspection)
+        case .cddl:
+            CDDLWorkspaceView(
+                document: document,
+                defaultEra: SchemaCheck.defaultEra(possibleEras: inspection.value?.summary.possibleEras ?? "")
+            )
         case .cbor:
             CBORExplorerView(
                 document: document,
