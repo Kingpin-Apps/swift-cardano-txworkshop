@@ -10,7 +10,7 @@ struct SummaryRows: View {
             TWBytesText(summary.id)
         }
         TWFieldRow(LocalizedStringResource("Fee", bundle: #bundle)) {
-            Text(verbatim: Self.ada(summary.view.fee)).font(TWFont.figure)
+            Text(verbatim: TWFormat.ada(summary.view.fee)).font(TWFont.figure)
         }
         TWFieldRow(LocalizedStringResource("Inputs", bundle: #bundle)) {
             Text(summary.view.inputs.count, format: .number).font(TWFont.figure)
@@ -29,10 +29,4 @@ struct SummaryRows: View {
         }
     }
 
-    /// Lovelace as ada, with all six decimals.
-    static func ada(_ lovelace: UInt64) -> String {
-        let whole = lovelace / 1_000_000
-        let fraction = lovelace % 1_000_000
-        return "₳ \(whole.formatted()).\(String(format: "%06d", fraction))"
-    }
 }

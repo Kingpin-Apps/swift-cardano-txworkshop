@@ -1,14 +1,24 @@
 import SwiftUI
 import TxWorkshopCore
+import TxWorkshopEngine
 
 struct SectionDetail: View {
     let section: WorkshopSection
     let document: TxWorkshopDocument
+    let inspection: LoadState<TransactionInspection>
 
     var body: some View {
         switch section {
         case .overview:
-            OverviewView(document: document)
+            OverviewView(document: document, inspection: inspection)
+        case .inputsOutputs:
+            InputsOutputsView(inspection: inspection)
+        case .body:
+            BodyView(inspection: inspection)
+        case .scripts:
+            ScriptsView(inspection: inspection)
+        case .metadata:
+            MetadataView(inspection: inspection)
         default:
             ContentUnavailableView {
                 Label {
