@@ -20,7 +20,10 @@ struct SectionDetail: View {
         case .metadata:
             MetadataView(inspection: inspection)
         case .cbor:
-            CBORExplorerView(document: document)
+            CBORExplorerView(
+                document: document,
+                defaultEra: SchemaCheck.defaultEra(possibleEras: inspection.value?.summary.possibleEras ?? "")
+            )
         default:
             ContentUnavailableView {
                 Label {

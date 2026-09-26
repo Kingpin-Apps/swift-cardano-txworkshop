@@ -5,6 +5,8 @@ import TxWorkshopEngine
 /// The transaction's bytes as a CBOR tree beside its hex, linked both ways.
 struct CBORExplorerView: View {
     let document: TxWorkshopDocument
+    /// The era the schema check starts with.
+    let defaultEra: String
     @State private var exploration: LoadState<CBORExploration> = .idle
 
     var body: some View {
@@ -24,7 +26,7 @@ struct CBORExplorerView: View {
                     Text(verbatim: message)
                 }
             case .loaded(let exploration):
-                CBORWorkspace(document: document, exploration: exploration)
+                CBORWorkspace(document: document, exploration: exploration, era: defaultEra)
             }
         }
         .navigationTitle(Text("CBOR", bundle: #bundle))
@@ -45,14 +47,23 @@ struct CBORExplorerView: View {
 private struct CBORWorkspace: View {
     let document: TxWorkshopDocument
     let exploration: CBORExploration
+    @State private var era: String
     @State private var editing: HexEditRequest?
     @Environment(\.undoManager) private var undoManager
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var selection: String?
     @State private var expanded: Set<String> = [""]
     @State private var pane = Pane.tree
+    @State private var inspector = Inspector.item
 
-    enum Pane: Hashable { case tree, hex, detail }
+    enum Pane: Hashable { case tree, hex, detail, schema }
+    enum Inspector: Hashable { case item, schema }
+
+    init(document: TxWorkshopDocument, exploration: CBORExploration, era: String) {
+        self.document = document
+        self.exploration = exploration
+        self.era = era
+    }
 
     private var selectedItem: CBORItem? {
         selection.flatMap { exploration.item(at: CBORItem.path(fromID: $0)) }
@@ -68,6 +79,7 @@ private struct CBORWorkspace: View {
                     Text("Tree", bundle: #bundle).tag(Pane.tree)
                     Text("Hex", bundle: #bundle).tag(Pane.hex)
                     Text("Detail", bundle: #bundle).tag(Pane.detail)
+                    Text("Schema", bundle: #bundle).tag(Pane.schema)
                 } label: {
                     Text("Pane", bundle: #bundle)
                 }
@@ -77,6 +89,7 @@ private struct CBORWorkspace: View {
                 case .tree: tree
                 case .hex: hex
                 case .detail: detail
+                case .schema: schema
                 }
             } else {
                 HStack(spacing: 0) {
@@ -87,7 +100,19 @@ private struct CBORWorkspace: View {
                         hex
                             .frame(minHeight: 160)
                         Divider()
-                        detail
+                        Picker(selection: $inspector) {
+                            Text("Item", bundle: #bundle).tag(Inspector.item)
+                            Text("Schema", bundle: #bundle).tag(Inspector.schema)
+                        } label: {
+                            Text("Inspector", bundle: #bundle)
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        .padding(TWSpacing.s)
+                        switch inspector {
+                        case .item: detail
+                        case .schema: schema
+                        }
                     }
                     .frame(minWidth: 320)
                 }
@@ -158,14 +183,22 @@ private struct CBORWorkspace: View {
         }
     }
 
+    private var schema: some View {
+        SchemaPanel(exploration: exploration, selectedItem: selectedItem, onSelectPath: select(path:), era: $era)
+    }
+
     /// Selects the item a byte belongs to, opening the tree down to it.
     private func select(byte offset: Int) {
-        guard var path = exploration.path(toByte: offset) else { return }
+        guard let path = exploration.path(toByte: offset) else { return }
+        select(path: path)
+        if sizeClass == .compact, pane == .hex { pane = .detail }
+    }
+
+    private func select(path: [Int]) {
         // The tree stops at its depth limit.
-        path = Array(path.prefix(CBORItem.maxDepth))
+        let path = Array(path.prefix(CBORItem.maxDepth))
         expanded.formUnion(CBORItem.ancestorIDs(of: path))
         selection = path.map(String.init).joined(separator: ".")
-        if sizeClass == .compact, pane == .hex { pane = .detail }
     }
 }
 
