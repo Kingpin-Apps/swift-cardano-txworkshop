@@ -36,6 +36,9 @@ settings:
     DEVELOPMENT_TEAM: ""
     "CODE_SIGN_STYLE[sdk=macosx*]": Manual
     "CODE_SIGN_IDENTITY[sdk=macosx*]": "-"
+    # The libsodium and BLST binaries in the Cardano stack ship only arm64 for
+    # the visionOS simulator, which runs on Apple silicon alone anyway.
+    "EXCLUDED_ARCHS[sdk=xrsimulator*]": x86_64
 
 # The document types every app target reads and writes.
 documentTypes: &documentTypes
