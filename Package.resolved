@@ -1,5 +1,5 @@
 {
-  "originHash" : "46a062faa46f67ef6f2dafafb6a4dc83515e34c0b34cf1af3daaad9bac4e8ade",
+  "originHash" : "be0ba04abc2c9ecddecd024ea73271175e26a75bf71e0ca12c80894b6c8a20b5",
   "pins" : [
     {
       "identity" : "base32",
@@ -186,8 +186,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Kingpin-Apps/swift-cddl.git",
       "state" : {
-        "revision" : "30f0a1585fc4c2d87bc15eb4b26145a31f4ee019",
-        "version" : "0.2.0"
+        "revision" : "7123e0e5aa173910833c5810cde5a6613b335df3",
+        "version" : "0.2.2"
       }
     },
     {
