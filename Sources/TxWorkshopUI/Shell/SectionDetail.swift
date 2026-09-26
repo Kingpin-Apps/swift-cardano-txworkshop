@@ -19,6 +19,8 @@ struct SectionDetail: View {
             ScriptsView(inspection: inspection)
         case .metadata:
             MetadataView(inspection: inspection)
+        case .cbor:
+            CBORExplorerView(document: document)
         default:
             ContentUnavailableView {
                 Label {
