@@ -38,11 +38,8 @@ public struct TransactionInspector: Sendable {
         chainContext: ChainContextSnapshot? = nil
     ) async throws -> TransactionInspection {
         let (transaction, summary) = try decode(bytes)
-        // Script listings walk the whole term tree recursively.
-        return await DeepStack.run {
-            InspectionBuilder(transaction: transaction, view: summary.view, network: network, chainContext: chainContext)
-                .build(summary: summary)
-        }
+        return InspectionBuilder(transaction: transaction, view: summary.view, network: network, chainContext: chainContext)
+            .build(summary: summary)
     }
 
     /// The summary of `bytes`. Decoding a large transaction takes a while, so
