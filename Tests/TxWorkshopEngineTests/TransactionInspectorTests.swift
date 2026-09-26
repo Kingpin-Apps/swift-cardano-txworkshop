@@ -6,8 +6,8 @@ import TxWorkshopCore
 
 @Suite("Transaction inspector")
 struct TransactionInspectorTests {
-    @Test("A mainnet transaction decodes with its on-chain id")
-    func inspectsMainnetTransaction() async throws {
+    @Test("A preprod transaction decodes with its on-chain id")
+    func inspectsPreprodTransaction() async throws {
         let url = try #require(Bundle.module.url(forResource: "conway-tx", withExtension: "hex", subdirectory: "Fixtures"))
         let bytes = try TxDocumentCodec.bytes(fromHex: try String(contentsOf: url, encoding: .utf8))
         let summary = try await TransactionInspector().inspect(bytes)

@@ -27,10 +27,26 @@ public enum InspectionError: Error, Sendable, Equatable, CustomStringConvertible
 public struct TransactionInspector: Sendable {
     public init() {}
 
+    /// Everything the inspector shows about `bytes`. `network` places the
+    /// validity window in time; without it, mainnet is assumed only when the
+    /// outputs pay mainnet addresses.
+    @concurrent
+    public func inspection(of bytes: Data, network: CardanoNetwork? = nil) async throws -> TransactionInspection {
+        let (transaction, summary) = try decode(bytes)
+        // Script listings walk the whole term tree recursively.
+        return await DeepStack.run {
+            InspectionBuilder(transaction: transaction, view: summary.view, network: network).build(summary: summary)
+        }
+    }
+
     /// The summary of `bytes`. Decoding a large transaction takes a while, so
     /// this runs off the caller's actor.
     @concurrent
     public func inspect(_ bytes: Data) async throws -> TransactionSummary {
+        try decode(bytes).summary
+    }
+
+    private func decode(_ bytes: Data) throws -> (transaction: Transaction, summary: TransactionSummary) {
         let transaction: Transaction
         do {
             transaction = try Transaction.fromCBOR(data: bytes)
@@ -43,12 +59,13 @@ public struct TransactionInspector: Sendable {
         } catch {
             throw InspectionError.malformed(String(describing: error))
         }
-        return TransactionSummary(
+        let summary = TransactionSummary(
             id: view.txId,
             view: view,
             possibleEras: view.possibleEras,
             isSigned: !transaction.transactionWitnessSet.isEmpty(),
             byteCount: bytes.count
         )
+        return (transaction, summary)
     }
 }

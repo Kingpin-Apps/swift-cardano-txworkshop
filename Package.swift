@@ -33,6 +33,8 @@ let package = Package(
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-chain.git", from: "0.10.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txvalidator.git", from: "0.4.0"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cddl.git", from: "0.2.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-uplc.git", from: "0.7.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-nacl.git", .upToNextMinor(from: "1.0.2")),
     ],
     targets: [
         .target(
@@ -51,11 +53,17 @@ let package = Package(
                 .product(name: "SwiftCardanoTxValidator", package: "swift-cardano-txvalidator"),
                 .product(name: "SwiftCDDL", package: "swift-cddl"),
                 .product(name: "SwiftCDDLCardano", package: "swift-cddl"),
+                .product(name: "SwiftCardanoUPLC", package: "swift-cardano-uplc"),
+                .product(name: "SwiftNaCl", package: "swift-nacl"),
             ]
         ),
         .target(
             name: "TxWorkshopUI",
-            dependencies: ["TxWorkshopCore", "TxWorkshopEngine"],
+            dependencies: [
+                "TxWorkshopCore",
+                "TxWorkshopEngine",
+                .product(name: "SwiftCardanoTxValidator", package: "swift-cardano-txvalidator"),
+            ],
             resources: [.process("Resources")]
         ),
         .target(
