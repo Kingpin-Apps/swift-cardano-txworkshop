@@ -6,6 +6,7 @@ import TxWorkshopEngine
 struct TransactionOverview: View {
     let document: TxWorkshopDocument
     let inspection: LoadState<TransactionInspection>
+    @State private var isComparing = false
 
     var body: some View {
         Form {
@@ -40,6 +41,19 @@ struct TransactionOverview: View {
         .formStyle(.grouped)
         .navigationTitle(Text("Overview", bundle: #bundle))
         .toolbar {
+            if inspection.value != nil {
+                ToolbarItem {
+                    Button {
+                        isComparing = true
+                    } label: {
+                        Label {
+                            Text("Compare With…", bundle: #bundle)
+                        } icon: {
+                            Image(systemName: "arrow.left.arrow.right.square")
+                        }
+                    }
+                }
+            }
             if let envelope = envelopeText {
                 ToolbarItem {
                     ShareLink(item: envelope, preview: SharePreview(Text("Transaction", bundle: #bundle))) {
@@ -50,6 +64,11 @@ struct TransactionOverview: View {
                         }
                     }
                 }
+            }
+        }
+        .sheet(isPresented: $isComparing) {
+            if let current = inspection.value {
+                CompareSheet(document: document, current: current)
             }
         }
     }
