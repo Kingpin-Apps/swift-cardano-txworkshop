@@ -1,5 +1,5 @@
 {
-  "originHash" : "7e519fe6b345791620a92d4ba6cd6b3d09ba0aaf5945d11aa56d4502a935cf68",
+  "originHash" : "8358bb4312be8a2548c96b658f2dedd76e292e9cd78a9e3aaae72900ca501256",
   "pins" : [
     {
       "identity" : "base32",
@@ -150,8 +150,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Kingpin-Apps/swift-cardano-token-registry.git",
       "state" : {
-        "revision" : "48e365b8e3be2487539e78bb6adb37b285bffd17",
-        "version" : "0.2.0"
+        "revision" : "6984e57d9af7de066301a4f501700c16327996e9",
+        "version" : "0.2.1"
       }
     },
     {

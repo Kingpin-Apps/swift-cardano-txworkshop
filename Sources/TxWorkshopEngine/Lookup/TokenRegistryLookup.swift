@@ -15,9 +15,8 @@ public struct TokenRegistryLookup: Sendable {
     static func endpoint(for network: CardanoNetwork) -> URL? {
         switch network {
         case .mainnet: Endpoint.mainnet
-        // `Endpoint.preprod` (metadata.cardano-testnet.iohkdev.io) is retired;
-        // the testnets share one metadata server.
-        case .preprod, .preview: Endpoint.preview
+        case .preprod: Endpoint.preprod
+        case .preview: Endpoint.preview
         case .custom: nil
         }
     }
