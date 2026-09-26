@@ -24,6 +24,7 @@ struct TxDocumentCodecTests {
                 tokens: [TokenInfo(subject: "cd", name: "Coin", ticker: "COIN", decimals: 6)], protocolParameters: Data("{}".utf8),
                 tipSlot: 123
             ),
+            schema: "fee = uint\n",
             witnesses: [CollectedWitness(label: "Alice", keyHash: "ab", witnessCBOR: "a0", addedAt: Date(timeIntervalSince1970: 1_790_000_100))],
             validations: [ValidationRecord(ranAt: Date(timeIntervalSince1970: 1_790_000_200), errorCount: 0, warningCount: 2)]
         )
@@ -33,7 +34,10 @@ struct TxDocumentCodecTests {
     func packageRoundTrip() throws {
         let content = try Self.fullContent()
         let files = try TxDocumentCodec.packageFiles(for: content)
-        #expect(Set(files.keys) == [TxDocumentCodec.PackageFile.manifest, TxDocumentCodec.PackageFile.transaction, TxDocumentCodec.PackageFile.context])
+        #expect(Set(files.keys) == [
+            TxDocumentCodec.PackageFile.manifest, TxDocumentCodec.PackageFile.transaction,
+            TxDocumentCodec.PackageFile.context, TxDocumentCodec.PackageFile.schema,
+        ])
         #expect(try TxDocumentCodec.content(fromPackageFiles: files) == content)
     }
 

@@ -18,6 +18,9 @@ public struct TxDocumentContent: Sendable, Equatable {
     /// Chain data resolved for the transaction, kept so it can be validated
     /// again without a connection.
     public var chainContext: ChainContextSnapshot?
+    /// A CDDL schema written for this document, beside the bundled era
+    /// schemas.
+    public var schema: String?
     /// Witnesses collected for the transaction, for multi-signature work.
     public var witnesses: [CollectedWitness]
     /// Past validation runs, oldest first.
@@ -29,6 +32,7 @@ public struct TxDocumentContent: Sendable, Equatable {
         notes: String = "",
         network: CardanoNetwork? = nil,
         chainContext: ChainContextSnapshot? = nil,
+        schema: String? = nil,
         witnesses: [CollectedWitness] = [],
         validations: [ValidationRecord] = []
     ) {
@@ -37,6 +41,7 @@ public struct TxDocumentContent: Sendable, Equatable {
         self.notes = notes
         self.network = network
         self.chainContext = chainContext
+        self.schema = schema
         self.witnesses = witnesses
         self.validations = validations
     }
