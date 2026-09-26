@@ -77,7 +77,7 @@ struct CBORItemDetail: View {
             }
         }
         .formStyle(.grouped)
-        .task(id: item.id) {
+        .task(id: [exploration.id.uuidString, item.id]) {
             diagnostic = nil
             diagnostic = await exploration.diagnosticText(at: item.path)
         }

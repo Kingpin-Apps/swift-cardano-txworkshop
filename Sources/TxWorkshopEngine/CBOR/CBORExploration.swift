@@ -7,7 +7,10 @@ import SwiftCDDL
 ///
 /// The decoded items are kept in a flat table rather than as nested values,
 /// so data nested thousands of levels deep is freed without deep recursion.
-public struct CBORExploration: Sendable {
+public struct CBORExploration: Sendable, Identifiable {
+    /// Unique to this decoding, so views keyed on it refresh when the bytes
+    /// change even where an item's path does not.
+    public let id = UUID()
     public let bytes: Data
     /// The outermost item, if one was begun. The tree stops at
     /// ``CBORItem/maxDepth``.

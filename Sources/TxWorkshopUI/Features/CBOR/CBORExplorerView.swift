@@ -24,7 +24,7 @@ struct CBORExplorerView: View {
                     Text(verbatim: message)
                 }
             case .loaded(let exploration):
-                CBORWorkspace(exploration: exploration)
+                CBORWorkspace(document: document, exploration: exploration)
             }
         }
         .navigationTitle(Text("CBOR", bundle: #bundle))
@@ -43,7 +43,10 @@ struct CBORExplorerView: View {
 
 /// The tree, hex and detail for one exploration.
 private struct CBORWorkspace: View {
+    let document: TxWorkshopDocument
     let exploration: CBORExploration
+    @State private var editing: HexEditRequest?
+    @Environment(\.undoManager) private var undoManager
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var selection: String?
     @State private var expanded: Set<String> = [""]
@@ -90,6 +93,36 @@ private struct CBORWorkspace: View {
                 }
             }
         }
+        .toolbar {
+            ToolbarItem {
+                Button {
+                    editing = editRequest()
+                } label: {
+                    Label {
+                        if selectedItem == nil {
+                            Text("Edit All Bytes…", bundle: #bundle)
+                        } else {
+                            Text("Edit Selected Bytes…", bundle: #bundle)
+                        }
+                    } icon: {
+                        Image(systemName: "pencil")
+                    }
+                }
+            }
+        }
+        .sheet(item: $editing) { request in
+            HexEditSheet(document: document, request: request, undoManager: undoManager)
+        }
+    }
+
+    /// The selected item's bytes, or all of them.
+    private func editRequest() -> HexEditRequest {
+        let first = exploration.root?.children?.first
+        let body = first?.name == "transaction body" ? first?.range : nil
+        if let item = selectedItem {
+            return HexEditRequest(range: item.range, title: item.name ?? item.label, bodyRange: body)
+        }
+        return HexEditRequest(range: 0..<exploration.bytes.count, title: nil, bodyRange: body)
     }
 
     private var tree: some View {
