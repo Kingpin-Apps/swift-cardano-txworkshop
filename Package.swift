@@ -29,7 +29,7 @@ let package = Package(
         .library(name: "TxWorkshopDirect", targets: ["TxWorkshopDirect"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.8.1"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.8.2"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-chain.git", from: "0.11.0"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txvalidator.git", from: "0.4.0"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cddl.git", from: "0.2.0"),

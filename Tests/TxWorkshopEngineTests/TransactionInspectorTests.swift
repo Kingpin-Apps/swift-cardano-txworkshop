@@ -24,6 +24,34 @@ struct TransactionInspectorTests {
         }
     }
 
+    /// A transaction whose witness set carries one datum: `datumDepth` nested
+    /// arrays around a 0. The tx array, witness map and datum list add three
+    /// CBOR levels, so a depth of 124 puts the whole transaction at the
+    /// decoder's 128-level cap.
+    private func transaction(datumDepth: Int) -> Data {
+        let body = Data([0xa3, 0x00, 0x81, 0x82, 0x58, 0x20]) + Data(count: 32)
+            + Data([0x00, 0x01, 0x80, 0x02, 0x00])
+        let datum = Data(repeating: 0x81, count: datumDepth) + Data([0x00])
+        let witnessSet = Data([0xa1, 0x04, 0x81]) + datum
+        return Data([0x84]) + body + witnessSet + Data([0xf5, 0xf6])
+    }
+
+    @Test("A datum nested to the depth cap decodes on a cooperative thread")
+    func inspectsDeeplyNestedDatum() async throws {
+        // Used to overflow the task's stack (SIGBUS) at ~100 levels.
+        let bytes = transaction(datumDepth: 124)
+        let summary = try await TransactionInspector().inspect(bytes)
+        #expect(summary.byteCount == bytes.count)
+        _ = try await TransactionInspector().inspection(of: bytes)
+    }
+
+    @Test("A datum nested past the depth cap is reported, not crashed on")
+    func rejectsTooDeeplyNestedDatum() async {
+        await #expect(throws: InspectionError.self) {
+            _ = try await TransactionInspector().inspect(self.transaction(datumDepth: 200))
+        }
+    }
+
     @Test("Every provider maps to a chain context or says why not")
     func offlineAndDirectProviders() async {
         await #expect(throws: ChainContextFactoryError.offline) {
