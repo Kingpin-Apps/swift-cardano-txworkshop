@@ -12,6 +12,7 @@ struct ValidateView: View {
     @State private var run: LoadState<ValidationOutcome> = .idle
     @State private var requirements: TransactionValidation.Requirements?
     @State private var isAskingWhatIf = false
+    @State private var tracing: TraceRequest?
 
     private var outcome: ValidationOutcome? {
         run.value ?? session.validation(for: document.content.transaction)
@@ -64,6 +65,8 @@ struct ValidateView: View {
                 if let outcome {
                     ValidationResultSections(outcome: outcome) { fieldPath in
                         session.show(fieldPath: fieldPath)
+                    } onTrace: { position in
+                        tracing = TraceRequest(position: position)
                     }
                     if !outcome.redeemers.isEmpty {
                         Section {
@@ -83,6 +86,9 @@ struct ValidateView: View {
         .navigationTitle(Text("Validate", bundle: #bundle))
         .sheet(isPresented: $isAskingWhatIf) {
             WhatIfSheet(document: document)
+        }
+        .sheet(item: $tracing) { request in
+            ScriptTraceSheet(document: document, request: request)
         }
         .task(id: RequirementsKey(transaction: document.content.transaction, snapshot: document.content.chainContext)) {
             guard let bytes = document.content.transaction else { return }

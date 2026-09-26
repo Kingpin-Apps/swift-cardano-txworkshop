@@ -6,6 +6,7 @@ import TxWorkshopEngine
 /// declares, and its traces.
 struct RedeemerBudgetRow: View {
     let redeemer: RedeemerOutcome
+    let onTrace: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: TWSpacing.s) {
@@ -46,6 +47,14 @@ struct RedeemerBudgetRow: View {
                     .foregroundStyle(TWColor.failure)
                     .textSelection(.enabled)
             }
+            Button(action: onTrace) {
+                Label {
+                    Text("Trace Timeline", bundle: #bundle)
+                } icon: {
+                    Image(systemName: "chart.xyaxis.line")
+                }
+            }
+            .buttonStyle(.borderless)
             if !redeemer.logs.isEmpty {
                 DisclosureGroup {
                     ForEach(redeemer.logs.enumerated(), id: \.offset) { _, line in

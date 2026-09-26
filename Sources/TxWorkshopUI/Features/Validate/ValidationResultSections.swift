@@ -6,6 +6,7 @@ import TxWorkshopEngine
 struct ValidationResultSections: View {
     let outcome: ValidationOutcome
     let onShow: (String) -> Void
+    let onTrace: (Int) -> Void
 
     var body: some View {
         Section {
@@ -42,7 +43,7 @@ struct ValidationResultSections: View {
         if !outcome.redeemers.isEmpty {
             Section {
                 ForEach(outcome.redeemers) { redeemer in
-                    RedeemerBudgetRow(redeemer: redeemer)
+                    RedeemerBudgetRow(redeemer: redeemer) { onTrace(redeemer.position) }
                 }
             } header: {
                 Text("Script budgets", bundle: #bundle)
