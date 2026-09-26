@@ -4,8 +4,8 @@ import TxWorkshopCore
 
 @testable import TxWorkshopEngine
 
-/// Runs against public preprod services; set `TXWORKSHOP_LIVE=1` to run.
-@Suite("Live lookups", .enabled(if: ProcessInfo.processInfo.environment["TXWORKSHOP_LIVE"] != nil))
+/// Runs against public preprod services; set `TW_LIVE=1` to run.
+@Suite("Live lookups", .enabled(if: ProcessInfo.processInfo.environment["TW_LIVE"] != nil))
 struct LiveLookupTests {
     @Test("Koios resolves the fixture's inputs on preprod")
     func koiosInputs() async throws {
