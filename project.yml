@@ -29,6 +29,9 @@ settings:
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: complete
     ENABLE_USER_SCRIPT_SANDBOXING: YES
+    # Enhanced Security: hardened heap, read-only dyld state, platform
+    # restrictions, stack zero-init. See xcode-security-settings.md.
+    ENABLE_ENHANCED_SECURITY: YES
     DEAD_CODE_STRIPPING: YES
     # No team yet: the simulators sign ad hoc, and macOS signs "to run locally".
     # Set DEVELOPMENT_TEAM for devices, TestFlight and notarisation.
@@ -110,6 +113,11 @@ targets:
         PRODUCT_NAME: Tx Workshop
         TARGETED_DEVICE_FAMILY: "1,2,7"
         ENABLE_HARDENED_RUNTIME: YES
+        # libsodium and BLST ship as prebuilt binaries with no arm64e slice,
+        # so pointer authentication (and the arm64e.x1 slice) must stay off.
+        ENABLE_POINTER_AUTHENTICATION: NO
+        ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE: NO
+        CODE_SIGN_ENTITLEMENTS: App/TxWorkshop.entitlements
         "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": App/TxWorkshop-macOS.entitlements
         "CODE_SIGN_STYLE[sdk=macosx*]": Manual
         "CODE_SIGN_IDENTITY[sdk=macosx*]": "-"
@@ -142,6 +150,10 @@ targets:
         PRODUCT_NAME: Tx Workshop
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) DIRECT_DISTRIBUTION
         ENABLE_HARDENED_RUNTIME: YES
+        # libsodium and BLST ship as prebuilt binaries with no arm64e slice,
+        # so pointer authentication (and the arm64e.x1 slice) must stay off.
+        ENABLE_POINTER_AUTHENTICATION: NO
+        ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE: NO
         CODE_SIGN_ENTITLEMENTS: AppDirect/TxWorkshopDirect.entitlements
 
   TxWorkshopWatch:
@@ -165,6 +177,10 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.txworkshop.watchkitapp
         PRODUCT_NAME: Tx Workshop
+        # libsodium and BLST ship as prebuilt binaries with no arm64e slice,
+        # so pointer authentication (and the arm64e.x1 slice) must stay off.
+        ENABLE_POINTER_AUTHENTICATION: NO
+        ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE: NO
 
 schemes:
   TxWorkshop:

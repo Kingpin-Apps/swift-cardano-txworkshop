@@ -54,6 +54,7 @@
 		7CE1E9C8A800D75196B3450F /* TxWorkshopWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TxWorkshopWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91643936B8393B8CD4046109 /* TxWorkshop.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TxWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C7717046104B6311FC201C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		97CB982DCFE36F65D6ABEAE7 /* TxWorkshop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshop.entitlements; sourceTree = "<group>"; };
 		9C504DAD812097C8A52346DF /* TxWorkshopDirect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TxWorkshopDirect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A680CCB6C7AF1211ED7B0255 /* TxWorkshopDirect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshopDirect.entitlements; sourceTree = "<group>"; };
 		C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-cardano-txworkshop"; path = .; sourceTree = SOURCE_ROOT; };
@@ -148,6 +149,7 @@
 			children = (
 				97C7717046104B6311FC201C /* Info.plist */,
 				C5D7F86C6DDD78E4458DD86B /* TxWorkshop-macOS.entitlements */,
+				97CB982DCFE36F65D6ABEAE7 /* TxWorkshop.entitlements */,
 				58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */,
 			);
 			path = App;
@@ -311,6 +313,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = NO;
+				ENABLE_POINTER_AUTHENTICATION = NO;
 				INFOPLIST_FILE = AppWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop.watchkitapp;
 				PRODUCT_NAME = "Tx Workshop";
@@ -324,11 +328,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/TxWorkshop.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "App/TxWorkshop-macOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				"CODE_SIGN_STYLE[sdk=macosx*]" = Manual;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = NO;
+				ENABLE_POINTER_AUTHENTICATION = NO;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -353,6 +360,8 @@
 				CODE_SIGN_ENTITLEMENTS = AppDirect/TxWorkshopDirect.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = NO;
+				ENABLE_POINTER_AUTHENTICATION = NO;
 				INFOPLIST_FILE = AppDirect/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -406,6 +415,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
+				ENABLE_ENHANCED_SECURITY = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -440,6 +450,8 @@
 				CODE_SIGN_ENTITLEMENTS = AppDirect/TxWorkshopDirect.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = NO;
+				ENABLE_POINTER_AUTHENTICATION = NO;
 				INFOPLIST_FILE = AppDirect/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -456,11 +468,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/TxWorkshop.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "App/TxWorkshop-macOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				"CODE_SIGN_STYLE[sdk=macosx*]" = Manual;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = NO;
+				ENABLE_POINTER_AUTHENTICATION = NO;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -519,6 +534,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_ENHANCED_SECURITY = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -557,6 +573,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = NO;
+				ENABLE_POINTER_AUTHENTICATION = NO;
 				INFOPLIST_FILE = AppWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop.watchkitapp;
 				PRODUCT_NAME = "Tx Workshop";
