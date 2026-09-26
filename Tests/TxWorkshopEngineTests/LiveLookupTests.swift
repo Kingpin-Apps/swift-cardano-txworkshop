@@ -27,4 +27,22 @@ struct LiveLookupTests {
         let tokens = try await TokenRegistryLookup().lookup(inspection.outputs.flatMap(\.assets) + inspection.mint, network: .preprod)
         print("tokens \(tokens)")
     }
+
+    /// Fetches the fixture's chain data; with `TW_FIXTURE_OUT` set, writes
+    /// it there as the offline fixture.
+    @Test("Koios gives everything validation needs")
+    func chainData() async throws {
+        let bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let provider = ProviderConfiguration(name: "Koios", kind: .koios, network: .preprod)
+        let snapshot = try await ChainDataFetcher().fetch(transaction: bytes, provider: provider, apiKey: nil, keeping: nil)
+        #expect(snapshot.protocolParameters != nil)
+        #expect(snapshot.utxos.count == 5)
+        #expect(snapshot.tipSlot != nil)
+        if let out = ProcessInfo.processInfo.environment["TW_FIXTURE_OUT"] {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            encoder.dateEncodingStrategy = .iso8601
+            try encoder.encode(snapshot).write(to: URL(fileURLWithPath: out))
+        }
+    }
 }
