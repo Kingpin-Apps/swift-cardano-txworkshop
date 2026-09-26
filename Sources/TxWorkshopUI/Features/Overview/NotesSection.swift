@@ -15,6 +15,7 @@ struct NotesSection: View {
                 Text("Add notes", bundle: #bundle)
             }
             .lineLimit(4...)
+            .labelsHidden()
         } header: {
             Text("Notes", bundle: #bundle)
         }
