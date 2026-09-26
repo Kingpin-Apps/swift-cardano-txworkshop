@@ -20,7 +20,8 @@ struct TxDocumentCodecTests {
             notes: "Check the collateral return.",
             network: .mainnet,
             chainContext: ChainContextSnapshot(
-                fetchedAt: Date(timeIntervalSince1970: 1_790_000_000), utxos: ["82825820"], protocolParameters: Data("{}".utf8),
+                fetchedAt: Date(timeIntervalSince1970: 1_790_000_000), utxos: ["82825820"], spentInputs: ["ab#0"],
+                tokens: [TokenInfo(subject: "cd", name: "Coin", ticker: "COIN", decimals: 6)], protocolParameters: Data("{}".utf8),
                 tipSlot: 123
             ),
             witnesses: [CollectedWitness(label: "Alice", keyHash: "ab", witnessCBOR: "a0", addedAt: Date(timeIntervalSince1970: 1_790_000_100))],

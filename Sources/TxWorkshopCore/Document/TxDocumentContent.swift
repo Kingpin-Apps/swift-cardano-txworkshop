@@ -101,16 +101,46 @@ public struct ChainContextSnapshot: Codable, Sendable, Equatable {
     public var fetchedAt: Date
     /// Every input the transaction spends or references, as UTxO CBOR in hex.
     public var utxos: [String]
+    /// The inputs, as `<transaction id>#<index>`, that were already spent
+    /// when the data was fetched.
+    public var spentInputs: [String]?
+    /// Token names from the token registry (CIP-26).
+    public var tokens: [TokenInfo]?
     /// The protocol parameters, as the provider returned them (JSON).
     public var protocolParameters: Data?
     /// The chain tip slot at the time.
     public var tipSlot: UInt64?
 
-    public init(fetchedAt: Date, utxos: [String], protocolParameters: Data? = nil, tipSlot: UInt64? = nil) {
+    public init(
+        fetchedAt: Date,
+        utxos: [String],
+        spentInputs: [String]? = nil,
+        tokens: [TokenInfo]? = nil,
+        protocolParameters: Data? = nil,
+        tipSlot: UInt64? = nil
+    ) {
         self.fetchedAt = fetchedAt
         self.utxos = utxos
+        self.spentInputs = spentInputs
+        self.tokens = tokens
         self.protocolParameters = protocolParameters
         self.tipSlot = tipSlot
+    }
+}
+
+/// What the token registry says about one asset.
+public struct TokenInfo: Codable, Sendable, Equatable {
+    /// The policy id and asset name, in hex, run together.
+    public var subject: String
+    public var name: String?
+    public var ticker: String?
+    public var decimals: Int?
+
+    public init(subject: String, name: String? = nil, ticker: String? = nil, decimals: Int? = nil) {
+        self.subject = subject
+        self.name = name
+        self.ticker = ticker
+        self.decimals = decimals
     }
 }
 
