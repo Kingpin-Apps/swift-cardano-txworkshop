@@ -41,6 +41,26 @@ struct BuildView: View {
                     recipe.scriptInputs.removeAll { $0.id == input.id }
                 }
             }
+            ForEach($recipe.certificates) { $item in
+                CertificateDraftSection(item: $item) {
+                    recipe.certificates.removeAll { $0.id == item.id }
+                }
+            }
+            ForEach($recipe.withdrawals) { $withdrawal in
+                WithdrawalDraftSection(withdrawal: $withdrawal) {
+                    recipe.withdrawals.removeAll { $0.id == withdrawal.id }
+                }
+            }
+            ForEach($recipe.votes) { $vote in
+                VoteDraftSection(vote: $vote) {
+                    recipe.votes.removeAll { $0.id == vote.id }
+                }
+            }
+            ForEach($recipe.proposals) { $proposal in
+                ProposalDraftSection(proposal: $proposal) {
+                    recipe.proposals.removeAll { $0.id == proposal.id }
+                }
+            }
             Section {
                 Button {
                     recipe.outputs.append(OutputDraft())
@@ -69,6 +89,30 @@ struct BuildView: View {
                         Image(systemName: "lock.open")
                     }
                 }
+                Menu {
+                    Button {
+                        recipe.certificates.append(CertificateItem(certificate: .registerStake(stakeAddress: "")))
+                    } label: { Text("Certificate", bundle: #bundle) }
+                    Button {
+                        recipe.withdrawals.append(WithdrawalDraft())
+                    } label: { Text("Withdrawal", bundle: #bundle) }
+                    Button {
+                        recipe.votes.append(VoteDraft())
+                    } label: { Text("Vote", bundle: #bundle) }
+                    Button {
+                        recipe.proposals.append(ProposalDraft())
+                    } label: { Text("Proposal", bundle: #bundle) }
+                } label: {
+                    Label {
+                        Text("Add Staking or Governance", bundle: #bundle)
+                    } icon: {
+                        Image(systemName: "building.columns")
+                    }
+                }
+                TextField(value: $recipe.donation, format: .number) {
+                    Text("Treasury donation (lovelace)", bundle: #bundle)
+                }
+                .font(TWFont.figure)
             }
             BuildOptionsSection(recipe: $recipe)
             Section {
