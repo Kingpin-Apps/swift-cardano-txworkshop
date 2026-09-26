@@ -31,6 +31,16 @@ struct BuildView: View {
                     recipe.outputs.removeAll { $0.id == output.id }
                 }
             }
+            ForEach($recipe.mints) { $mint in
+                MintDraftSection(mint: $mint) {
+                    recipe.mints.removeAll { $0.id == mint.id }
+                }
+            }
+            ForEach($recipe.scriptInputs) { $input in
+                ScriptInputSection(input: $input) {
+                    recipe.scriptInputs.removeAll { $0.id == input.id }
+                }
+            }
             Section {
                 Button {
                     recipe.outputs.append(OutputDraft())
@@ -39,6 +49,24 @@ struct BuildView: View {
                         Text("Add Output", bundle: #bundle)
                     } icon: {
                         Image(systemName: "plus")
+                    }
+                }
+                Button {
+                    recipe.mints.append(MintDraft(assets: [AssetDraft()]))
+                } label: {
+                    Label {
+                        Text("Add Mint or Burn", bundle: #bundle)
+                    } icon: {
+                        Image(systemName: "sparkles")
+                    }
+                }
+                Button {
+                    recipe.scriptInputs.append(ScriptInputDraft())
+                } label: {
+                    Label {
+                        Text("Add Script Input", bundle: #bundle)
+                    } icon: {
+                        Image(systemName: "lock.open")
                     }
                 }
             }

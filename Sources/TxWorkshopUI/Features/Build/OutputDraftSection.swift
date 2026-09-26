@@ -72,15 +72,7 @@ struct OutputDraftSection: View {
                 .autocorrectionDisabled()
             }
         } header: {
-            HStack {
-                Text("Output", bundle: #bundle)
-                Spacer()
-                Button(role: .destructive, action: onRemove) {
-                    Text("Remove", bundle: #bundle)
-                }
-                .buttonStyle(.borderless)
-                .font(.caption)
-            }
+            RemovableHeader(title: Text("Output", bundle: #bundle), onRemove: onRemove)
         }
         .onAppear {
             switch output.datum {
