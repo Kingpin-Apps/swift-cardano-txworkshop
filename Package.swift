@@ -83,6 +83,11 @@ let package = Package(
             resources: [.copy("Fixtures")]
         ),
         .testTarget(
+            name: "TxWorkshopUITests",
+            dependencies: ["TxWorkshopUI", "TxWorkshopEngine", "TxWorkshopCore"],
+            resources: [.copy("Fixtures")]
+        ),
+        .testTarget(
             name: "TxWorkshopEngineTests",
             dependencies: ["TxWorkshopEngine", "TxWorkshopCore"],
             resources: [.copy("Fixtures")]

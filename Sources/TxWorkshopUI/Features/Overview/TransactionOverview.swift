@@ -41,7 +41,10 @@ struct TransactionOverview: View {
         .formStyle(.grouped)
         .navigationTitle(Text("Overview", bundle: #bundle))
         .toolbar {
-            if inspection.value != nil {
+            if let current = inspection.value {
+                ToolbarItem {
+                    ExportMenu(document: document, inspection: current)
+                }
                 ToolbarItem {
                     Button {
                         isComparing = true
