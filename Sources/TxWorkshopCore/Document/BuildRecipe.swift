@@ -25,6 +25,13 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
     public var requiredSigners: [String]
     /// Lovelace added to the computed fee.
     public var feeBuffer: UInt64?
+    /// Assets to mint (positive) or burn (negative), by policy script.
+    public var mints: [MintDraft]
+    /// Script-locked UTxOs to spend, with what unlocks them.
+    public var scriptInputs: [ScriptInputDraft]
+    /// Inputs (`<transaction id>#<index>`) to put up as collateral; the
+    /// builder picks from the source addresses when empty.
+    public var collateral: [String]
 
     public enum CoinSelection: String, Codable, Sendable, CaseIterable {
         case randomImprove, largestFirst
@@ -33,7 +40,8 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
     public init(
         sourceAddresses: [String] = [], utxos: [String] = [], fixedInputs: [String] = [], outputs: [OutputDraft] = [],
         changeAddress: String = "", coinSelection: CoinSelection = .randomImprove, validFrom: UInt64? = nil,
-        validUntil: UInt64? = nil, message: String = "", requiredSigners: [String] = [], feeBuffer: UInt64? = nil
+        validUntil: UInt64? = nil, message: String = "", requiredSigners: [String] = [], feeBuffer: UInt64? = nil,
+        mints: [MintDraft] = [], scriptInputs: [ScriptInputDraft] = [], collateral: [String] = []
     ) {
         self.sourceAddresses = sourceAddresses
         self.utxos = utxos
@@ -46,6 +54,9 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         self.message = message
         self.requiredSigners = requiredSigners
         self.feeBuffer = feeBuffer
+        self.mints = mints
+        self.scriptInputs = scriptInputs
+        self.collateral = collateral
     }
 
     /// Reads recipes saved before a field existed.
@@ -62,6 +73,9 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         message = try c.decodeIfPresent(String.self, forKey: .message) ?? ""
         requiredSigners = try c.decodeIfPresent([String].self, forKey: .requiredSigners) ?? []
         feeBuffer = try c.decodeIfPresent(UInt64.self, forKey: .feeBuffer)
+        mints = try c.decodeIfPresent([MintDraft].self, forKey: .mints) ?? []
+        scriptInputs = try c.decodeIfPresent([ScriptInputDraft].self, forKey: .scriptInputs) ?? []
+        collateral = try c.decodeIfPresent([String].self, forKey: .collateral) ?? []
     }
 }
 
@@ -111,4 +125,53 @@ public enum DatumDraft: Codable, Sendable, Equatable {
     case hash(String)
     /// Plutus data, as CBOR hex, inline in the output.
     case inline(String)
+}
+
+/// A script, as the recipe gives it.
+public enum ScriptDraft: Codable, Sendable, Equatable {
+    /// A native script as cardano-cli simple-script JSON.
+    case native(json: String)
+    /// A Plutus script (version 1–3) as CBOR hex, as in a `.plutus` file's
+    /// `cborHex` or a blueprint's `compiledCode`.
+    case plutus(version: Int, cborHex: String)
+    /// A reference script carried by the UTxO `<transaction id>#<index>`.
+    case reference(input: String)
+}
+
+/// Assets minted or burned under one policy.
+public struct MintDraft: Codable, Sendable, Equatable, Identifiable {
+    public var id: UUID
+    public var script: ScriptDraft
+    /// Asset names (hex) and quantities; the policy id comes from the script.
+    public var assets: [AssetDraft]
+    /// The redeemer, as Plutus data CBOR hex; Plutus policies only.
+    public var redeemer: String
+
+    public init(id: UUID = UUID(), script: ScriptDraft = .native(json: ""), assets: [AssetDraft] = [], redeemer: String = "") {
+        self.id = id
+        self.script = script
+        self.assets = assets
+        self.redeemer = redeemer
+    }
+}
+
+/// A script-locked UTxO to spend.
+public struct ScriptInputDraft: Codable, Sendable, Equatable, Identifiable {
+    public var id: UUID
+    /// The UTxO, `<transaction id>#<index>`.
+    public var input: String
+    /// The script that locks it; `nil` when a reference input carries it.
+    public var script: ScriptDraft?
+    /// The datum, as Plutus data CBOR hex, when the UTxO holds only its hash.
+    public var datum: String
+    /// The redeemer, as Plutus data CBOR hex.
+    public var redeemer: String
+
+    public init(id: UUID = UUID(), input: String = "", script: ScriptDraft? = nil, datum: String = "", redeemer: String = "") {
+        self.id = id
+        self.input = input
+        self.script = script
+        self.datum = datum
+        self.redeemer = redeemer
+    }
 }
