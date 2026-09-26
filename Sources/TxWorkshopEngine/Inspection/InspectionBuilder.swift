@@ -51,7 +51,8 @@ struct InspectionBuilder {
             redeemers: redeemers(),
             datums: datums(witnesses),
             metadata: metadata(),
-            requiredSigners: body.requiredSigners?.asList.map { $0.payload.hex } ?? []
+            requiredSigners: body.requiredSigners?.asList.map { $0.payload.hex } ?? [],
+            signers: signers(witnesses)
         )
     }
 
@@ -188,6 +189,16 @@ struct InspectionBuilder {
         guard lines.count > listingLineLimit else { return text }
         return lines.prefix(listingLineLimit).joined(separator: "\n")
             + "\n… \(lines.count - listingLineLimit) more lines"
+    }
+
+    /// Blake2b-224 of each witness's key; an extended key's chain code is
+    /// not part of the hash.
+    private func signers(_ witnesses: TransactionWitnessSet) -> [String] {
+        (witnesses.vkeyWitnesses?.asList ?? []).map { witness in
+            let key = witness.vkey.payload.prefix(32)
+            return ((try? Hash().blake2b(data: Data(key), digestSize: 28, encoder: RawEncoder.self)) ?? Data()).hex
+        }
+        .sorted()
     }
 
     private func redeemers() -> [RedeemerDetail] {

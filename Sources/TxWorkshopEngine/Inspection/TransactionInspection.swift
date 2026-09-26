@@ -19,6 +19,8 @@ public struct TransactionInspection: Sendable, Equatable {
     public let datums: [DatumDetail]
     public let metadata: [MetadataEntry]
     public let requiredSigners: [String]
+    /// The key hashes of the keys that signed, from the vkey witnesses.
+    public let signers: [String]
 
     public var view: TransactionView { summary.view }
 }
