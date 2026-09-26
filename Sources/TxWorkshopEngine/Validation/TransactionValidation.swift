@@ -145,7 +145,7 @@ public enum ValidationRunError: Error, Sendable, Equatable, CustomStringConverti
 }
 
 /// The verdict of one validation run.
-public struct ValidationOutcome: Sendable, Equatable {
+public struct ValidationOutcome: Sendable, Equatable, Codable {
     public let ranAt: Date
     public let mode: TransactionValidation.Mode
     public let issues: [ValidationFinding]
@@ -157,7 +157,7 @@ public struct ValidationOutcome: Sendable, Equatable {
 }
 
 /// One thing validation found.
-public struct ValidationFinding: Sendable, Equatable, Identifiable {
+public struct ValidationFinding: Sendable, Equatable, Identifiable, Codable {
     /// 1 for the ledger rules, 2 for scripts.
     public let phase: Int
     /// The validator's name for it, e.g. `feeTooSmall`.
@@ -169,6 +169,10 @@ public struct ValidationFinding: Sendable, Equatable, Identifiable {
     public let hint: String?
     public let isWarning: Bool
     public var id: String { "\(phase)|\(kind)|\(fieldPath)|\(message)" }
+
+    private enum CodingKeys: String, CodingKey {
+        case phase, kind, fieldPath, message, hint, isWarning
+    }
 
     init(_ error: ValidationError, phase: Int) {
         self.phase = phase
@@ -190,7 +194,7 @@ public struct ValidationFinding: Sendable, Equatable, Identifiable {
 }
 
 /// How one redeemer's script ran.
-public struct RedeemerOutcome: Sendable, Equatable, Identifiable {
+public struct RedeemerOutcome: Sendable, Equatable, Identifiable, Codable {
     /// The redeemer's position in the witness set.
     public let position: Int
     public let tag: String
@@ -205,7 +209,7 @@ public struct RedeemerOutcome: Sendable, Equatable, Identifiable {
     public let error: String?
     public var id: Int { position }
 
-    public struct Budget: Sendable, Equatable {
+    public struct Budget: Sendable, Equatable, Codable {
         public let memory: Int64
         public let steps: Int64
     }

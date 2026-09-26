@@ -77,3 +77,47 @@ struct TransactionValidationTests {
         }
     }
 }
+
+@Suite("Validation reports")
+struct ValidationReportTests {
+    @Test("Markdown and JSON carry the verdict, findings and budgets")
+    func reports() async throws {
+        let bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let outcome = try await TransactionValidation().validate(bytes, snapshot: try TransactionValidationTests.snapshot(), network: .preprod, mode: .now)
+        let report = ValidationReport(transactionID: "f5cd", network: .preprod, outcome: outcome)
+        let markdown = report.markdown()
+        #expect(markdown.hasPrefix("# Validation of f5cd\n"))
+        #expect(markdown.contains("**Not valid**"))
+        #expect(markdown.contains("`inputAlreadySpent` at `transaction_body.inputs[0]`"))
+        #expect(markdown.contains("| mint 0 | passed |"))
+
+        let object = try #require(try JSONSerialization.jsonObject(with: report.json()) as? [String: Any])
+        #expect(object["isValid"] as? Bool == false)
+        let decoded = try JSONDecoder.iso8601.decode(Wrapper.self, from: report.json())
+        #expect(decoded.outcome.issues == outcome.issues)
+        #expect(decoded.outcome.redeemers == outcome.redeemers)
+    }
+
+    @Test("A folder's transaction files are found; a batch table lists each")
+    func batch() throws {
+        let folder = FileManager.default.temporaryDirectory.appending(path: "tw-batch-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        for name in ["b.tx", "a.hex", "c.cbor", "notes.txt"] {
+            try Data().write(to: folder.appending(path: name))
+        }
+        #expect(try BatchValidator.transactionFiles(in: folder).map(\.lastPathComponent) == ["a.hex", "b.tx", "c.cbor"])
+        let table = BatchValidator.markdown([.init(file: "a.hex", transactionID: nil, outcome: nil, problem: "Not a transaction.")], network: .preprod, mode: .now)
+        #expect(table.contains("| a.hex | — | not run: Not a transaction. | 0 | 0 |"))
+    }
+
+    struct Wrapper: Decodable { let outcome: ValidationOutcome }
+}
+
+extension JSONDecoder {
+    static var iso8601: JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return decoder
+    }
+}
