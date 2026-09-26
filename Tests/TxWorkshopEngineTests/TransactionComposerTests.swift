@@ -1,5 +1,6 @@
 import Foundation
 import SwiftCardanoCore
+import SwiftCardanoUPLC
 import Testing
 import TxWorkshopCore
 
@@ -7,6 +8,9 @@ import TxWorkshopCore
 
 @Suite("Building")
 struct TransactionComposerTests {
+    /// What an unsigned transaction is refused for: signatures it lacks.
+    static let unsigned: Set<String> = ["missingVKeyWitness", "missingRequiredSigner", "nativeScriptFailed"]
+
     /// The fixture's chain data, and a key-address UTxO from it to spend.
     static func setup() throws -> (snapshot: ChainContextSnapshot, utxo: UTxO, address: String) {
         let snapshot = try TransactionValidationTests.snapshot()
@@ -79,5 +83,69 @@ struct TransactionComposerTests {
         }
         #expect(lines.count == 2)
         #expect(try TransactionComposer.message("  \n") == nil)
+    }
+}
+
+@Suite("Building with scripts")
+struct ScriptBuildingTests {
+    /// An always-succeeding PlutusV3 minting policy, as `compiledCode` hex.
+    static func alwaysSucceeds() throws -> String {
+        var parser = UPLCParser()
+        let program = try DeBruijnConverter().convert(try parser.parse("(program 1.1.0 (lam ctx (con unit ())))"))
+        let flat = try FlatEncoder().encode(program)
+        return try Primitive.bytes(flat).toCBORData().hex
+    }
+
+    @Test("A native-script mint is signed for by the key it names")
+    func nativeMint() async throws {
+        let (snapshot, utxo, address) = try TransactionComposerTests.setup()
+        let keyHash = "04619f081850a9c468c25ac4ca72f783b6c3f006cc2dfe4e8a27fdc0"
+        let recipe = BuildRecipe(
+            utxos: [try utxo.toCBORData().hex],
+            outputs: [OutputDraft(address: address)],
+            changeAddress: address,
+            mints: [MintDraft(script: .native(json: #"{"type": "sig", "keyHash": "\#(keyHash)"}"#), assets: [AssetDraft(assetNameHex: "5457", quantity: 1)])]
+        )
+        let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
+        #expect(inspection.mint.map(\.assetNameHex) == ["5457"])
+        #expect(inspection.scripts.map(\.language) == ["native"])
+        let outcome = try await TransactionValidation().validate(built.transaction, snapshot: snapshot, network: .preprod, mode: .asWritten)
+        #expect(Set(outcome.errors.map(\.kind)).isSubset(of: TransactionComposerTests.unsigned), "\(outcome.errors.map(\.message))")
+    }
+
+    @Test("A Plutus mint gets its execution units, collateral and script data hash")
+    func plutusMint() async throws {
+        let (snapshot, utxo, address) = try TransactionComposerTests.setup()
+        let recipe = BuildRecipe(
+            utxos: [try utxo.toCBORData().hex],
+            outputs: [OutputDraft(address: address)],
+            changeAddress: address,
+            mints: [MintDraft(script: .plutus(version: 3, cborHex: try Self.alwaysSucceeds()), assets: [AssetDraft(assetNameHex: "5457", quantity: 5)], redeemer: "d87980")]
+        )
+        let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        #expect(built.fee.steps > 0)
+        let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
+        #expect(!inspection.collateralInputs.isEmpty)
+        #expect(inspection.redeemers.count == 1)
+        let outcome = try await TransactionValidation().validate(built.transaction, snapshot: snapshot, network: .preprod, mode: .asWritten)
+        #expect(Set(outcome.errors.map(\.kind)).isSubset(of: TransactionComposerTests.unsigned), "\(outcome.errors.map(\.message))")
+        let run = try #require(outcome.redeemers.first)
+        #expect(run.passed)
+        #expect(!run.exceedsDeclared)
+    }
+
+    @Test("Bad scripts and data are named")
+    func badScripts() async throws {
+        let (snapshot, utxo, address) = try TransactionComposerTests.setup()
+        func recipe(_ mint: MintDraft) throws -> BuildRecipe {
+            BuildRecipe(utxos: [try utxo.toCBORData().hex], outputs: [OutputDraft(address: address)], changeAddress: address, mints: [mint])
+        }
+        await #expect(throws: ComposeError.self) {
+            _ = try await TransactionComposer().compose(try recipe(MintDraft(script: .native(json: "{"), assets: [AssetDraft(assetNameHex: "00")])), snapshot: snapshot, network: .preprod)
+        }
+        await #expect(throws: ComposeError.badPlutusData("the minting redeemer")) {
+            _ = try await TransactionComposer().compose(try recipe(MintDraft(script: .plutus(version: 3, cborHex: try Self.alwaysSucceeds()), assets: [AssetDraft(assetNameHex: "00")], redeemer: "zz")), snapshot: snapshot, network: .preprod)
+        }
     }
 }

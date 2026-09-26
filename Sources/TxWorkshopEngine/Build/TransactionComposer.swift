@@ -1,4 +1,5 @@
 import Foundation
+import OrderedCollections
 import SwiftCardanoChain
 import SwiftCardanoCore
 import SwiftCardanoTxBuilder
@@ -109,6 +110,7 @@ public struct TransactionComposer: Sendable {
         if let metadata = try Self.message(recipe.message) {
             builder.auxiliaryData = metadata
         }
+        try await Self.addScripts(recipe, to: builder, context: context)
 
         let change = try recipe.changeAddress.isEmpty ? sources.first : Self.address(recipe.changeAddress)
         guard let change else { throw ComposeError.noChangeAddress }
@@ -176,16 +178,7 @@ public struct TransactionComposer: Sendable {
     }
 
     static func output(_ draft: OutputDraft, context: WorkshopChainContext) async throws -> TransactionOutput {
-        var assets: [String: [String: Int64]] = [:]
-        for asset in draft.assets where asset.quantity != 0 {
-            assets[asset.policyID, default: [:]][asset.assetNameHex, default: 0] += asset.quantity
-        }
-        let multiAsset: MultiAsset
-        do {
-            multiAsset = assets.isEmpty ? MultiAsset([:]) : try MultiAsset(from: assets.mapValues { $0.mapKeys { "0x" + $0 } })
-        } catch {
-            throw ComposeError.badAsset(String(describing: error))
-        }
+        let multiAsset = try Self.multiAsset(draft.assets.map { ($0.policyID, $0.assetNameHex, $0.quantity) })
         var output = TransactionOutput(
             address: try address(draft.address),
             amount: Value(coin: Int64(draft.lovelace ?? 0), multiAsset: multiAsset),
@@ -212,6 +205,23 @@ public struct TransactionComposer: Sendable {
             throw ComposeError.belowMinimum(address: draft.address, minimum: least)
         }
         return output
+    }
+
+    /// Assets from policy ids and asset names in hex. Built from bytes: the
+    /// string form of `MultiAsset(from:)` reads names as UTF-8 text.
+    static func multiAsset(_ assets: [(policy: String, nameHex: String, quantity: Int64)]) throws -> MultiAsset {
+        var policies: [ScriptHash: OrderedDictionary<AssetName, Int64>] = [:]
+        for (policy, nameHex, quantity) in assets where quantity != 0 {
+            guard let policyBytes = try? TxDocumentCodec.bytes(fromHex: policy), policyBytes.count == 28 else {
+                throw ComposeError.badAsset("\(policy) is not a 28-byte policy id.")
+            }
+            let nameBytes = nameHex.isEmpty ? Data() : (try? TxDocumentCodec.bytes(fromHex: nameHex))
+            guard let nameBytes, nameBytes.count <= 32, let name = try? AssetName(payload: nameBytes) else {
+                throw ComposeError.badAsset("\(nameHex) is not an asset name of up to 32 bytes in hex.")
+            }
+            policies[ScriptHash(payload: policyBytes), default: [:]][name, default: 0] += quantity
+        }
+        return MultiAsset(policies.mapValues { Asset($0) })
     }
 
     /// Label 674 metadata: `{"msg": [line, …]}`, lines split at 64 bytes.
@@ -243,6 +253,8 @@ public enum ComposeError: Error, Sendable, Equatable, CustomStringConvertible {
     case badAsset(String)
     case badDatum
     case badKeyHash(String)
+    case badScript(String)
+    case badPlutusData(String)
     case unknownInput(String)
     case belowMinimum(address: String, minimum: Int64)
     case scriptFails(String, String)
@@ -257,17 +269,13 @@ public enum ComposeError: Error, Sendable, Equatable, CustomStringConvertible {
         case .badAsset(let reason): "An asset is not valid: \(reason)"
         case .badDatum: "A datum is not a 32-byte hash or Plutus data in CBOR hex."
         case .badKeyHash(let hex): "\(hex) is not a 28-byte key hash."
+        case .badScript(let reason): reason
+        case .badPlutusData(let what): "\(what.prefix(1).uppercased() + what.dropFirst()) is not Plutus data in CBOR hex."
         case .unknownInput(let id): "\(id) is not among the UTxOs the builder knows."
         case .belowMinimum(let address, let minimum): "The output to \(address) needs at least \(minimum) lovelace."
         case .scriptFails(let redeemer, let reason): "The \(redeemer) script fails: \(reason)"
         case .builder(let reason): reason
         }
-    }
-}
-
-private extension Dictionary {
-    func mapKeys<T: Hashable>(_ transform: (Key) -> T) -> [T: Value] {
-        Dictionary<T, Value>(uniqueKeysWithValues: map { (transform($0.key), $0.value) })
     }
 }
 

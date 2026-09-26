@@ -36,6 +36,7 @@ let package = Package(
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-uplc.git", from: "0.7.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txbuilder.git", from: "1.1.0"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-token-registry.git", from: "0.2.1"),
+        .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.0"),
         .package(url: "https://github.com/Kingpin-Apps/swift-nacl.git", .upToNextMinor(from: "1.0.2")),
     ],
     targets: [
@@ -58,6 +59,7 @@ let package = Package(
                 .product(name: "SwiftCardanoUPLC", package: "swift-cardano-uplc"),
                 .product(name: "SwiftCardanoTokenRegistryClient", package: "swift-cardano-token-registry"),
                 .product(name: "SwiftCardanoTxBuilder", package: "swift-cardano-txbuilder"),
+                .product(name: "OrderedCollections", package: "swift-collections"),
                 .product(name: "SwiftNaCl", package: "swift-nacl"),
             ]
         ),
