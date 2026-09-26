@@ -149,3 +149,60 @@ struct ScriptBuildingTests {
         }
     }
 }
+
+@Suite("Building governance")
+struct GovernanceBuildingTests {
+    static func stakeAddress() throws -> String {
+        let hash = VerificationKeyHash(payload: try TxDocumentCodec.bytes(fromHex: "04619f081850a9c468c25ac4ca72f783b6c3f006cc2dfe4e8a27fdc0"))
+        return try Address(stakingPart: .verificationKeyHash(hash), network: .testnet).toBech32()
+    }
+
+    @Test("Registering and delegating pays the stake deposit, and the value balances")
+    func registerAndDelegate() async throws {
+        let (snapshot, utxo, address) = try TransactionComposerTests.setup()
+        let stake = try Self.stakeAddress()
+        let pool = String(repeating: "ab", count: 28)
+        let recipe = BuildRecipe(
+            utxos: [try utxo.toCBORData().hex],
+            outputs: [OutputDraft(address: address)],
+            changeAddress: address,
+            certificates: [
+                CertificateItem(certificate: .registerStake(stakeAddress: stake)),
+                CertificateItem(certificate: .delegateStake(stakeAddress: stake, pool: pool)),
+                CertificateItem(certificate: .delegateVote(stakeAddress: stake, drep: "abstain")),
+            ]
+        )
+        let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        let parameters = try #require(TransactionValidation.protocolParameters(snapshot))
+        #expect(built.deposits == parameters.stakeAddressDeposit)
+        #expect(built.totalIn == built.totalOut + Int64(built.fee.total) + built.deposits)
+        let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
+        #expect(inspection.view.certificates.count == 3)
+        let outcome = try await TransactionValidation().validate(built.transaction, snapshot: snapshot, network: .preprod, mode: .asWritten)
+        #expect(!outcome.errors.contains { $0.kind == "valueNotConserved" || $0.kind == "feeTooSmall" })
+    }
+
+    @Test(
+        "A treasury donation comes out of the change and decodes",
+        .disabled("Needs swift-cardano-core 0.8.3 (PositiveCoin decoding) and swift-cardano-txbuilder 1.1.1 (donation balancing)")
+    )
+    func donation() async throws {
+        let (snapshot, utxo, address) = try TransactionComposerTests.setup()
+        let recipe = BuildRecipe(
+            utxos: [try utxo.toCBORData().hex], outputs: [OutputDraft(address: address)], changeAddress: address, donation: 1_000_000
+        )
+        let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        #expect(built.totalIn == built.totalOut + Int64(built.fee.total) + 1_000_000)
+        let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
+        #expect(inspection.view.treasuryDonation == 1_000_000)
+    }
+
+    @Test("Governance mistakes are named")
+    func mistakes() throws {
+        #expect(throws: ComposeError.self) { _ = try TransactionComposer.rewardAccount("addr_test1vqzxr8cgrpg2n3rgcfdvfjnj77pmdslsqmxzmljw3gnlmsqyskzqq") }
+        #expect(throws: ComposeError.self) { _ = try TransactionComposer.govActionID("abc#1") }
+        #expect(throws: ComposeError.self) { _ = try TransactionComposer.anchor("https://example.com", "00") }
+        #expect(try TransactionComposer.anchor("", "") == nil)
+        #expect(try TransactionComposer.drep("abstain").credential == .alwaysAbstain)
+    }
+}

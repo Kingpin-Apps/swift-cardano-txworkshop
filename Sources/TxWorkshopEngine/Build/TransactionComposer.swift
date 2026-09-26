@@ -111,6 +111,7 @@ public struct TransactionComposer: Sendable {
             builder.auxiliaryData = metadata
         }
         try await Self.addScripts(recipe, to: builder, context: context)
+        let deposits = try Self.addGovernance(recipe, to: builder, parameters: parameters)
 
         let change = try recipe.changeAddress.isEmpty ? sources.first : Self.address(recipe.changeAddress)
         guard let change else { throw ComposeError.noChangeAddress }
@@ -145,8 +146,8 @@ public struct TransactionComposer: Sendable {
             totalIn: totalIn,
             totalOut: totalOut,
             change: changeOutput?.amount.coin,
-            deposits: 0,
-            refunds: 0
+            deposits: deposits.paid,
+            refunds: deposits.refunded
         )
     }
 
@@ -255,6 +256,7 @@ public enum ComposeError: Error, Sendable, Equatable, CustomStringConvertible {
     case badKeyHash(String)
     case badScript(String)
     case badPlutusData(String)
+    case badGovernance(String)
     case unknownInput(String)
     case belowMinimum(address: String, minimum: Int64)
     case scriptFails(String, String)
@@ -270,6 +272,7 @@ public enum ComposeError: Error, Sendable, Equatable, CustomStringConvertible {
         case .badDatum: "A datum is not a 32-byte hash or Plutus data in CBOR hex."
         case .badKeyHash(let hex): "\(hex) is not a 28-byte key hash."
         case .badScript(let reason): reason
+        case .badGovernance(let reason): reason
         case .badPlutusData(let what): "\(what.prefix(1).uppercased() + what.dropFirst()) is not Plutus data in CBOR hex."
         case .unknownInput(let id): "\(id) is not among the UTxOs the builder knows."
         case .belowMinimum(let address, let minimum): "The output to \(address) needs at least \(minimum) lovelace."
