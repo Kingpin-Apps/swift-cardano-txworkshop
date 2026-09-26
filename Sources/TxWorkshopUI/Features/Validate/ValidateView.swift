@@ -1,6 +1,7 @@
 import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
+import UniformTypeIdentifiers
 
 /// Validates the transaction against the ledger rules and runs its scripts,
 /// from the chain data the document keeps.
@@ -13,6 +14,15 @@ struct ValidateView: View {
     @State private var requirements: TransactionValidation.Requirements?
     @State private var isAskingWhatIf = false
     @State private var tracing: TraceRequest?
+    @State private var report = ReportFile()
+    @State private var isExporting = false
+    @State private var isPickingFolder = false
+    @State private var batchFolder: BatchFolder?
+
+    struct BatchFolder: Identifiable {
+        let url: URL
+        var id: URL { url }
+    }
 
     private var outcome: ValidationOutcome? {
         run.value ?? session.validation(for: document.content.transaction)
@@ -90,6 +100,50 @@ struct ValidateView: View {
         .sheet(item: $tracing) { request in
             ScriptTraceSheet(document: document, request: request)
         }
+        .toolbar {
+            if let outcome {
+                ToolbarItem {
+                    Menu {
+                        Button { export(outcome, as: .markdown) } label: { Text("Markdown", bundle: #bundle) }
+                        Button { export(outcome, as: .json) } label: { Text("JSON", bundle: #bundle) }
+                    } label: {
+                        Label {
+                            Text("Export Report", bundle: #bundle)
+                        } icon: {
+                            Image(systemName: "doc.badge.arrow.up")
+                        }
+                    }
+                }
+            }
+            #if os(macOS)
+            ToolbarItem {
+                Button {
+                    isPickingFolder = true
+                } label: {
+                    Label {
+                        Text("Batch Validate a Folder…", bundle: #bundle)
+                    } icon: {
+                        Image(systemName: "folder.badge.gearshape")
+                    }
+                }
+                .disabled(document.content.network == nil)
+            }
+            #endif
+        }
+        .fileExporter(
+            isPresented: $isExporting, document: report, contentType: report.contentType,
+            defaultFilename: String(localized: "Validation Report", bundle: #bundle)
+        ) { _ in }
+        #if os(macOS)
+        .fileImporter(isPresented: $isPickingFolder, allowedContentTypes: [.folder]) { result in
+            if case .success(let url) = result { batchFolder = BatchFolder(url: url) }
+        }
+        .sheet(item: $batchFolder) { folder in
+            if let network = document.content.network {
+                BatchValidationSheet(folder: folder.url, network: network, mode: mode)
+            }
+        }
+        #endif
         .task(id: RequirementsKey(transaction: document.content.transaction, snapshot: document.content.chainContext)) {
             guard let bytes = document.content.transaction else { return }
             let found = try? TransactionValidation().requirements(for: bytes, snapshot: document.content.chainContext)
@@ -97,6 +151,18 @@ struct ValidateView: View {
             // A transaction whose inputs are all spent is most likely on
             // chain already: judge it as written.
             if found?.allInputsSpent == true, run.value == nil { mode = .asWritten }
+        }
+    }
+
+    private func export(_ outcome: ValidationOutcome, as type: UTType) {
+        guard let bytes = document.content.transaction else { return }
+        let network = document.content.network
+        Task {
+            let id = (try? await TransactionInspector().inspect(bytes).id) ?? ""
+            let report = ValidationReport(transactionID: id, network: network, outcome: outcome)
+            self.report.data = type == .json ? ((try? report.json()) ?? Data()) : Data(report.markdown().utf8)
+            self.report.contentType = type
+            isExporting = true
         }
     }
 
@@ -110,7 +176,11 @@ struct ValidateView: View {
                 let outcome = try await TransactionValidation().validate(bytes, snapshot: snapshot, network: network, mode: mode)
                 run = .loaded(outcome)
                 session.record(outcome, for: bytes)
-                let record = ValidationRecord(ranAt: outcome.ranAt, errorCount: outcome.errors.count, warningCount: outcome.warnings.count)
+                let id = (try? await TransactionInspector().inspect(bytes).id) ?? ""
+                let record = ValidationRecord(
+                    ranAt: outcome.ranAt, errorCount: outcome.errors.count, warningCount: outcome.warnings.count,
+                    report: try? ValidationReport(transactionID: id, network: network, outcome: outcome).json()
+                )
                 document.update(
                     { $0.validations.append(record) },
                     actionName: LocalizedStringResource("Validate", bundle: #bundle),
