@@ -1,7 +1,9 @@
 import SwiftUI
 import TxWorkshopCore
+import UniformTypeIdentifiers
 
-/// Takes a transaction pasted as hex, base64 or a text envelope.
+/// Takes a transaction for an empty document: pasted as hex, base64 or a
+/// text envelope, fetched by id, or dropped as a file.
 struct PasteTransactionView: View {
     let document: TxWorkshopDocument
     @Environment(\.undoManager) private var undoManager
@@ -38,14 +40,39 @@ struct PasteTransactionView: View {
             } header: {
                 Text("Paste a transaction", bundle: #bundle)
             } footer: {
-                Text("Hex, base64, or a cardano-cli text envelope. You can also open a .tx, .signed or .cbor file.", bundle: #bundle)
+                Text("Hex, base64, or a cardano-cli text envelope. You can also drop a .tx, .signed, .cbor or .hex file here.", bundle: #bundle)
             }
+            FetchByHashSection(document: document)
+        }
+        .dropDestination(for: URL.self) { urls, _ in
+            guard let url = urls.first else { return false }
+            return load(url)
         }
         .formStyle(.grouped)
         #if os(iOS)
         .scrollDismissesKeyboard(.interactively)
         #endif
         .navigationTitle(Text("Overview", bundle: #bundle))
+    }
+
+    /// Reads a dropped transaction file.
+    private func load(_ url: URL) -> Bool {
+        let accessing = url.startAccessingSecurityScopedResource()
+        defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+        guard let type = UTType(filenameExtension: url.pathExtension),
+            let format = TxDocumentFormat(contentType: type), format != .package,
+            let data = try? Data(contentsOf: url),
+            let dropped = try? TxDocumentCodec.content(fromFile: data, format: format)
+        else {
+            problem = String(localized: "That file is not a transaction.", bundle: #bundle)
+            return false
+        }
+        document.update({ content in
+            content.transaction = dropped.transaction
+            content.envelope = dropped.envelope
+        }, actionName: LocalizedStringResource("Drop Transaction", bundle: #bundle), undoManager: undoManager)
+        problem = nil
+        return true
     }
 
     private func decode() {

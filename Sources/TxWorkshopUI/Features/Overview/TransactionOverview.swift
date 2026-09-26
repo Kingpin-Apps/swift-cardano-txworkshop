@@ -34,9 +34,28 @@ struct TransactionOverview: View {
                 }
                 ValiditySection(validity: inspection.validity)
             }
+            NetworkSection(document: document)
             NotesSection(document: document)
         }
         .formStyle(.grouped)
         .navigationTitle(Text("Overview", bundle: #bundle))
+        .toolbar {
+            if let envelope = envelopeText {
+                ToolbarItem {
+                    ShareLink(item: envelope, preview: SharePreview(Text("Transaction", bundle: #bundle))) {
+                        Label {
+                            Text("Share Transaction", bundle: #bundle)
+                        } icon: {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// The transaction as a cardano-cli text envelope, for sharing.
+    private var envelopeText: String? {
+        (try? TxDocumentCodec.file(for: document.content, format: .textEnvelope)).flatMap { String(data: $0, encoding: .utf8) }
     }
 }
