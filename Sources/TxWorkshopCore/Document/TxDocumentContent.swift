@@ -21,6 +21,8 @@ public struct TxDocumentContent: Sendable, Equatable {
     /// A CDDL schema written for this document, beside the bundled era
     /// schemas.
     public var schema: String?
+    /// The builder's form, when the transaction was built here.
+    public var recipe: BuildRecipe?
     /// Witnesses collected for the transaction, for multi-signature work.
     public var witnesses: [CollectedWitness]
     /// Past validation runs, oldest first.
@@ -33,6 +35,7 @@ public struct TxDocumentContent: Sendable, Equatable {
         network: CardanoNetwork? = nil,
         chainContext: ChainContextSnapshot? = nil,
         schema: String? = nil,
+        recipe: BuildRecipe? = nil,
         witnesses: [CollectedWitness] = [],
         validations: [ValidationRecord] = []
     ) {
@@ -42,6 +45,7 @@ public struct TxDocumentContent: Sendable, Equatable {
         self.network = network
         self.chainContext = chainContext
         self.schema = schema
+        self.recipe = recipe
         self.witnesses = witnesses
         self.validations = validations
     }

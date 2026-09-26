@@ -80,6 +80,7 @@ public enum TxDocumentCodec {
         public static let transaction = "transaction.cbor"
         public static let context = "chain-context.json"
         public static let schema = "schema.cddl"
+        public static let recipe = "build.json"
     }
 
     struct Manifest: Codable {
@@ -109,6 +110,9 @@ public enum TxDocumentCodec {
         if let schema = content.schema {
             files[PackageFile.schema] = Data(schema.utf8)
         }
+        if let recipe = content.recipe {
+            files[PackageFile.recipe] = try encoder.encode(recipe)
+        }
         return files
     }
 
@@ -128,6 +132,7 @@ public enum TxDocumentCodec {
             network: manifest.network,
             chainContext: try files[PackageFile.context].map { try decoder.decode(ChainContextSnapshot.self, from: $0) },
             schema: files[PackageFile.schema].map { String(decoding: $0, as: UTF8.self) },
+            recipe: try files[PackageFile.recipe].map { try decoder.decode(BuildRecipe.self, from: $0) },
             witnesses: manifest.witnesses,
             validations: manifest.validations
         )

@@ -25,6 +25,10 @@ struct TxDocumentCodecTests {
                 tipSlot: 123
             ),
             schema: "fee = uint\n",
+            recipe: BuildRecipe(
+                sourceAddresses: ["addr_test1"], outputs: [OutputDraft(address: "addr_test1", lovelace: 2_000_000, assets: [AssetDraft(policyID: "ab", assetNameHex: "cd", quantity: 3)], datum: .inline("d87980"))],
+                message: "hi"
+            ),
             witnesses: [CollectedWitness(label: "Alice", keyHash: "ab", witnessCBOR: "a0", addedAt: Date(timeIntervalSince1970: 1_790_000_100))],
             validations: [ValidationRecord(ranAt: Date(timeIntervalSince1970: 1_790_000_200), errorCount: 0, warningCount: 2)]
         )
@@ -36,7 +40,7 @@ struct TxDocumentCodecTests {
         let files = try TxDocumentCodec.packageFiles(for: content)
         #expect(Set(files.keys) == [
             TxDocumentCodec.PackageFile.manifest, TxDocumentCodec.PackageFile.transaction,
-            TxDocumentCodec.PackageFile.context, TxDocumentCodec.PackageFile.schema,
+            TxDocumentCodec.PackageFile.context, TxDocumentCodec.PackageFile.schema, TxDocumentCodec.PackageFile.recipe,
         ])
         #expect(try TxDocumentCodec.content(fromPackageFiles: files) == content)
     }
