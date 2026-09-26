@@ -10,6 +10,24 @@ struct InspectionBuilder {
     let transaction: Transaction
     let view: TransactionView
     let network: CardanoNetwork?
+    private let chainContext: ChainContextSnapshot?
+    private let names: AssetNames
+    /// The looked-up outputs, by `<transaction id>#<index>`.
+    private let resolved: [String: UTxO]
+
+    init(transaction: Transaction, view: TransactionView, network: CardanoNetwork?, chainContext: ChainContextSnapshot? = nil) {
+        self.transaction = transaction
+        self.view = view
+        self.network = network
+        self.chainContext = chainContext
+        self.names = AssetNames(metadata: Self.metadataEntries(of: transaction), registry: chainContext?.tokens ?? [])
+        var resolved: [String: UTxO] = [:]
+        for hex in chainContext?.utxos ?? [] {
+            guard let bytes = try? TxDocumentCodec.bytes(fromHex: hex), let utxo = try? UTxO.fromCBOR(data: bytes) else { continue }
+            resolved[InputResolver.id(utxo.input)] = utxo
+        }
+        self.resolved = resolved
+    }
 
     /// Script listings longer than this are cut short; the full script is
     /// still in the CBOR explorer.
@@ -40,7 +58,17 @@ struct InspectionBuilder {
     // MARK: Inputs and outputs
 
     private func input(_ input: TransactionInput) -> InputDetail {
-        InputDetail(transactionID: input.transactionId.payload.hex, index: input.index)
+        let id = InputResolver.id(input)
+        let utxo = resolved[id]
+        let status: InputDetail.Status =
+            if chainContext == nil { .unresolved }
+            else if utxo == nil { .notFound }
+            else if chainContext?.spentInputs?.contains(id) == true { .spent }
+            else { .unspent }
+        return InputDetail(
+            transactionID: input.transactionId.payload.hex, index: input.index,
+            status: status, output: utxo.map { output($0.output, index: Int(input.index)) }
+        )
     }
 
     private func output(_ output: TransactionOutput, index: Int) -> OutputDetail {
@@ -87,12 +115,21 @@ struct InspectionBuilder {
     private func assets(_ multiAsset: MultiAsset) -> [AssetDetail] {
         multiAsset.data.flatMap { policy, asset in
             asset.data.map { name, quantity in
-                AssetDetail(
-                    policyID: policy.payload.hex,
-                    assetNameHex: name.payload.hex,
-                    assetName: DataNode.printableText(name.payload),
+                let policyHex = policy.payload.hex
+                let nameHex = name.payload.hex
+                // A CIP-67 label is a 4-byte prefix; the readable name follows it.
+                let readable = AssetDetail.cip67Label(ofNameHex: nameHex) == nil ? name.payload : name.payload.dropFirst(4)
+                let known = names[policyHex + nameHex]
+                return AssetDetail(
+                    policyID: policyHex,
+                    assetNameHex: nameHex,
+                    assetName: DataNode.printableText(Data(readable)),
                     fingerprint: AssetFingerprint.fingerprint(policyID: policy.payload, assetName: name.payload),
-                    quantity: quantity
+                    quantity: quantity,
+                    displayName: known?.name,
+                    nameSource: known?.source,
+                    ticker: known?.ticker,
+                    decimals: known?.decimals
                 )
             }
         }
@@ -179,14 +216,17 @@ struct InspectionBuilder {
         61286: "Vote registration witness (CIP-36)",
     ]
 
-    private func metadata() -> [MetadataEntry] {
-        guard let auxiliary = transaction.auxiliaryData else { return [] }
-        let entries: [UInt64: TransactionMetadatum]
+    static func metadataEntries(of transaction: Transaction) -> [UInt64: TransactionMetadatum] {
+        guard let auxiliary = transaction.auxiliaryData else { return [:] }
         switch auxiliary.data {
-        case .metadata(let metadata): entries = metadata.data
-        case .shelleyMaryMetadata(let metadata): entries = metadata.metadata.data
-        case .alonzoMetadata(let metadata): entries = metadata.metadata?.data ?? [:]
+        case .metadata(let metadata): return metadata.data
+        case .shelleyMaryMetadata(let metadata): return metadata.metadata.data
+        case .alonzoMetadata(let metadata): return metadata.metadata?.data ?? [:]
         }
+    }
+
+    private func metadata() -> [MetadataEntry] {
+        let entries = Self.metadataEntries(of: transaction)
         return entries.keys.sorted().map { label in
             let value = entries[label]!
             return MetadataEntry(

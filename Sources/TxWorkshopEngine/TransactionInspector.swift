@@ -29,13 +29,19 @@ public struct TransactionInspector: Sendable {
 
     /// Everything the inspector shows about `bytes`. `network` places the
     /// validity window in time; without it, mainnet is assumed only when the
-    /// outputs pay mainnet addresses.
+    /// outputs pay mainnet addresses. `chainContext` supplies the looked-up
+    /// inputs and token names.
     @concurrent
-    public func inspection(of bytes: Data, network: CardanoNetwork? = nil) async throws -> TransactionInspection {
+    public func inspection(
+        of bytes: Data,
+        network: CardanoNetwork? = nil,
+        chainContext: ChainContextSnapshot? = nil
+    ) async throws -> TransactionInspection {
         let (transaction, summary) = try decode(bytes)
         // Script listings walk the whole term tree recursively.
         return await DeepStack.run {
-            InspectionBuilder(transaction: transaction, view: summary.view, network: network).build(summary: summary)
+            InspectionBuilder(transaction: transaction, view: summary.view, network: network, chainContext: chainContext)
+                .build(summary: summary)
         }
     }
 

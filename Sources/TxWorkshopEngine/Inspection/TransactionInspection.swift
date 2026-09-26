@@ -26,7 +26,21 @@ public struct TransactionInspection: Sendable, Equatable {
 public struct InputDetail: Sendable, Equatable, Identifiable {
     public let transactionID: String
     public let index: UInt16
+    /// What the chain said about the input, when it was looked up.
+    public let status: Status
+    /// The output the input spends, when it was looked up and found.
+    public let output: OutputDetail?
     public var id: String { "\(transactionID)#\(index)" }
+
+    public enum Status: Sendable, Equatable {
+        /// Not looked up yet.
+        case unresolved
+        case unspent
+        case spent
+        /// The provider did not know it; some providers only see unspent
+        /// outputs, so it may be spent.
+        case notFound
+    }
 }
 
 /// An output, as the chain would read it.
@@ -65,7 +79,22 @@ public struct AssetDetail: Sendable, Equatable, Identifiable {
     public let assetName: String?
     public let fingerprint: String?
     public let quantity: Int64
+    /// A name from CIP-25 metadata or the token registry.
+    public let displayName: String?
+    public let nameSource: NameSource?
+    public let ticker: String?
+    /// How many decimal places the registry says the quantity has.
+    public let decimals: Int?
     public var id: String { "\(policyID).\(assetNameHex)" }
+    /// How the token registry names the asset.
+    public var registrySubject: String { policyID + assetNameHex }
+
+    public enum NameSource: Sendable, Equatable {
+        /// The transaction's own NFT metadata (label 721).
+        case cip25
+        /// The Cardano token registry.
+        case registry
+    }
     /// CIP-67 label, when the name carries one (e.g. 222 for CIP-68 NFTs).
     public var cip67Label: Int? { AssetDetail.cip67Label(ofNameHex: assetNameHex) }
 
