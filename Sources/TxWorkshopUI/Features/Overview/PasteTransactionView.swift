@@ -42,7 +42,9 @@ struct PasteTransactionView: View {
             }
         }
         .formStyle(.grouped)
+        #if os(iOS)
         .scrollDismissesKeyboard(.interactively)
+        #endif
         .navigationTitle(Text("Overview", bundle: #bundle))
     }
 
