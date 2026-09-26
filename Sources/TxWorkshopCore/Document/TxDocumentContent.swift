@@ -115,6 +115,10 @@ public struct ChainContextSnapshot: Codable, Sendable, Equatable {
     public var protocolParameters: Data?
     /// The chain tip slot at the time.
     public var tipSlot: UInt64?
+    /// The ledger state validation reads beyond UTxOs: stake accounts, pools,
+    /// DReps, governance actions, the committee, the epoch and era. Written
+    /// and read by the validation engine; opaque here.
+    public var ledgerState: Data?
 
     public init(
         fetchedAt: Date,
@@ -122,7 +126,8 @@ public struct ChainContextSnapshot: Codable, Sendable, Equatable {
         spentInputs: [String]? = nil,
         tokens: [TokenInfo]? = nil,
         protocolParameters: Data? = nil,
-        tipSlot: UInt64? = nil
+        tipSlot: UInt64? = nil,
+        ledgerState: Data? = nil
     ) {
         self.fetchedAt = fetchedAt
         self.utxos = utxos
@@ -130,6 +135,7 @@ public struct ChainContextSnapshot: Codable, Sendable, Equatable {
         self.tokens = tokens
         self.protocolParameters = protocolParameters
         self.tipSlot = tipSlot
+        self.ledgerState = ledgerState
     }
 }
 
