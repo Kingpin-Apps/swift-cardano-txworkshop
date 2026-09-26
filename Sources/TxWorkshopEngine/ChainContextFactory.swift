@@ -34,14 +34,16 @@ public struct ChainContextFactory: Sendable {
                 throw ChainContextFactoryError.misconfigured("Ogmios needs a server URL.")
             }
             let secure = url.scheme == "https" || url.scheme == "wss"
-            return try await OgmiosChainContext(
+            let ogmios = try await OgmiosChainContext(
                 host: host,
                 port: url.port ?? (secure ? 443 : 1337),
                 path: url.path(),
                 secure: secure,
-                network: network,
-                kupo: provider.kupoURL.map { KupoClient(baseURL: $0) }
+                network: network
             )
+            // Kupo answers UTxO lookups; everything else goes on to Ogmios.
+            guard let kupoURL = provider.kupoURL else { return ogmios }
+            return try KupoChainContext(url: kupoURL, network: network, wrapping: ogmios)
         case .yaciDevKit:
             guard let url = provider.url else { throw ChainContextFactoryError.misconfigured("Yaci DevKit needs a store URL.") }
             return try YaciDevkitChainContext(apiURL: url.absoluteString, network: network)

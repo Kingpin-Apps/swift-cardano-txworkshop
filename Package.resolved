@@ -1,5 +1,5 @@
 {
-  "originHash" : "8358bb4312be8a2548c96b658f2dedd76e292e9cd78a9e3aaae72900ca501256",
+  "originHash" : "bb06abbeb941fdd88837c9b535767af2879592ee05feacc154840aac7a7fe48e",
   "pins" : [
     {
       "identity" : "base32",
@@ -123,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Kingpin-Apps/swift-cardano-chain.git",
       "state" : {
-        "revision" : "b49d9c59d7d42919ec041d94e79e861d3c3472a4",
-        "version" : "0.10.1"
+        "revision" : "f4d60910ed09337aa624a3fc8b414ef4b2bc2ff5",
+        "version" : "0.11.0"
       }
     },
     {
@@ -269,6 +269,15 @@
       "state" : {
         "revision" : "5a21e34fa4c181403eff599c3c5d93ed554814a6",
         "version" : "0.2.2"
+      }
+    },
+    {
+      "identity" : "swift-kupo",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Kingpin-Apps/swift-kupo.git",
+      "state" : {
+        "revision" : "dd996fb3b90ecee7bc4df2e688d61ca17c27ef5e",
+        "version" : "0.1.2"
       }
     },
     {
