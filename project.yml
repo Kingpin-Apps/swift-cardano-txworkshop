@@ -1,0 +1,180 @@
+# XcodeGen spec for Cardano Tx Workshop.
+#
+# Generates TxWorkshop.xcodeproj, which is committed so Xcode Cloud can build it.
+# Regenerate after editing with `just generate`.
+#
+#   • TxWorkshop        — iOS, iPadOS, macOS (App Store, sandboxed) and visionOS.
+#   • TxWorkshopDirect  — macOS, Developer ID: outside the sandbox, built with
+#                         DIRECT_DISTRIBUTION and linking TxWorkshopDirect.
+#   • TxWorkshopWatch   — the watchOS companion, embedded in the iOS app.
+name: TxWorkshop
+options:
+  bundleIdPrefix: com.kingpinapps
+  deploymentTarget:
+    iOS: "27.0"
+    macOS: "27.0"
+    visionOS: "27.0"
+    watchOS: "27.0"
+  createIntermediateGroups: true
+  localPackagesGroup: Packages
+
+packages:
+  TxWorkshop:
+    path: .
+
+settings:
+  base:
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEAD_CODE_STRIPPING: YES
+    # No team yet: the simulators sign ad hoc, and macOS signs "to run locally".
+    # Set DEVELOPMENT_TEAM for devices, TestFlight and notarisation.
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+    "CODE_SIGN_STYLE[sdk=macosx*]": Manual
+    "CODE_SIGN_IDENTITY[sdk=macosx*]": "-"
+
+# The document types every app target reads and writes.
+documentTypes: &documentTypes
+  CFBundleDocumentTypes:
+    - CFBundleTypeName: Tx Workshop Document
+      CFBundleTypeRole: Editor
+      LSHandlerRank: Owner
+      LSTypeIsPackage: true
+      LSItemContentTypes: [com.kingpinapps.txworkshop.document]
+    - CFBundleTypeName: Cardano Transaction
+      CFBundleTypeRole: Editor
+      LSHandlerRank: Alternate
+      LSItemContentTypes:
+        - com.kingpinapps.txworkshop.text-envelope
+        - com.kingpinapps.txworkshop.transaction-cbor
+        - com.kingpinapps.txworkshop.transaction-hex
+  UTExportedTypeDeclarations:
+    - UTTypeIdentifier: com.kingpinapps.txworkshop.document
+      UTTypeDescription: Tx Workshop Document
+      UTTypeConformsTo: [com.apple.package, public.content]
+      UTTypeTagSpecification:
+        public.filename-extension: [txworkshop]
+    - UTTypeIdentifier: com.kingpinapps.txworkshop.text-envelope
+      UTTypeDescription: Cardano Transaction Envelope
+      UTTypeConformsTo: [public.json, public.data]
+      UTTypeTagSpecification:
+        public.filename-extension: [tx, signed, txsigned, witnessed]
+    - UTTypeIdentifier: com.kingpinapps.txworkshop.transaction-cbor
+      UTTypeDescription: Cardano Transaction CBOR
+      UTTypeConformsTo: [public.data]
+      UTTypeTagSpecification:
+        public.filename-extension: [cbor]
+    - UTTypeIdentifier: com.kingpinapps.txworkshop.transaction-hex
+      UTTypeDescription: Cardano Transaction Hex
+      UTTypeConformsTo: [public.plain-text]
+      UTTypeTagSpecification:
+        public.filename-extension: [hex, txhex]
+
+targets:
+  TxWorkshop:
+    type: application
+    supportedDestinations: [iOS, macOS, visionOS]
+    sources:
+      - App
+    info:
+      path: App/Info.plist
+      properties:
+        <<: *documentTypes
+        CFBundleDisplayName: Tx Workshop
+        LSApplicationCategoryType: public.app-category.developer-tools
+        UISupportsDocumentBrowser: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UILaunchScreen: {}
+        NSCameraUsageDescription: Tx Workshop scans the animated QR codes a Keystone hardware wallet shows.
+        NSBluetoothAlwaysUsageDescription: Tx Workshop connects to your Ledger over Bluetooth to sign transactions.
+        ITSAppUsesNonExemptEncryption: false
+    dependencies:
+      - package: TxWorkshop
+        product: TxWorkshopCore
+      - package: TxWorkshop
+        product: TxWorkshopEngine
+      - package: TxWorkshop
+        product: TxWorkshopUI
+      - target: TxWorkshopWatch
+        destinationFilters: [iOS]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.txworkshop
+        PRODUCT_NAME: Tx Workshop
+        TARGETED_DEVICE_FAMILY: "1,2,7"
+        ENABLE_HARDENED_RUNTIME: YES
+        "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": App/TxWorkshop-macOS.entitlements
+        "CODE_SIGN_STYLE[sdk=macosx*]": Manual
+        "CODE_SIGN_IDENTITY[sdk=macosx*]": "-"
+        "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]": ""
+
+  TxWorkshopDirect:
+    type: application
+    platform: macOS
+    sources:
+      - AppDirect
+    info:
+      path: AppDirect/Info.plist
+      properties:
+        <<: *documentTypes
+        CFBundleDisplayName: Tx Workshop
+        LSApplicationCategoryType: public.app-category.developer-tools
+        ITSAppUsesNonExemptEncryption: false
+    dependencies:
+      - package: TxWorkshop
+        product: TxWorkshopCore
+      - package: TxWorkshop
+        product: TxWorkshopEngine
+      - package: TxWorkshop
+        product: TxWorkshopUI
+      - package: TxWorkshop
+        product: TxWorkshopDirect
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.txworkshop
+        PRODUCT_NAME: Tx Workshop
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) DIRECT_DISTRIBUTION
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: AppDirect/TxWorkshopDirect.entitlements
+
+  TxWorkshopWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - AppWatch
+    info:
+      path: AppWatch/Info.plist
+      properties:
+        CFBundleDisplayName: Tx Workshop
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: com.kingpinapps.txworkshop
+        WKRunsIndependentlyOfCompanionApp: false
+    dependencies:
+      - package: TxWorkshop
+        product: TxWorkshopCore
+      - package: TxWorkshop
+        product: TxWorkshopWatchUI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.txworkshop.watchkitapp
+        PRODUCT_NAME: Tx Workshop
+
+schemes:
+  TxWorkshop:
+    build:
+      targets:
+        TxWorkshop: all
+    test:
+      targets: []
+  TxWorkshopDirect:
+    build:
+      targets:
+        TxWorkshopDirect: all
+  TxWorkshopWatch:
+    build:
+      targets:
+        TxWorkshopWatch: all

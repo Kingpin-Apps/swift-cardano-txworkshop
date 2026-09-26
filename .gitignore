@@ -1,0 +1,17 @@
+.DS_Store
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+/Packages/
+fastlane/report.xml
+fastlane/test_output/
+*.ipa
+*.dSYM.zip
+# Keys and secrets never go in the repo.
+*.skey
+*.vkey
+*.p8
+*.env
+secrets/

@@ -1,0 +1,82 @@
+// swift-tools-version: 6.4
+import PackageDescription
+
+// Cardano Tx Workshop — inspect, validate, build, sign and submit Cardano transactions.
+//
+//   • TxWorkshopCore    — platform-neutral and watch-safe: the document format, models, provider
+//                         settings, design system. Depends on swift-cardano-core only.
+//   • TxWorkshopEngine  — decoding, inspection, validation and chain providers over the
+//                         swift-cardano-* stack. Not on watchOS (its chain clients are not).
+//   • TxWorkshopUI      — the SwiftUI app: document scene, adaptive shell, features.
+//   • TxWorkshopWatchUI — the watchOS companion.
+//   • TxWorkshopDirect  — what only the Developer ID build may do: a local node, cardano-cli.
+//
+// The installable apps are XcodeGen targets under App/, AppDirect/ and AppWatch/ (project.yml).
+let package = Package(
+    name: "TxWorkshop",
+    defaultLocalization: "en",
+    platforms: [
+        .macOS(.v27),
+        .iOS(.v27),
+        .visionOS(.v27),
+        .watchOS(.v27),
+    ],
+    products: [
+        .library(name: "TxWorkshopCore", targets: ["TxWorkshopCore"]),
+        .library(name: "TxWorkshopEngine", targets: ["TxWorkshopEngine"]),
+        .library(name: "TxWorkshopUI", targets: ["TxWorkshopUI"]),
+        .library(name: "TxWorkshopWatchUI", targets: ["TxWorkshopWatchUI"]),
+        .library(name: "TxWorkshopDirect", targets: ["TxWorkshopDirect"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.8.1"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-chain.git", from: "0.10.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txvalidator.git", from: "0.4.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cddl.git", from: "0.2.0"),
+    ],
+    targets: [
+        .target(
+            name: "TxWorkshopCore",
+            dependencies: [
+                .product(name: "SwiftCardanoCore", package: "swift-cardano-core"),
+            ],
+            resources: [.process("Resources")]
+        ),
+        .target(
+            name: "TxWorkshopEngine",
+            dependencies: [
+                "TxWorkshopCore",
+                .product(name: "SwiftCardanoCore", package: "swift-cardano-core"),
+                .product(name: "SwiftCardanoChain", package: "swift-cardano-chain"),
+                .product(name: "SwiftCardanoTxValidator", package: "swift-cardano-txvalidator"),
+                .product(name: "SwiftCDDL", package: "swift-cddl"),
+                .product(name: "SwiftCDDLCardano", package: "swift-cddl"),
+            ]
+        ),
+        .target(
+            name: "TxWorkshopUI",
+            dependencies: ["TxWorkshopCore", "TxWorkshopEngine"],
+            resources: [.process("Resources")]
+        ),
+        .target(
+            name: "TxWorkshopWatchUI",
+            dependencies: ["TxWorkshopCore"],
+            resources: [.process("Resources")]
+        ),
+        .target(
+            name: "TxWorkshopDirect",
+            dependencies: ["TxWorkshopCore", "TxWorkshopEngine"]
+        ),
+        .testTarget(
+            name: "TxWorkshopCoreTests",
+            dependencies: ["TxWorkshopCore"],
+            resources: [.copy("Fixtures")]
+        ),
+        .testTarget(
+            name: "TxWorkshopEngineTests",
+            dependencies: ["TxWorkshopEngine", "TxWorkshopCore"],
+            resources: [.copy("Fixtures")]
+        ),
+    ],
+    swiftLanguageModes: [.v6]
+)

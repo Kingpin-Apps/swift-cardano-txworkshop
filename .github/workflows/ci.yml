@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  package:
+    name: Package tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+      - name: Select Xcode 27
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode_27*.app | sort -V | tail -1)"
+      - run: swift --version
+      - run: swift test
+
+  apps:
+    name: Build ${{ matrix.scheme }} (${{ matrix.platform }})
+    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { scheme: TxWorkshop, platform: macOS }
+          - { scheme: TxWorkshopDirect, platform: macOS }
+          - { scheme: TxWorkshop, platform: iOS Simulator }
+          - { scheme: TxWorkshop, platform: visionOS Simulator }
+          - { scheme: TxWorkshopWatch, platform: watchOS Simulator }
+    steps:
+      - uses: actions/checkout@v7
+      - name: Select Xcode 27
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode_27*.app | sort -V | tail -1)"
+      - name: Build
+        run: >
+          xcodebuild -project TxWorkshop.xcodeproj -scheme "${{ matrix.scheme }}"
+          -destination "generic/platform=${{ matrix.platform }}"
+          -skipPackagePluginValidation -skipMacroValidation
+          CODE_SIGNING_ALLOWED=NO build

@@ -1,0 +1,655 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0447B5973A7972EB6931B25D /* TxWorkshopWatchUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8ACA9B3B5E3EAC6DBC315E8F /* TxWorkshopWatchUI */; };
+		0C21BDF2EBF4F6D4B8D3B198 /* TxWorkshopEngine in Frameworks */ = {isa = PBXBuildFile; productRef = DEFC3E863F7F94B8028847BF /* TxWorkshopEngine */; };
+		16F14469E25849DB43C1C6F8 /* TxWorkshopWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89F0AE91992A293386D2BBF /* TxWorkshopWatchApp.swift */; };
+		19DE7E2B2437C777300C97F2 /* TxWorkshopUI in Frameworks */ = {isa = PBXBuildFile; productRef = 283784CCCCCC5FF527B82D0D /* TxWorkshopUI */; };
+		2DAF3DFE25281AB5786AC371 /* TxWorkshopDirect in Frameworks */ = {isa = PBXBuildFile; productRef = 9099A1D0D21229074F7C96FA /* TxWorkshopDirect */; };
+		39758F20BF0E32129F97EDFE /* TxWorkshopCore in Frameworks */ = {isa = PBXBuildFile; productRef = CD904B83B2A02B6FE980AE1C /* TxWorkshopCore */; };
+		692D3889B0B3B3731E2A8150 /* TxWorkshopWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 7CE1E9C8A800D75196B3450F /* TxWorkshopWatch.app */; platformFilters = (ios, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7004F93AFE5B453DC40636C8 /* TxWorkshopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */; };
+		A827A9DB54F03E350E8542FD /* TxWorkshopCore in Frameworks */ = {isa = PBXBuildFile; productRef = A9CF102464994FDC19B49526 /* TxWorkshopCore */; };
+		B6B5BA02EE90C93C2FB5D129 /* TxWorkshopDirectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */; };
+		DA038764F05E376CC59AA2BE /* TxWorkshopUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7F4C2104AF1CDC0C07DB644A /* TxWorkshopUI */; };
+		E4E63B86C115FA0B8EB7F5B0 /* TxWorkshopEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 24A2FA7CD389DAAB9865A3D0 /* TxWorkshopEngine */; };
+		EE9869ADAD062EFA7B719FC3 /* TxWorkshopCore in Frameworks */ = {isa = PBXBuildFile; productRef = C1FC1141BDC6BF5CC6CFE1CD /* TxWorkshopCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5503BCDBDFDC6F0C7D99CC69 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FCDDB31D646F591965DBBE00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F602E277E3BE74A6CF9A22BD;
+			remoteInfo = TxWorkshopWatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EE15630810C7787C9DF1D009 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				692D3889B0B3B3731E2A8150 /* TxWorkshopWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopDirectApp.swift; sourceTree = "<group>"; };
+		58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopApp.swift; sourceTree = "<group>"; };
+		5901409EE1D9EE868F5A0386 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		634621FBB18E7126B4C58317 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7CE1E9C8A800D75196B3450F /* TxWorkshopWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TxWorkshopWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		91643936B8393B8CD4046109 /* TxWorkshop.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TxWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		97C7717046104B6311FC201C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		9C504DAD812097C8A52346DF /* TxWorkshopDirect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TxWorkshopDirect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A680CCB6C7AF1211ED7B0255 /* TxWorkshopDirect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshopDirect.entitlements; sourceTree = "<group>"; };
+		C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-cardano-txworkshop"; path = .; sourceTree = SOURCE_ROOT; };
+		C5D7F86C6DDD78E4458DD86B /* TxWorkshop-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "TxWorkshop-macOS.entitlements"; sourceTree = "<group>"; };
+		E89F0AE91992A293386D2BBF /* TxWorkshopWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopWatchApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1601A8FD36402D3B761307DB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				39758F20BF0E32129F97EDFE /* TxWorkshopCore in Frameworks */,
+				E4E63B86C115FA0B8EB7F5B0 /* TxWorkshopEngine in Frameworks */,
+				19DE7E2B2437C777300C97F2 /* TxWorkshopUI in Frameworks */,
+				2DAF3DFE25281AB5786AC371 /* TxWorkshopDirect in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5CA534D015D9C53E7A73B519 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE9869ADAD062EFA7B719FC3 /* TxWorkshopCore in Frameworks */,
+				0447B5973A7972EB6931B25D /* TxWorkshopWatchUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BFB2C5697C00737AAB19904C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A827A9DB54F03E350E8542FD /* TxWorkshopCore in Frameworks */,
+				0C21BDF2EBF4F6D4B8D3B198 /* TxWorkshopEngine in Frameworks */,
+				DA038764F05E376CC59AA2BE /* TxWorkshopUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0D94BC1919F0BB67ED364B09 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				91643936B8393B8CD4046109 /* TxWorkshop.app */,
+				9C504DAD812097C8A52346DF /* TxWorkshopDirect.app */,
+				7CE1E9C8A800D75196B3450F /* TxWorkshopWatch.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		16E307BBB19EC04908737A46 /* AppWatch */ = {
+			isa = PBXGroup;
+			children = (
+				634621FBB18E7126B4C58317 /* Info.plist */,
+				E89F0AE91992A293386D2BBF /* TxWorkshopWatchApp.swift */,
+			);
+			path = AppWatch;
+			sourceTree = "<group>";
+		};
+		6A8E6D820A27CE9561B969A6 /* AppDirect */ = {
+			isa = PBXGroup;
+			children = (
+				5901409EE1D9EE868F5A0386 /* Info.plist */,
+				A680CCB6C7AF1211ED7B0255 /* TxWorkshopDirect.entitlements */,
+				36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */,
+			);
+			path = AppDirect;
+			sourceTree = "<group>";
+		};
+		92C0C8049232E3A97A27B90D = {
+			isa = PBXGroup;
+			children = (
+				B0193ED87AA5506FF06BB890 /* App */,
+				6A8E6D820A27CE9561B969A6 /* AppDirect */,
+				16E307BBB19EC04908737A46 /* AppWatch */,
+				A105A53A9084442517D6EEB6 /* Packages */,
+				0D94BC1919F0BB67ED364B09 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A105A53A9084442517D6EEB6 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		B0193ED87AA5506FF06BB890 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				97C7717046104B6311FC201C /* Info.plist */,
+				C5D7F86C6DDD78E4458DD86B /* TxWorkshop-macOS.entitlements */,
+				58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E62EC02209F76F0098F87E0E /* TxWorkshopDirect */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CF789A50766201A76FF0631C /* Build configuration list for PBXNativeTarget "TxWorkshopDirect" */;
+			buildPhases = (
+				CD6313F8E2885CED0E0F8F8B /* Sources */,
+				1601A8FD36402D3B761307DB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TxWorkshopDirect;
+			packageProductDependencies = (
+				CD904B83B2A02B6FE980AE1C /* TxWorkshopCore */,
+				24A2FA7CD389DAAB9865A3D0 /* TxWorkshopEngine */,
+				283784CCCCCC5FF527B82D0D /* TxWorkshopUI */,
+				9099A1D0D21229074F7C96FA /* TxWorkshopDirect */,
+			);
+			productName = TxWorkshopDirect;
+			productReference = 9C504DAD812097C8A52346DF /* TxWorkshopDirect.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E7FD08AAD82FAA6D2C8EB31C /* TxWorkshop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7F99BA02E9B5D94916485E16 /* Build configuration list for PBXNativeTarget "TxWorkshop" */;
+			buildPhases = (
+				F74E47CE04076B56DD5B8AFA /* Sources */,
+				BFB2C5697C00737AAB19904C /* Frameworks */,
+				EE15630810C7787C9DF1D009 /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2544C5CF29279F94690E9E43 /* PBXTargetDependency */,
+			);
+			name = TxWorkshop;
+			packageProductDependencies = (
+				A9CF102464994FDC19B49526 /* TxWorkshopCore */,
+				DEFC3E863F7F94B8028847BF /* TxWorkshopEngine */,
+				7F4C2104AF1CDC0C07DB644A /* TxWorkshopUI */,
+			);
+			productName = TxWorkshop;
+			productReference = 91643936B8393B8CD4046109 /* TxWorkshop.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F602E277E3BE74A6CF9A22BD /* TxWorkshopWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 216E722E07B42C6A9D98DBC5 /* Build configuration list for PBXNativeTarget "TxWorkshopWatch" */;
+			buildPhases = (
+				28DB456ACB020A7F2D89898F /* Sources */,
+				5CA534D015D9C53E7A73B519 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TxWorkshopWatch;
+			packageProductDependencies = (
+				C1FC1141BDC6BF5CC6CFE1CD /* TxWorkshopCore */,
+				8ACA9B3B5E3EAC6DBC315E8F /* TxWorkshopWatchUI */,
+			);
+			productName = TxWorkshopWatch;
+			productReference = 7CE1E9C8A800D75196B3450F /* TxWorkshopWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FCDDB31D646F591965DBBE00 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					E62EC02209F76F0098F87E0E = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					E7FD08AAD82FAA6D2C8EB31C = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					F602E277E3BE74A6CF9A22BD = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 35435AAF9A4A908CFDAE7EE0 /* Build configuration list for PBXProject "TxWorkshop" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 92C0C8049232E3A97A27B90D;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1D4A975DC123E8A4FF9B5C3B /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 0D94BC1919F0BB67ED364B09 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E7FD08AAD82FAA6D2C8EB31C /* TxWorkshop */,
+				E62EC02209F76F0098F87E0E /* TxWorkshopDirect */,
+				F602E277E3BE74A6CF9A22BD /* TxWorkshopWatch */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		28DB456ACB020A7F2D89898F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16F14469E25849DB43C1C6F8 /* TxWorkshopWatchApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CD6313F8E2885CED0E0F8F8B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6B5BA02EE90C93C2FB5D129 /* TxWorkshopDirectApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F74E47CE04076B56DD5B8AFA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7004F93AFE5B453DC40636C8 /* TxWorkshopApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2544C5CF29279F94690E9E43 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilters = (
+				ios,
+			);
+			target = F602E277E3BE74A6CF9A22BD /* TxWorkshopWatch */;
+			targetProxy = 5503BCDBDFDC6F0C7D99CC69 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1426FD50F1999CBB3B9BA3CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = AppWatch/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop.watchkitapp;
+				PRODUCT_NAME = "Tx Workshop";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
+		1EBFAD0D1B19D6F6CCE037FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "App/TxWorkshop-macOS.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_STYLE[sdk=macosx*]" = Manual;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
+				PRODUCT_NAME = "Tx Workshop";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+			};
+			name = Release;
+		};
+		5038A34411F222596A8B6771 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AppDirect/TxWorkshopDirect.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = AppDirect/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
+				PRODUCT_NAME = "Tx Workshop";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DIRECT_DISTRIBUTION";
+			};
+			name = Release;
+		};
+		57AD0BA970F6E3930BB21F13 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_STYLE[sdk=macosx*]" = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+				XROS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Release;
+		};
+		5882DC98B4EF863FF087B1F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AppDirect/TxWorkshopDirect.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = AppDirect/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
+				PRODUCT_NAME = "Tx Workshop";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DIRECT_DISTRIBUTION";
+			};
+			name = Debug;
+		};
+		76EAFF3909F04D47DBFE97A7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "App/TxWorkshop-macOS.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_STYLE[sdk=macosx*]" = Manual;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
+				PRODUCT_NAME = "Tx Workshop";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+			};
+			name = Debug;
+		};
+		E05EA3FD9894369038614F70 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_STYLE[sdk=macosx*]" = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+				XROS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Debug;
+		};
+		F262865CA0D9275247C5F930 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = AppWatch/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop.watchkitapp;
+				PRODUCT_NAME = "Tx Workshop";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		216E722E07B42C6A9D98DBC5 /* Build configuration list for PBXNativeTarget "TxWorkshopWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1426FD50F1999CBB3B9BA3CE /* Debug */,
+				F262865CA0D9275247C5F930 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		35435AAF9A4A908CFDAE7EE0 /* Build configuration list for PBXProject "TxWorkshop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E05EA3FD9894369038614F70 /* Debug */,
+				57AD0BA970F6E3930BB21F13 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7F99BA02E9B5D94916485E16 /* Build configuration list for PBXNativeTarget "TxWorkshop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76EAFF3909F04D47DBFE97A7 /* Debug */,
+				1EBFAD0D1B19D6F6CCE037FB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CF789A50766201A76FF0631C /* Build configuration list for PBXNativeTarget "TxWorkshopDirect" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5882DC98B4EF863FF087B1F5 /* Debug */,
+				5038A34411F222596A8B6771 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1D4A975DC123E8A4FF9B5C3B /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		24A2FA7CD389DAAB9865A3D0 /* TxWorkshopEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TxWorkshopEngine;
+		};
+		283784CCCCCC5FF527B82D0D /* TxWorkshopUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TxWorkshopUI;
+		};
+		7F4C2104AF1CDC0C07DB644A /* TxWorkshopUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TxWorkshopUI;
+		};
+		8ACA9B3B5E3EAC6DBC315E8F /* TxWorkshopWatchUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TxWorkshopWatchUI;
+		};
+		9099A1D0D21229074F7C96FA /* TxWorkshopDirect */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TxWorkshopDirect;
+		};
+		A9CF102464994FDC19B49526 /* TxWorkshopCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TxWorkshopCore;
+		};
+		C1FC1141BDC6BF5CC6CFE1CD /* TxWorkshopCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TxWorkshopCore;
+		};
+		CD904B83B2A02B6FE980AE1C /* TxWorkshopCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TxWorkshopCore;
+		};
+		DEFC3E863F7F94B8028847BF /* TxWorkshopEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TxWorkshopEngine;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = FCDDB31D646F591965DBBE00 /* Project object */;
+}
