@@ -56,29 +56,3 @@ struct OutputSection: View {
         }
     }
 }
-
-/// A native asset: its readable name, fingerprint and quantity.
-struct AssetRow: View {
-    let asset: AssetDetail
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline) {
-            VStack(alignment: .leading, spacing: TWSpacing.xxs) {
-                Text(verbatim: asset.assetName ?? (asset.assetNameHex.isEmpty ? "—" : asset.assetNameHex))
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                if let fingerprint = asset.fingerprint {
-                    TWBytesText(fingerprint, font: TWFont.bytesSmall)
-                        .foregroundStyle(TWColor.secondaryText)
-                }
-                TWBytesText(asset.policyID, font: TWFont.bytesSmall)
-                    .foregroundStyle(TWColor.secondaryText)
-            }
-            Spacer()
-            Text(asset.quantity, format: .number)
-                .font(TWFont.figure)
-                .foregroundStyle(asset.quantity < 0 ? TWColor.failure : Color.primary)
-        }
-        .accessibilityElement(children: .combine)
-    }
-}

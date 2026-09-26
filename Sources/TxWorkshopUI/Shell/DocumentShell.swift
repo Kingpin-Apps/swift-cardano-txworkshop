@@ -48,7 +48,11 @@ struct DocumentShell: View {
         } detail: {
             SectionDetail(section: selection ?? .overview, document: document, inspection: inspection)
         }
-        .task(id: InspectionKey(transaction: document.content.transaction, network: document.content.network)) {
+        .task(id: InspectionKey(
+            transaction: document.content.transaction,
+            network: document.content.network,
+            chainContext: document.content.chainContext
+        )) {
             await inspect()
         }
         #if !os(macOS)
@@ -67,10 +71,11 @@ struct DocumentShell: View {
 }
 
 extension DocumentShell {
-    /// What an inspection depends on; a change to either runs it again.
+    /// What an inspection depends on; a change to any of it runs it again.
     struct InspectionKey: Equatable {
         let transaction: Data?
         let network: CardanoNetwork?
+        let chainContext: ChainContextSnapshot?
     }
 
     /// Decodes and inspects the document's transaction once, for every section.
@@ -79,10 +84,14 @@ extension DocumentShell {
             inspection = .idle
             return
         }
-        inspection = .loading
+        // Keep showing the last inspection while chain data or the network
+        // changes; it is replaced in place.
+        if case .loaded = inspection {} else { inspection = .loading }
         do {
             inspection = .loaded(
-                try await TransactionInspector().inspection(of: transaction, network: document.content.network)
+                try await TransactionInspector().inspection(
+                    of: transaction, network: document.content.network, chainContext: document.content.chainContext
+                )
             )
         } catch {
             inspection = .failed(String(describing: error))

@@ -12,7 +12,7 @@ struct SectionDetail: View {
         case .overview:
             OverviewView(document: document, inspection: inspection)
         case .inputsOutputs:
-            InputsOutputsView(inspection: inspection)
+            InputsOutputsView(document: document, inspection: inspection)
         case .body:
             BodyView(inspection: inspection)
         case .scripts:

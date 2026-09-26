@@ -4,11 +4,13 @@ import TxWorkshopEngine
 
 /// What the transaction spends, references and creates.
 struct InputsOutputsView: View {
+    let document: TxWorkshopDocument
     let inspection: LoadState<TransactionInspection>
 
     var body: some View {
         InspectionContainer(inspection: inspection, title: LocalizedStringResource("Inputs & Outputs", bundle: #bundle)) { inspection in
             Form {
+                ChainLookupSection(document: document, inspection: inspection)
                 InputSection(title: LocalizedStringResource("Inputs", bundle: #bundle), inputs: inspection.inputs)
                 if !inspection.referenceInputs.isEmpty {
                     InputSection(title: LocalizedStringResource("Reference Inputs", bundle: #bundle), inputs: inspection.referenceInputs)
@@ -44,7 +46,7 @@ private struct InputSection: View {
     var body: some View {
         Section {
             ForEach(inputs) { input in
-                TWBytesText(input.id, font: TWFont.bytesSmall)
+                InputRow(input: input)
             }
         } header: {
             Text("\(Text(title)) · \(inputs.count)", bundle: #bundle)
