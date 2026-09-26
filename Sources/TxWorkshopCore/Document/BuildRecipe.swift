@@ -32,6 +32,12 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
     /// Inputs (`<transaction id>#<index>`) to put up as collateral; the
     /// builder picks from the source addresses when empty.
     public var collateral: [String]
+    public var certificates: [CertificateItem]
+    public var withdrawals: [WithdrawalDraft]
+    public var votes: [VoteDraft]
+    public var proposals: [ProposalDraft]
+    /// Lovelace given to the treasury.
+    public var donation: UInt64?
 
     public enum CoinSelection: String, Codable, Sendable, CaseIterable {
         case randomImprove, largestFirst
@@ -41,7 +47,9 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         sourceAddresses: [String] = [], utxos: [String] = [], fixedInputs: [String] = [], outputs: [OutputDraft] = [],
         changeAddress: String = "", coinSelection: CoinSelection = .randomImprove, validFrom: UInt64? = nil,
         validUntil: UInt64? = nil, message: String = "", requiredSigners: [String] = [], feeBuffer: UInt64? = nil,
-        mints: [MintDraft] = [], scriptInputs: [ScriptInputDraft] = [], collateral: [String] = []
+        mints: [MintDraft] = [], scriptInputs: [ScriptInputDraft] = [], collateral: [String] = [],
+        certificates: [CertificateItem] = [], withdrawals: [WithdrawalDraft] = [], votes: [VoteDraft] = [],
+        proposals: [ProposalDraft] = [], donation: UInt64? = nil
     ) {
         self.sourceAddresses = sourceAddresses
         self.utxos = utxos
@@ -57,6 +65,11 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         self.mints = mints
         self.scriptInputs = scriptInputs
         self.collateral = collateral
+        self.certificates = certificates
+        self.withdrawals = withdrawals
+        self.votes = votes
+        self.proposals = proposals
+        self.donation = donation
     }
 
     /// Reads recipes saved before a field existed.
@@ -76,6 +89,11 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         mints = try c.decodeIfPresent([MintDraft].self, forKey: .mints) ?? []
         scriptInputs = try c.decodeIfPresent([ScriptInputDraft].self, forKey: .scriptInputs) ?? []
         collateral = try c.decodeIfPresent([String].self, forKey: .collateral) ?? []
+        certificates = try c.decodeIfPresent([CertificateItem].self, forKey: .certificates) ?? []
+        withdrawals = try c.decodeIfPresent([WithdrawalDraft].self, forKey: .withdrawals) ?? []
+        votes = try c.decodeIfPresent([VoteDraft].self, forKey: .votes) ?? []
+        proposals = try c.decodeIfPresent([ProposalDraft].self, forKey: .proposals) ?? []
+        donation = try c.decodeIfPresent(UInt64.self, forKey: .donation)
     }
 }
 
@@ -173,5 +191,105 @@ public struct ScriptInputDraft: Codable, Sendable, Equatable, Identifiable {
         self.script = script
         self.datum = datum
         self.redeemer = redeemer
+    }
+}
+
+/// A certificate to include, with an identity for editing.
+public struct CertificateItem: Codable, Sendable, Equatable, Identifiable {
+    public var id: UUID
+    public var certificate: CertificateDraft
+
+    public init(id: UUID = UUID(), certificate: CertificateDraft) {
+        self.id = id
+        self.certificate = certificate
+    }
+}
+
+/// The Conway certificates the builder writes. Stake credentials come from a
+/// stake address; DRep credentials are key hashes (hex).
+public enum CertificateDraft: Codable, Sendable, Equatable {
+    /// Register a stake address, paying the deposit.
+    case registerStake(stakeAddress: String)
+    /// Deregister a stake address, taking the deposit back.
+    case deregisterStake(stakeAddress: String)
+    /// Delegate stake to a pool (`pool1…` or hex).
+    case delegateStake(stakeAddress: String, pool: String)
+    /// Delegate votes to a DRep: `drep1…`, a key hash, `abstain` or
+    /// `no-confidence`.
+    case delegateVote(stakeAddress: String, drep: String)
+    case registerDRep(keyHash: String, anchorURL: String, anchorHash: String)
+    case unregisterDRep(keyHash: String)
+    case updateDRep(keyHash: String, anchorURL: String, anchorHash: String)
+}
+
+/// Rewards to withdraw from a stake address.
+public struct WithdrawalDraft: Codable, Sendable, Equatable, Identifiable {
+    public var id: UUID
+    public var stakeAddress: String
+    /// The whole reward balance: the ledger takes nothing less.
+    public var lovelace: UInt64
+
+    public init(id: UUID = UUID(), stakeAddress: String = "", lovelace: UInt64 = 0) {
+        self.id = id
+        self.stakeAddress = stakeAddress
+        self.lovelace = lovelace
+    }
+}
+
+/// A vote on a governance action.
+public struct VoteDraft: Codable, Sendable, Equatable, Identifiable {
+    public enum Voter: String, Codable, Sendable, CaseIterable {
+        case drep, stakePool, committee
+    }
+
+    public enum Choice: String, Codable, Sendable, CaseIterable {
+        case yes, no, abstain
+    }
+
+    public var id: UUID
+    public var voter: Voter
+    /// The voter's key hash (hex), or a `pool1…` id for a stake pool.
+    public var voterID: String
+    /// The action, `<transaction id>#<index>`.
+    public var action: String
+    public var choice: Choice
+    public var anchorURL: String
+    public var anchorHash: String
+
+    public init(
+        id: UUID = UUID(), voter: Voter = .drep, voterID: String = "", action: String = "", choice: Choice = .yes,
+        anchorURL: String = "", anchorHash: String = ""
+    ) {
+        self.id = id
+        self.voter = voter
+        self.voterID = voterID
+        self.action = action
+        self.choice = choice
+        self.anchorURL = anchorURL
+        self.anchorHash = anchorHash
+    }
+}
+
+/// A governance action to propose.
+public struct ProposalDraft: Codable, Sendable, Equatable, Identifiable {
+    public enum Kind: Codable, Sendable, Equatable {
+        case info
+        /// Pay `lovelace` from the treasury to a stake address.
+        case treasuryWithdrawal(stakeAddress: String, lovelace: UInt64)
+    }
+
+    public var id: UUID
+    public var kind: Kind
+    /// Where the deposit returns, a stake address.
+    public var returnAddress: String
+    public var anchorURL: String
+    public var anchorHash: String
+
+    public init(id: UUID = UUID(), kind: Kind = .info, returnAddress: String = "", anchorURL: String = "", anchorHash: String = "") {
+        self.id = id
+        self.kind = kind
+        self.returnAddress = returnAddress
+        self.anchorURL = anchorURL
+        self.anchorHash = anchorHash
     }
 }
