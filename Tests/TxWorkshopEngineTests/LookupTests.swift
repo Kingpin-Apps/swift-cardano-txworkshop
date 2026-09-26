@@ -66,7 +66,7 @@ struct LookupTests {
 
         let tokens = try await lookup.lookup(mint, network: .preprod)
         #expect(tokens == [TokenInfo(subject: asset.registrySubject, name: "Order NFT", ticker: "GYO", decimals: 0)])
-        #expect(RegistryURLProtocol.lastURL?.absoluteString == "https://metadata.cardano-testnet.iohkdev.io/metadata/query")
+        #expect(RegistryURLProtocol.lastURL?.absoluteString == "https://metadata.world.dev.cardano.org/metadata/query")
         #expect(try await lookup.lookup(mint, network: .custom(magic: 42)).isEmpty)
 
         let snapshot = ChainContextSnapshot(fetchedAt: .now, utxos: [], tokens: tokens)
