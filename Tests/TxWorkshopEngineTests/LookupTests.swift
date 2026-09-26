@@ -75,6 +75,8 @@ struct LookupTests {
         #expect(namedAsset.displayName == "Order NFT")
         #expect(namedAsset.nameSource == .registry)
         #expect(namedAsset.ticker == "GYO")
+        // Names alone do not mean the inputs were looked up.
+        #expect(named.inputs.allSatisfy { $0.status == .unresolved })
     }
 
     @Test("CIP-25 names are read from version 1 text keys and version 2 byte keys")

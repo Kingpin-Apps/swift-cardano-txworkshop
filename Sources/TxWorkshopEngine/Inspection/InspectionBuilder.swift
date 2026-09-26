@@ -60,8 +60,11 @@ struct InspectionBuilder {
     private func input(_ input: TransactionInput) -> InputDetail {
         let id = InputResolver.id(input)
         let utxo = resolved[id]
+        // A snapshot may hold only token names; the inputs were looked up
+        // only if it has outputs or a spent list.
+        let lookedUp = chainContext.map { $0.spentInputs != nil || !$0.utxos.isEmpty } ?? false
         let status: InputDetail.Status =
-            if chainContext == nil { .unresolved }
+            if !lookedUp { .unresolved }
             else if utxo == nil { .notFound }
             else if chainContext?.spentInputs?.contains(id) == true { .spent }
             else { .unspent }
