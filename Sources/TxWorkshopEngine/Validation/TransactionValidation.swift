@@ -217,3 +217,58 @@ public struct RedeemerOutcome: Sendable, Equatable, Identifiable {
         return consumed.memory > declared.memory || consumed.steps > declared.steps
     }
 }
+
+/// Chain data typed in by hand, for validating offline.
+public enum ManualChainData {
+    /// A UTxO for input `id` (`<transaction id>#<index>`), from the CBOR of
+    /// either the whole UTxO or just its output, as hex.
+    public static func utxoHex(for id: String, cborHex: String) throws -> String {
+        let bytes = try TxDocumentCodec.bytes(fromHex: cborHex)
+        if let utxo = try? UTxO.fromCBOR(data: bytes) {
+            guard InputResolver.id(utxo.input) == id else { throw ManualChainDataError.wrongInput(InputResolver.id(utxo.input)) }
+            return bytes.hex
+        }
+        guard let input = TransactionValidation.input(id) else { throw ManualChainDataError.notAnInput(id) }
+        do {
+            let output = try TransactionOutput.fromCBOR(data: bytes)
+            return try UTxO(input: input, output: output).toCBORData().hex
+        } catch {
+            throw ManualChainDataError.notAnOutput
+        }
+    }
+
+    /// Protocol parameters as JSON (the Blockfrost / Ogmios field names),
+    /// checked and written back the way the snapshot keeps them.
+    public static func protocolParameters(json: String) throws -> Data {
+        do {
+            let parameters = try JSONDecoder().decode(ProtocolParameters.self, from: Data(json.utf8))
+            return try JSONEncoder().encode(parameters)
+        } catch {
+            throw ManualChainDataError.notProtocolParameters(String(describing: error))
+        }
+    }
+
+    /// The saved protocol parameters as readable JSON, for editing.
+    public static func protocolParametersText(_ data: Data?) -> String {
+        guard let data, let object = try? JSONSerialization.jsonObject(with: data),
+            let pretty = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted, .sortedKeys])
+        else { return "" }
+        return String(decoding: pretty, as: UTF8.self)
+    }
+}
+
+public enum ManualChainDataError: Error, Sendable, Equatable, CustomStringConvertible {
+    case wrongInput(String)
+    case notAnInput(String)
+    case notAnOutput
+    case notProtocolParameters(String)
+
+    public var description: String {
+        switch self {
+        case .wrongInput(let found): "That UTxO is \(found), not this input."
+        case .notAnInput(let id): "\(id) is not an input reference."
+        case .notAnOutput: "That is neither a UTxO nor a transaction output in CBOR."
+        case .notProtocolParameters(let reason): "Those are not protocol parameters: \(reason)"
+        }
+    }
+}

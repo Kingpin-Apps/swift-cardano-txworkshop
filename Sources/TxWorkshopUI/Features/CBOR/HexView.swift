@@ -9,6 +9,7 @@ struct HexView: View {
     let selection: CBORItem?
     /// Where decoding stopped, when it did.
     let problemOffset: Int?
+    var markers: CBORMarkers = .none
     let onSelectByte: (Int) -> Void
 
     static let bytesPerRow = 16
@@ -22,7 +23,7 @@ struct HexView: View {
                     ForEach(0..<rowCount, id: \.self) { row in
                         HexRow(
                             bytes: bytes, row: row, selection: selection,
-                            problemOffset: problemOffset, onSelectByte: onSelectByte
+                            problemOffset: problemOffset, markers: markers, onSelectByte: onSelectByte
                         )
                         .id(row)
                     }
@@ -43,6 +44,7 @@ private struct HexRow: View {
     let row: Int
     let selection: CBORItem?
     let problemOffset: Int?
+    let markers: CBORMarkers
     let onSelectByte: (Int) -> Void
 
     private var offsets: Range<Int> {
@@ -72,10 +74,15 @@ private struct HexRow: View {
 
     private func background(_ offset: Int) -> Color {
         if offset == problemOffset { return TWColor.failure.opacity(0.5) }
-        guard let selection else { return .clear }
-        if selection.headerRange.contains(offset) { return Color.accentColor.opacity(0.45) }
-        if selection.range.contains(offset) { return Color.accentColor.opacity(0.18) }
-        if selection.keyRange?.contains(offset) == true { return TWColor.warning.opacity(0.3) }
+        if let selection {
+            if selection.headerRange.contains(offset) { return Color.accentColor.opacity(0.45) }
+            if selection.range.contains(offset) { return Color.accentColor.opacity(0.18) }
+            if selection.keyRange?.contains(offset) == true { return TWColor.warning.opacity(0.3) }
+        }
+        // The innermost marked item holding the byte decides its colour.
+        if let marked = markers.ranges.filter({ $0.range.contains(offset) }).min(by: { $0.range.count < $1.range.count }) {
+            return (marked.isError ? TWColor.failure : TWColor.warning).opacity(0.22)
+        }
         return .clear
     }
 }

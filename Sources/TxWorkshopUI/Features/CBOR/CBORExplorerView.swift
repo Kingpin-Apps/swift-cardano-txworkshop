@@ -49,7 +49,9 @@ private struct CBORWorkspace: View {
     let exploration: CBORExploration
     @State private var era: String
     @State private var editing: HexEditRequest?
+    @State private var markers = CBORMarkers.none
     @Environment(\.undoManager) private var undoManager
+    @Environment(WorkshopSession.self) private var session
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var selection: String?
     @State private var expanded: Set<String> = [""]
@@ -135,9 +137,26 @@ private struct CBORWorkspace: View {
                 }
             }
         }
+        .task(id: MarkerKey(exploration: exploration.id, validated: session.validation(for: exploration.bytes)?.ranAt)) {
+            markers = CBORMarkers(outcome: session.validation(for: exploration.bytes), exploration: exploration)
+        }
+        .onChange(of: session.cborFieldFocus, initial: true) { _, fieldPath in
+            guard let fieldPath else { return }
+            session.cborFieldFocus = nil
+            if let path = exploration.path(forFieldPath: fieldPath) {
+                select(path: path)
+                inspector = .item
+                if sizeClass == .compact { pane = .detail }
+            }
+        }
         .sheet(item: $editing) { request in
             HexEditSheet(document: document, request: request, undoManager: undoManager)
         }
+    }
+
+    private struct MarkerKey: Equatable {
+        let exploration: UUID
+        let validated: Date?
     }
 
     /// The selected item's bytes, or all of them.
@@ -154,7 +173,7 @@ private struct CBORWorkspace: View {
         ScrollViewReader { proxy in
             List(selection: $selection) {
                 if let root = exploration.root {
-                    CBORTreeRow(item: root, expanded: $expanded)
+                    CBORTreeRow(item: root, markers: markers, expanded: $expanded)
                 }
             }
             .onChange(of: selection) { _, id in
@@ -167,13 +186,13 @@ private struct CBORWorkspace: View {
     private var hex: some View {
         HexView(
             bytes: exploration.bytes, selection: selectedItem,
-            problemOffset: exploration.problem?.offset, onSelectByte: select(byte:)
+            problemOffset: exploration.problem?.offset, markers: markers, onSelectByte: select(byte:)
         )
     }
 
     @ViewBuilder private var detail: some View {
         if let item = selectedItem {
-            CBORItemDetail(exploration: exploration, item: item)
+            CBORItemDetail(exploration: exploration, item: item, findings: markers.findings(item.id))
         } else {
             ContentUnavailableView {
                 Text("Select an item", bundle: #bundle)

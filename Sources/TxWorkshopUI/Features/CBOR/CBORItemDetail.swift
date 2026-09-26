@@ -7,6 +7,7 @@ import TxWorkshopEngine
 struct CBORItemDetail: View {
     let exploration: CBORExploration
     let item: CBORItem
+    var findings: [ValidationFinding] = []
     @State private var diagnostic: String?
 
     var body: some View {
@@ -44,6 +45,15 @@ struct CBORItemDetail: View {
                 }
             } header: {
                 Text(verbatim: item.label ?? String(localized: "Root", bundle: #bundle))
+            }
+            if !findings.isEmpty {
+                Section {
+                    ForEach(findings) { finding in
+                        FindingRow(finding: finding)
+                    }
+                } header: {
+                    Text("Validation", bundle: #bundle)
+                }
             }
             if !item.flags.isEmpty {
                 Section {

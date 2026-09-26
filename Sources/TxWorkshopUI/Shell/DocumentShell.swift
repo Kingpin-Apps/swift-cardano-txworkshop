@@ -6,13 +6,14 @@ import TxWorkshopEngine
 /// section. Collapses to a navigation stack on iPhone.
 struct DocumentShell: View {
     let document: TxWorkshopDocument
-    @State private var selection: WorkshopSection? = .overview
+    @State private var session = WorkshopSession()
     @State private var showsSettings = false
     @State private var inspection: LoadState<TransactionInspection> = .idle
 
     var body: some View {
+        @Bindable var session = session
         NavigationSplitView {
-            List(selection: $selection) {
+            List(selection: $session.selection) {
                 Section {
                     ForEach(WorkshopSection.inspect) { section in
                         SectionLink(section: section)
@@ -46,8 +47,9 @@ struct DocumentShell: View {
             }
             #endif
         } detail: {
-            SectionDetail(section: selection ?? .overview, document: document, inspection: inspection)
+            SectionDetail(section: session.selection ?? .overview, document: document, inspection: inspection)
         }
+        .environment(session)
         .task(id: InspectionKey(
             transaction: document.content.transaction,
             network: document.content.network,
