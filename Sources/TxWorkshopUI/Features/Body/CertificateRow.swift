@@ -62,20 +62,3 @@ struct ProposalRow: View {
         .accessibilityElement(children: .combine)
     }
 }
-
-/// A governance anchor: its URL and the hash its content must have.
-struct AnchorLine: View {
-    let url: String
-    let hash: String?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: TWSpacing.xxs) {
-            if let link = URL(string: url), link.scheme == "https" || link.scheme == "http" {
-                Link(destination: link) { TWBytesText(url, font: TWFont.bytesSmall) }
-            } else {
-                TWBytesText(url, font: TWFont.bytesSmall)
-            }
-            if let hash { TWBytesText(hash, font: TWFont.bytesSmall).foregroundStyle(TWColor.secondaryText) }
-        }
-    }
-}
