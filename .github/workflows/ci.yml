@@ -1,9 +1,9 @@
 name: CI
 
+# Builds run in Xcode Cloud: GitHub's hosted Macs do not have Xcode 27 yet.
+# Run this by hand on a runner that does (for example a self-hosted one).
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   package:
