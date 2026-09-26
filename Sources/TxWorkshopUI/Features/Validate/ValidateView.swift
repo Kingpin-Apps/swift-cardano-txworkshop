@@ -11,6 +11,7 @@ struct ValidateView: View {
     @State private var mode = TransactionValidation.Mode.now
     @State private var run: LoadState<ValidationOutcome> = .idle
     @State private var requirements: TransactionValidation.Requirements?
+    @State private var isAskingWhatIf = false
 
     private var outcome: ValidationOutcome? {
         run.value ?? session.validation(for: document.content.transaction)
@@ -64,11 +65,25 @@ struct ValidateView: View {
                     ValidationResultSections(outcome: outcome) { fieldPath in
                         session.show(fieldPath: fieldPath)
                     }
+                    if !outcome.redeemers.isEmpty {
+                        Section {
+                            Button {
+                                isAskingWhatIf = true
+                            } label: {
+                                Text("What If…", bundle: #bundle)
+                            }
+                        } footer: {
+                            Text("Change a redeemer or datum and see what it does to each script.", bundle: #bundle)
+                        }
+                    }
                 }
             }
         }
         .formStyle(.grouped)
         .navigationTitle(Text("Validate", bundle: #bundle))
+        .sheet(isPresented: $isAskingWhatIf) {
+            WhatIfSheet(document: document)
+        }
         .task(id: RequirementsKey(transaction: document.content.transaction, snapshot: document.content.chainContext)) {
             guard let bytes = document.content.transaction else { return }
             let found = try? TransactionValidation().requirements(for: bytes, snapshot: document.content.chainContext)
