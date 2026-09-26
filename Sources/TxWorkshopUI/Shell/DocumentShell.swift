@@ -88,12 +88,15 @@ extension DocumentShell {
         // changes; it is replaced in place.
         if case .loaded = inspection {} else { inspection = .loading }
         do {
-            inspection = .loaded(
-                try await TransactionInspector().inspection(
-                    of: transaction, network: document.content.network, chainContext: document.content.chainContext
-                )
+            let result = try await TransactionInspector().inspection(
+                of: transaction, network: document.content.network, chainContext: document.content.chainContext
             )
+            // A newer inspection has started; this one is stale.
+            guard !Task.isCancelled else { return }
+            inspection = .loaded(result)
+        } catch is CancellationError {
         } catch {
+            guard !Task.isCancelled else { return }
             inspection = .failed(String(describing: error))
         }
     }

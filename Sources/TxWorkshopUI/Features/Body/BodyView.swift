@@ -48,7 +48,7 @@ struct BodyView: View {
                     }
                     if !view.votes.isEmpty {
                         Section {
-                            ForEach(Array(view.votes.enumerated()), id: \.offset) { _, vote in
+                            ForEach(view.votes.enumerated(), id: \.offset) { _, vote in
                                 VoteRow(vote: vote)
                             }
                         } header: {

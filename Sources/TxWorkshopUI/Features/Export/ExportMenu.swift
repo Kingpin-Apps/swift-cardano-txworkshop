@@ -37,7 +37,7 @@ struct ExportMenu: View {
         }
         .fileExporter(
             isPresented: $isExporting, document: file, contentType: file.contentType,
-            defaultFilename: "Transaction \(inspection.summary.id.prefix(8))"
+            defaultFilename: String(localized: "Transaction \(String(inspection.summary.id.prefix(8)))", bundle: #bundle)
         ) { result in
             if case .failure(let error) = result { problem = String(describing: error) }
         }

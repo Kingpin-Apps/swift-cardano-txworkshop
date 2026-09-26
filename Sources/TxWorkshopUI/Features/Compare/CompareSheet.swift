@@ -32,6 +32,7 @@ struct CompareSheet: View {
                     } label: {
                         Text("Open a File…", bundle: #bundle)
                     }
+                    .disabled(diff.isLoading)
                 } header: {
                     Text("Other transaction", bundle: #bundle)
                 } footer: {

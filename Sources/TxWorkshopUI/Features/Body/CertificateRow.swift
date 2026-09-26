@@ -21,7 +21,7 @@ struct CertificateRow: View {
             if let drep = certificate.drep { TWBytesText("drep:\(drep)", font: TWFont.bytesSmall) }
             if let url = certificate.anchorURL { AnchorLine(url: url, hash: certificate.anchorHash) }
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
     }
 }
 
@@ -42,7 +42,7 @@ struct VoteRow: View {
             TWBytesText(vote.govActionId, font: TWFont.bytesSmall)
             if let url = vote.anchorURL { AnchorLine(url: url, hash: vote.anchorHash) }
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
     }
 }
 
@@ -59,6 +59,6 @@ struct ProposalRow: View {
             TWBytesText(proposal.returnAddress, font: TWFont.bytesSmall)
             AnchorLine(url: proposal.anchorURL, hash: proposal.anchorHash)
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
     }
 }

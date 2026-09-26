@@ -13,6 +13,7 @@ struct AnchorLine: View {
         VStack(alignment: .leading, spacing: TWSpacing.xxs) {
             if let link = URL(string: url), link.scheme == "https" || link.scheme == "http" {
                 Link(destination: link) { TWBytesText(url, font: TWFont.bytesSmall) }
+                    .buttonStyle(.borderless)
             } else {
                 TWBytesText(url, font: TWFont.bytesSmall)
             }

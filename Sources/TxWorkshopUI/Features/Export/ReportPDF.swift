@@ -94,7 +94,7 @@ private struct ReportPage: View {
                     .foregroundStyle(.secondary)
             }
             Divider()
-            ForEach(rows, id: \.self) { row in
+            ForEach(rows.enumerated(), id: \.offset) { _, row in
                 switch row {
                 case .heading(let title):
                     Text(verbatim: title)

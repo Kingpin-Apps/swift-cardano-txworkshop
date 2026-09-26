@@ -31,11 +31,9 @@ struct FetchByHashSection: View {
                 .foregroundStyle(TWColor.failure)
             }
             Button(action: fetch) {
-                if isFetching {
-                    ProgressView()
-                } else {
-                    Text("Fetch Transaction", bundle: #bundle)
-                }
+                Text("Fetch Transaction", bundle: #bundle)
+                    .opacity(isFetching ? 0 : 1)
+                    .overlay { if isFetching { ProgressView() } }
             }
             .disabled(isFetching || hash.trimmingCharacters(in: .whitespaces).isEmpty)
         } header: {
@@ -46,6 +44,7 @@ struct FetchByHashSection: View {
     }
 
     private func fetch() {
+        guard !isFetching, !hash.trimmingCharacters(in: .whitespaces).isEmpty else { return }
         let sources = CardanoNetwork.allCases.compactMap { network in
             providers.selectedProvider(for: network).map {
                 TransactionFetcher.Source(provider: $0, apiKey: providers.apiKey(for: $0))

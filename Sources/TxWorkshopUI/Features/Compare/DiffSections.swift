@@ -21,9 +21,9 @@ struct DiffSections: View {
                 Image(systemName: diff.relation == .different ? "arrow.left.arrow.right" : "equal.circle")
             }
         }
-        ForEach(sections, id: \.self) { section in
+        ForEach(diff.sections, id: \.section) { section, changes in
             Section {
-                ForEach(diff.changes.filter { $0.section == section }) { change in
+                ForEach(changes) { change in
                     ChangeRow(change: change)
                 }
             } header: {
@@ -32,9 +32,6 @@ struct DiffSections: View {
         }
     }
 
-    private var sections: [TransactionFact.Section] {
-        TransactionFact.Section.allCases.filter { section in diff.changes.contains { $0.section == section } }
-    }
 }
 
 /// One change: what it was, and what it is now.

@@ -19,7 +19,7 @@ struct ScriptRow: View {
             TWBytesText(script.hash, font: TWFont.bytesSmall)
             if let listing = script.listing {
                 DisclosureGroup(isExpanded: $showsListing) {
-                    ScrollView(.horizontal) {
+                    ScrollView([.horizontal, .vertical]) {
                         Text(verbatim: listing)
                             .font(TWFont.bytesSmall)
                             .textSelection(.enabled)

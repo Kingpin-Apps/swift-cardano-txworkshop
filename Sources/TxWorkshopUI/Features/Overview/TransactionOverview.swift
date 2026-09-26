@@ -23,11 +23,7 @@ struct TransactionOverview: View {
                     .foregroundStyle(TWColor.failure)
                 }
             case .loaded(let inspection):
-                Section {
-                    Text(verbatim: TransactionDescription.sentence(for: inspection))
-                } header: {
-                    Text("In short", bundle: #bundle)
-                }
+                InShortSection(inspection: inspection)
                 Section {
                     SummaryRows(summary: inspection.summary)
                 } header: {
@@ -57,15 +53,9 @@ struct TransactionOverview: View {
                     }
                 }
             }
-            if let envelope = envelopeText {
+            if let transaction = document.content.transaction {
                 ToolbarItem {
-                    ShareLink(item: envelope, preview: SharePreview(Text("Transaction", bundle: #bundle))) {
-                        Label {
-                            Text("Share Transaction", bundle: #bundle)
-                        } icon: {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                    }
+                    ShareTransactionLink(transaction: transaction, envelope: document.content.envelope)
                 }
             }
         }
@@ -74,10 +64,5 @@ struct TransactionOverview: View {
                 CompareSheet(document: document, current: current)
             }
         }
-    }
-
-    /// The transaction as a cardano-cli text envelope, for sharing.
-    private var envelopeText: String? {
-        (try? TxDocumentCodec.file(for: document.content, format: .textEnvelope)).flatMap { String(data: $0, encoding: .utf8) }
     }
 }

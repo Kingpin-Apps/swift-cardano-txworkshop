@@ -32,13 +32,15 @@ struct ChainLookupSection: View {
                 .foregroundStyle(TWColor.failure)
             }
             Button(action: lookUp) {
-                if isLookingUp {
-                    ProgressView()
-                } else if snapshot == nil {
-                    Text("Look Up Inputs & Names", bundle: #bundle)
-                } else {
-                    Text("Look Up Again", bundle: #bundle)
+                Group {
+                    if snapshot == nil {
+                        Text("Look Up Inputs & Names", bundle: #bundle)
+                    } else {
+                        Text("Look Up Again", bundle: #bundle)
+                    }
                 }
+                .opacity(isLookingUp ? 0 : 1)
+                .overlay { if isLookingUp { ProgressView() } }
             }
             .disabled(isLookingUp || network == nil)
         } header: {
