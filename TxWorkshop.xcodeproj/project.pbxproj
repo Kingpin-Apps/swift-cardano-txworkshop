@@ -368,7 +368,7 @@
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
-				PRODUCT_NAME = "Tx Workshop";
+				PRODUCT_NAME = "Tx Workshop Direct";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DIRECT_DISTRIBUTION";
 			};
@@ -458,7 +458,7 @@
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
-				PRODUCT_NAME = "Tx Workshop";
+				PRODUCT_NAME = "Tx Workshop Direct";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DIRECT_DISTRIBUTION";
 			};

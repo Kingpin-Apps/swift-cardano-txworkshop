@@ -147,7 +147,9 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.txworkshop
-        PRODUCT_NAME: Tx Workshop
+        # Its own product name, so it never overwrites the App Store build;
+        # it still shows as "Tx Workshop".
+        PRODUCT_NAME: Tx Workshop Direct
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) DIRECT_DISTRIBUTION
         ENABLE_HARDENED_RUNTIME: YES
         # libsodium and BLST ship as prebuilt binaries with no arm64e slice,
