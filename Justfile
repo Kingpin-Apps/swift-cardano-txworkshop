@@ -20,6 +20,10 @@ build-apps:
     {{xcodebuild}} -scheme TxWorkshop -destination "generic/platform=visionOS Simulator" build
     {{xcodebuild}} -scheme TxWorkshopWatch -destination "generic/platform=watchOS Simulator" build
 
+# Fill the String Catalogs from the source (builds macOS, iOS and watchOS)
+strings:
+    scripts/sync-strings.sh
+
 # Update the changelog
 changelog:
     cz ch

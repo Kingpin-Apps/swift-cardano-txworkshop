@@ -1,5 +1,48 @@
 {
-  "sourceLanguage": "en",
-  "strings": {},
-  "version": "1.0"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Add the provider's API key." : {
+
+    },
+    "Add the server URL." : {
+
+    },
+    "Blockfrost" : {
+
+    },
+    "Choose the node's socket." : {
+
+    },
+    "Custom (%u)" : {
+
+    },
+    "Give the provider a name." : {
+
+    },
+    "Koios" : {
+
+    },
+    "Local node" : {
+
+    },
+    "Mainnet" : {
+
+    },
+    "Offline" : {
+
+    },
+    "Ogmios" : {
+
+    },
+    "Preprod" : {
+
+    },
+    "Preview" : {
+
+    },
+    "Yaci DevKit" : {
+
+    }
+  },
+  "version" : "1.0"
 }

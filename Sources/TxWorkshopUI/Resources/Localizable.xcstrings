@@ -1,5 +1,1772 @@
 {
-  "sourceLanguage": "en",
-  "strings": {},
-  "version": "1.0"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%@ calls · %@ steps" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ calls · %2$@ steps"
+          }
+        }
+      }
+    },
+    "%@ credential" : {
+
+    },
+    "%@ is deleted from the Keychain. Keep a copy if you still need it." : {
+
+    },
+    "%@ mem · %@ steps" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ mem · %2$@ steps"
+          }
+        }
+      }
+    },
+    "%@ of %@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ of %2$@ (%3$@)"
+          }
+        }
+      }
+    },
+    "%@ · %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$lld"
+          }
+        }
+      }
+    },
+    "%@%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@%2$@"
+          }
+        }
+      }
+    },
+    "%@… is on %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@… is on %2$@."
+          }
+        }
+      }
+    },
+    "%lld errors, %lld warnings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld errors, %2$lld warnings"
+          }
+        }
+      }
+    },
+    "%lld inputs without their UTxO" : {
+
+    },
+    "%lld steps and %lld memory in %lld machine steps" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld steps and %2$lld memory in %3$lld machine steps"
+          }
+        }
+      }
+    },
+    "%lld–%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld–%2$lld"
+          }
+        }
+      }
+    },
+    "%lld–%lld (%lld)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld–%2$lld (%3$lld)"
+          }
+        }
+      }
+    },
+    "+%@" : {
+
+    },
+    "A key (%@)" : {
+
+    },
+    "A script (%@)" : {
+
+    },
+    "A witness set or witness in CBOR hex, or a cardano-cli witness file." : {
+
+    },
+    "API key" : {
+
+    },
+    "Abstain" : {
+
+    },
+    "Account %lld" : {
+
+    },
+    "Accounts: %lld" : {
+
+    },
+    "Action" : {
+
+    },
+    "Ada" : {
+
+    },
+    "Add" : {
+
+    },
+    "Add Asset" : {
+
+    },
+    "Add Mint or Burn" : {
+
+    },
+    "Add Output" : {
+
+    },
+    "Add Provider" : {
+
+    },
+    "Add Script Input" : {
+
+    },
+    "Add Signing Key" : {
+
+    },
+    "Add Staking or Governance" : {
+
+    },
+    "Add Witness" : {
+
+    },
+    "Add a Co-signer's Witness…" : {
+
+    },
+    "Add a Signing Key…" : {
+
+    },
+    "Add a provider for %@ in Settings to fetch chain data, or enter it by hand." : {
+
+    },
+    "Add a provider for %@ in Settings to look inputs up. Asset names come from the token registry." : {
+
+    },
+    "Add a provider for this network in Settings first." : {
+
+    },
+    "Add a transaction in Overview first." : {
+
+    },
+    "Add notes" : {
+
+    },
+    "Add or build a transaction first." : {
+
+    },
+    "Address" : {
+
+    },
+    "After" : {
+
+    },
+    "Already spent" : {
+
+    },
+    "Anchor URL" : {
+
+    },
+    "Anchor URL (optional)" : {
+
+    },
+    "Anchor hash (Blake2b-256, hex)" : {
+
+    },
+    "Apply" : {
+
+    },
+    "Approved on Apple Watch %@" : {
+
+    },
+    "Arrives in phase %lld of the build." : {
+
+    },
+    "As written" : {
+
+    },
+    "Ask Apple Watch to Review" : {
+
+    },
+    "Asks %@ for the outputs the inputs spend, and the %@ token registry for asset names. What it finds is saved in the document." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Asks %1$@ for the outputs the inputs spend, and the %2$@ token registry for asset names. What it finds is saved in the document."
+          }
+        }
+      }
+    },
+    "Asserted balance" : {
+
+    },
+    "Asset name (hex)" : {
+
+    },
+    "At the chain tip the data was fetched at, with inputs spent as they were then." : {
+
+    },
+    "Batch Validate a Folder…" : {
+
+    },
+    "Batch Validation" : {
+
+    },
+    "Before" : {
+
+    },
+    "Before and after" : {
+
+    },
+    "Budget spent over the run" : {
+
+    },
+    "Buffer" : {
+
+    },
+    "Build" : {
+
+    },
+    "Built" : {
+
+    },
+    "By hash" : {
+
+    },
+    "Bytes" : {
+
+    },
+    "Bytes %lld–%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Bytes %1$lld–%2$lld"
+          }
+        }
+      }
+    },
+    "Bytes in hex" : {
+
+    },
+    "CBOR" : {
+
+    },
+    "CDDL" : {
+
+    },
+    "CIP-67 label %lld" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Canonical CBOR sorts map keys by their encoded bytes." : {
+
+    },
+    "Certificate" : {
+
+    },
+    "Certificates" : {
+
+    },
+    "Certificates & Governance" : {
+
+    },
+    "Chain Data" : {
+
+    },
+    "Change" : {
+
+    },
+    "Change Network" : {
+
+    },
+    "Change a redeemer or datum and see what it does to each script." : {
+
+    },
+    "Change address (first source address if empty)" : {
+
+    },
+    "Check" : {
+
+    },
+    "Check Against Schema" : {
+
+    },
+    "Check the transaction on the device and approve it there." : {
+
+    },
+    "Co-signer" : {
+
+    },
+    "Co-signer review" : {
+
+    },
+    "Coin selection" : {
+
+    },
+    "Collateral" : {
+
+    },
+    "Collateral Return" : {
+
+    },
+    "Collateral inputs, one per line" : {
+
+    },
+    "Compare" : {
+
+    },
+    "Compare With…" : {
+
+    },
+    "Connect and unlock the device, open its Cardano app, then approve exporting the public key." : {
+
+    },
+    "Constitutional committee" : {
+
+    },
+    "Contains a validation finding" : {
+
+    },
+    "Costliest builtins" : {
+
+    },
+    "Could not fetch the content: %@" : {
+
+    },
+    "Current slot" : {
+
+    },
+    "Custom URL (optional)" : {
+
+    },
+    "DRep" : {
+
+    },
+    "DRep (drep1…, key hash, abstain or no-confidence)" : {
+
+    },
+    "DRep key hash (hex)" : {
+
+    },
+    "Datum" : {
+
+    },
+    "Datum %@…" : {
+
+    },
+    "Datum (CBOR hex; only for a datum hash)" : {
+
+    },
+    "Datum hash" : {
+
+    },
+    "Datums" : {
+
+    },
+    "Declined on Apple Watch %@" : {
+
+    },
+    "Decodes as one CBOR item of ^[%lld byte](inflect: true)." : {
+
+    },
+    "Decoding stopped at byte %lld: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Decoding stopped at byte %1$lld: %2$@"
+          }
+        }
+      }
+    },
+    "Decoding stopped: %@" : {
+
+    },
+    "Decoding would stop at byte %lld: %@. You can still apply it and fix it in the tree." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Decoding would stop at byte %1$lld: %2$@. You can still apply it and fix it in the tree."
+          }
+        }
+      }
+    },
+    "Decoding would stop: %@. You can still apply it and fix it in the tree." : {
+
+    },
+    "Delegate stake to a pool" : {
+
+    },
+    "Delegate votes to a DRep" : {
+
+    },
+    "Deposit return stake address" : {
+
+    },
+    "Deposits" : {
+
+    },
+    "Deregister stake address" : {
+
+    },
+    "Detail" : {
+
+    },
+    "Device" : {
+
+    },
+    "Diagnostic notation" : {
+
+    },
+    "Different transactions, with ^[%lld change](inflect: true)." : {
+
+    },
+    "Donation" : {
+
+    },
+    "Done" : {
+
+    },
+    "Drop Transaction" : {
+
+    },
+    "Each a whole UTxO in CBOR hex, one per line." : {
+
+    },
+    "Edit" : {
+
+    },
+    "Edit All Bytes…" : {
+
+    },
+    "Edit Bytes" : {
+
+    },
+    "Edit Notes" : {
+
+    },
+    "Edit Recipe" : {
+
+    },
+    "Edit Schema" : {
+
+    },
+    "Edit Selected Bytes…" : {
+
+    },
+    "Enter Chain Data" : {
+
+    },
+    "Enter by Hand…" : {
+
+    },
+    "Era" : {
+
+    },
+    "Every input's UTxO" : {
+
+    },
+    "Every signature it needs is here." : {
+
+    },
+    "Export" : {
+
+    },
+    "Export Report" : {
+
+    },
+    "Export Summary…" : {
+
+    },
+    "Export failed" : {
+
+    },
+    "Extra fee (lovelace)" : {
+
+    },
+    "Failed after %lld steps: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Failed after %1$lld steps: %2$@"
+          }
+        }
+      }
+    },
+    "Fails" : {
+
+    },
+    "Fee" : {
+
+    },
+    "Fetch Chain Data" : {
+
+    },
+    "Fetch Their UTxOs" : {
+
+    },
+    "Fetch Transaction" : {
+
+    },
+    "Fetch by id" : {
+
+    },
+    "Fetch or enter chain data first." : {
+
+    },
+    "Fetched" : {
+
+    },
+    "Fetches inputs, protocol parameters, the tip and ledger state from %@, and saves them in the document for validating offline." : {
+
+    },
+    "Field" : {
+
+    },
+    "Fixed" : {
+
+    },
+    "Float wider than needed" : {
+
+    },
+    "Forget %@" : {
+
+    },
+    "Format" : {
+
+    },
+    "Format Schema" : {
+
+    },
+    "Fungible token (CIP-68)" : {
+
+    },
+    "Give the script here" : {
+
+    },
+    "Governance action (transaction id#index)" : {
+
+    },
+    "Hardware wallets" : {
+
+    },
+    "Hash (hex)" : {
+
+    },
+    "Head" : {
+
+    },
+    "Head longer than needed" : {
+
+    },
+    "Held by %@" : {
+
+    },
+    "Hex" : {
+
+    },
+    "Hex, base64 or text envelope" : {
+
+    },
+    "Hex, base64, or a cardano-cli text envelope. You can also drop a .tx, .signed, .cbor or .hex file here." : {
+
+    },
+    "ID" : {
+
+    },
+    "If submitted now" : {
+
+    },
+    "Import" : {
+
+    },
+    "Import Hardware Account" : {
+
+    },
+    "Import a Hardware Account…" : {
+
+    },
+    "In" : {
+
+    },
+    "In short" : {
+
+    },
+    "Incomplete" : {
+
+    },
+    "Indefinite length" : {
+
+    },
+    "Info action" : {
+
+    },
+    "Inline" : {
+
+    },
+    "Inline datum" : {
+
+    },
+    "Inputs" : {
+
+    },
+    "Inputs & Outputs" : {
+
+    },
+    "Inputs (transaction id#index), one per line. Left empty, the builder picks collateral from the source addresses when scripts run." : {
+
+    },
+    "Inputs without their UTxO" : {
+
+    },
+    "Inspect" : {
+
+    },
+    "Inspector" : {
+
+    },
+    "It also carries signatures nothing asks for." : {
+
+    },
+    "It goes to %@ and cannot be taken back once it is on chain." : {
+
+    },
+    "Item" : {
+
+    },
+    "JSON" : {
+
+    },
+    "JSON with Blockfrost or Ogmios field names, as `cardano-cli query protocol-parameters` can give via a provider." : {
+
+    },
+    "Judge it" : {
+
+    },
+    "Kept in the Keychain on this device only. Use test keys: this is a developer tool." : {
+
+    },
+    "Kept in your Keychain, on this device only." : {
+
+    },
+    "Key bytes" : {
+
+    },
+    "Key file (.skey)" : {
+
+    },
+    "Key file contents" : {
+
+    },
+    "Key hash (hex)" : {
+
+    },
+    "Key hashes in hex, one per line." : {
+
+    },
+    "Key repeats an earlier key" : {
+
+    },
+    "Keys are derived for the first 20 external and change addresses of each account, and its stake and DRep keys." : {
+
+    },
+    "Keystone (QR codes)" : {
+
+    },
+    "Kind" : {
+
+    },
+    "Kupo URL (optional)" : {
+
+    },
+    "Label %llu" : {
+
+    },
+    "Label %llu · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Label %1$llu · %2$@"
+          }
+        }
+      }
+    },
+    "Largest first" : {
+
+    },
+    "Leave the script out when a reference script on the UTxO or a reference input carries it." : {
+
+    },
+    "Ledger over Bluetooth" : {
+
+    },
+    "Ledger over USB" : {
+
+    },
+    "Ledger over USB or Bluetooth, Trezor over USB on the Mac, and Keystone by QR code on iPhone and iPad. Payments, stake registration and delegation, vote delegation and withdrawals." : {
+
+    },
+    "Ledger rules" : {
+
+    },
+    "Line %lld, column %lld: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Line %1$lld, column %2$lld: %3$@"
+          }
+        }
+      }
+    },
+    "Listing" : {
+
+    },
+    "Look Up Again" : {
+
+    },
+    "Look Up Chain Data" : {
+
+    },
+    "Look Up Inputs & Names" : {
+
+    },
+    "Looked up" : {
+
+    },
+    "Lovelace" : {
+
+    },
+    "Lovelace (empty for the minimum)" : {
+
+    },
+    "Machine step" : {
+
+    },
+    "Map has duplicate keys" : {
+
+    },
+    "Map keys out of order" : {
+
+    },
+    "Markdown" : {
+
+    },
+    "Matches `%@` in the %@ schema." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Matches `%1$@` in the %2$@ schema."
+          }
+        }
+      }
+    },
+    "Matches as the ledger reads it. The schema alone refuses what is listed below." : {
+
+    },
+    "Memory" : {
+
+    },
+    "Message" : {
+
+    },
+    "Message (CIP-20)" : {
+
+    },
+    "Metadata" : {
+
+    },
+    "Mint or burn" : {
+
+    },
+    "Minted & Burned" : {
+
+    },
+    "Mismatches" : {
+
+    },
+    "NFT (CIP-68)" : {
+
+    },
+    "Name" : {
+
+    },
+    "Name (hex)" : {
+
+    },
+    "Named by the token registry" : {
+
+    },
+    "Named in the transaction (CIP-25)" : {
+
+    },
+    "Native script" : {
+
+    },
+    "Native script JSON" : {
+
+    },
+    "Negative quantities burn. The policy id comes from the script." : {
+
+    },
+    "Nested too deep to show as a tree; the notation below has it all." : {
+
+    },
+    "Network" : {
+
+    },
+    "New Provider" : {
+
+    },
+    "New Schema" : {
+
+    },
+    "No" : {
+
+    },
+    "No CBOR" : {
+
+    },
+    "No Metadata" : {
+
+    },
+    "No Scripts" : {
+
+    },
+    "No Transaction" : {
+
+    },
+    "No bound" : {
+
+    },
+    "No budget: the protocol parameters have no cost model for this script." : {
+
+    },
+    "No changes yet." : {
+
+    },
+    "No datum" : {
+
+    },
+    "No protocol parameters" : {
+
+    },
+    "No provider. Transactions on %@ can only be inspected offline." : {
+
+    },
+    "No schema of its own" : {
+
+    },
+    "No trace" : {
+
+    },
+    "Node socket path" : {
+
+    },
+    "Not a UTxO: %@…" : {
+
+    },
+    "Not canonical" : {
+
+    },
+    "Not found, or already spent" : {
+
+    },
+    "Not hex: use pairs of 0–9 and a–f." : {
+
+    },
+    "Not signed" : {
+
+    },
+    "Not valid: ^[%lld error](inflect: true) and ^[%lld warning](inflect: true)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Not valid: ^[%1$lld error](inflect: true) and ^[%2$lld warning](inflect: true)."
+          }
+        }
+      }
+    },
+    "Notes" : {
+
+    },
+    "Nothing Here" : {
+
+    },
+    "Now %@" : {
+
+    },
+    "OK" : {
+
+    },
+    "Offset %lld: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Offset %1$lld: %2$@"
+          }
+        }
+      }
+    },
+    "On chain since %@" : {
+
+    },
+    "On the Keystone, open Connect Software Wallet and show the account QR code." : {
+
+    },
+    "One per line. Fetching saves their UTxOs in the recipe, so it builds offline later." : {
+
+    },
+    "Only the first %lld events are listed." : {
+
+    },
+    "Open Transaction" : {
+
+    },
+    "Open a File…" : {
+
+    },
+    "Options" : {
+
+    },
+    "Other transaction" : {
+
+    },
+    "Out" : {
+
+    },
+    "Output" : {
+
+    },
+    "Output %lld" : {
+
+    },
+    "Outputs" : {
+
+    },
+    "Over by %@: the ledger stops the script at its declared units." : {
+
+    },
+    "Overview" : {
+
+    },
+    "PDF Report" : {
+
+    },
+    "Pane" : {
+
+    },
+    "Passes" : {
+
+    },
+    "Passphrase (optional)" : {
+
+    },
+    "Paste Transaction" : {
+
+    },
+    "Paste a transaction" : {
+
+    },
+    "Paste hex, base64 or a text envelope, or open a transaction file. Changes read from this document to the other." : {
+
+    },
+    "Paste or open a transaction on the Overview first." : {
+
+    },
+    "Pay to stake address" : {
+
+    },
+    "Pays the deposit the protocol parameters set." : {
+
+    },
+    "Pays the governance action deposit, returned to the stake address when the action ends." : {
+
+    },
+    "Pays to" : {
+
+    },
+    "Pick an item in the tree, or tap a byte." : {
+
+    },
+    "Places the validity window in time, and picks the provider used for this transaction." : {
+
+    },
+    "Plutus V1" : {
+
+    },
+    "Plutus V2" : {
+
+    },
+    "Plutus V3" : {
+
+    },
+    "Plutus data (CBOR hex)" : {
+
+    },
+    "Plutus data as CBOR hex. The scripts run against the document's chain data; nothing is saved." : {
+
+    },
+    "Policy id" : {
+
+    },
+    "Pool (pool1… or hex)" : {
+
+    },
+    "Proposal" : {
+
+    },
+    "Proposals" : {
+
+    },
+    "Protocol parameters" : {
+
+    },
+    "Protocol parameters come from the document's chain data, or the provider. Without a provider, only pasted UTxOs are spent." : {
+
+    },
+    "Providers" : {
+
+    },
+    "QR code" : {
+
+    },
+    "Quantity" : {
+
+    },
+    "Ran" : {
+
+    },
+    "Random-improve" : {
+
+    },
+    "Rationale URL (optional)" : {
+
+    },
+    "Rationale hash (Blake2b-256, hex)" : {
+
+    },
+    "Record Confirmation" : {
+
+    },
+    "Recovery phrase" : {
+
+    },
+    "Redeemer (Plutus data CBOR hex)" : {
+
+    },
+    "Redeemer: %@ %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Redeemer: %1$@ %2$lld"
+          }
+        }
+      }
+    },
+    "Redeemers" : {
+
+    },
+    "Reference Inputs" : {
+
+    },
+    "Reference NFT (CIP-68)" : {
+
+    },
+    "Reference script" : {
+
+    },
+    "Reference scripts: %llu bytes" : {
+
+    },
+    "Refunds" : {
+
+    },
+    "Register as a DRep" : {
+
+    },
+    "Register stake address" : {
+
+    },
+    "Remove" : {
+
+    },
+    "Remove %@" : {
+
+    },
+    "Remove Asset" : {
+
+    },
+    "Remove Provider" : {
+
+    },
+    "Remove this key?" : {
+
+    },
+    "Replace API key" : {
+
+    },
+    "Replaces the document's transaction, to inspect, validate and sign. Undo brings the old one back." : {
+
+    },
+    "Required signers" : {
+
+    },
+    "Required signers, one key hash per line" : {
+
+    },
+    "Retire as a DRep" : {
+
+    },
+    "Revert" : {
+
+    },
+    "Rich fungible token (CIP-68)" : {
+
+    },
+    "Root" : {
+
+    },
+    "Rule" : {
+
+    },
+    "Rules" : {
+
+    },
+    "Run Scripts" : {
+
+    },
+    "Same body and id. Only the witnesses differ, as between an unsigned transaction and its signed copy." : {
+
+    },
+    "Save" : {
+
+    },
+    "Scan the Keystone's Signature" : {
+
+    },
+    "Scan the account QR code the Keystone shows." : {
+
+    },
+    "Scan the signature the Keystone shows" : {
+
+    },
+    "Scan this with the Keystone and approve the transaction on it." : {
+
+    },
+    "Schema" : {
+
+    },
+    "Script" : {
+
+    },
+    "Script CBOR hex" : {
+
+    },
+    "Script Trace" : {
+
+    },
+    "Script budgets" : {
+
+    },
+    "Script input" : {
+
+    },
+    "Script memory: %llu" : {
+
+    },
+    "Script steps: %llu" : {
+
+    },
+    "Scripts" : {
+
+    },
+    "Scripts & Datums" : {
+
+    },
+    "Scripts in the witness set" : {
+
+    },
+    "Scripts used by reference are listed with the outputs that carry them." : {
+
+    },
+    "Searches mainnet, preprod and preview with each network's Blockfrost or Koios provider." : {
+
+    },
+    "Select" : {
+
+    },
+    "Select an item" : {
+
+    },
+    "Select an item in the tree first." : {
+
+    },
+    "Selected item" : {
+
+    },
+    "Selects the item" : {
+
+    },
+    "Server URL" : {
+
+    },
+    "Set the document's network to see these slots as times." : {
+
+    },
+    "Set the network and a provider for it to submit." : {
+
+    },
+    "Set the network in Overview first." : {
+
+    },
+    "Set the network in Overview to fetch chain data, or enter it by hand." : {
+
+    },
+    "Set the network in Overview to look inputs up." : {
+
+    },
+    "Share Transaction" : {
+
+    },
+    "Share the transaction with co-signers, then add the witnesses they send back." : {
+
+    },
+    "Show" : {
+
+    },
+    "Show in CBOR" : {
+
+    },
+    "Shows the transaction on your Apple Watch to approve before you sign here." : {
+
+    },
+    "Sign" : {
+
+    },
+    "Sign & Submit" : {
+
+    },
+    "Sign the transaction with %@" : {
+
+    },
+    "Sign with %@" : {
+
+    },
+    "Sign with Hardware Wallet" : {
+
+    },
+    "Sign with Keystone" : {
+
+    },
+    "Signatures" : {
+
+    },
+    "Signed" : {
+
+    },
+    "Signing keys" : {
+
+    },
+    "Size" : {
+
+    },
+    "Size: %llu bytes" : {
+
+    },
+    "Slot" : {
+
+    },
+    "Slot %llu" : {
+
+    },
+    "Source" : {
+
+    },
+    "Source addresses" : {
+
+    },
+    "Source addresses, one per line" : {
+
+    },
+    "Spends ^[%lld input](inflect: true)" : {
+
+    },
+    "Stake" : {
+
+    },
+    "Stake address (stake…)" : {
+
+    },
+    "Stake pool" : {
+
+    },
+    "Start Empty" : {
+
+    },
+    "Start from Conway" : {
+
+    },
+    "Steps" : {
+
+    },
+    "Steps spent" : {
+
+    },
+    "Submit" : {
+
+    },
+    "Submit this transaction?" : {
+
+    },
+    "Submitted %@ through %@; waiting" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Submitted %1$@ through %2$@; waiting"
+          }
+        }
+      }
+    },
+    "Submit…" : {
+
+    },
+    "Succeeded in %lld machine steps." : {
+
+    },
+    "Takes the deposit back." : {
+
+    },
+    "That file is not a transaction." : {
+
+    },
+    "That is not a transaction in hex, base64 or a text envelope." : {
+
+    },
+    "That is not a transaction in hex, base64, a text envelope or a transaction file." : {
+
+    },
+    "That witness does not sign this transaction: it was made for different bytes." : {
+
+    },
+    "The Transaction Did Not Decode" : {
+
+    },
+    "The bytes end before this item does." : {
+
+    },
+    "The content does not match: it hashes to %@." : {
+
+    },
+    "The content matches its hash." : {
+
+    },
+    "The document has no transaction yet." : {
+
+    },
+    "The document's schema does not parse (line %lld). Fix it in the CDDL section." : {
+
+    },
+    "The ledger accepts this: long Plutus byte strings are written in 64-byte chunks." : {
+
+    },
+    "The length or value is written in more bytes than it needs. Re-encoding shortens it, which changes hashes." : {
+
+    },
+    "The number fits a shorter float encoding." : {
+
+    },
+    "The slot is a whole number." : {
+
+    },
+    "The token registry could not be reached." : {
+
+    },
+    "The transactions are identical." : {
+
+    },
+    "The whole reward balance: the ledger refuses any other amount." : {
+
+    },
+    "These bytes are part of the transaction body: changing them changes the transaction id, and existing signatures no longer match." : {
+
+    },
+    "This Document's Schema" : {
+
+    },
+    "This device has no camera the scanner can use." : {
+
+    },
+    "This key is written the same as an earlier key in its map." : {
+
+    },
+    "This transaction carries no metadata." : {
+
+    },
+    "This transaction did not decode: %@" : {
+
+    },
+    "This transaction has no certificates, withdrawals, votes or proposals." : {
+
+    },
+    "This transaction runs no scripts and supplies no datums." : {
+
+    },
+    "Through %@, to %@. You get a notification when it is on chain." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Through %1$@, to %2$@. You get a notification when it is on chain."
+          }
+        }
+      }
+    },
+    "Tier %lld: %llu bytes at %@ per byte" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tier %1$lld: %2$llu bytes at %3$@ per byte"
+          }
+        }
+      }
+    },
+    "Timeline" : {
+
+    },
+    "Tip slot" : {
+
+    },
+    "Trace Timeline" : {
+
+    },
+    "Trace messages only" : {
+
+    },
+    "Transaction" : {
+
+    },
+    "Transaction %@" : {
+
+    },
+    "Transaction confirmed" : {
+
+    },
+    "Transaction id" : {
+
+    },
+    "Treasury" : {
+
+    },
+    "Treasury donation (lovelace)" : {
+
+    },
+    "Treasury withdrawal" : {
+
+    },
+    "Tree" : {
+
+    },
+    "Trezor over USB" : {
+
+    },
+    "Two keys in this map are written the same. Decoders disagree on which one wins." : {
+
+    },
+    "Tx Workshop" : {
+
+    },
+    "UTxO (transaction id#index)" : {
+
+    },
+    "UTxO carrying it (transaction id#index)" : {
+
+    },
+    "UTxO or output CBOR, hex" : {
+
+    },
+    "UTxOs as CBOR hex, one per line" : {
+
+    },
+    "UTxOs to spend" : {
+
+    },
+    "Unknown" : {
+
+    },
+    "Unspent" : {
+
+    },
+    "Update DRep metadata" : {
+
+    },
+    "Use Built Transaction" : {
+
+    },
+    "Use as the Document's Transaction" : {
+
+    },
+    "Use the provider for address UTxOs and the tip" : {
+
+    },
+    "Used by" : {
+
+    },
+    "Uses" : {
+
+    },
+    "Uses the Cardano ledger's own CDDL for the era." : {
+
+    },
+    "Uses the schema written in the CDDL section." : {
+
+    },
+    "Valid from" : {
+
+    },
+    "Valid from slot" : {
+
+    },
+    "Valid in any slot." : {
+
+    },
+    "Valid until" : {
+
+    },
+    "Valid until slot" : {
+
+    },
+    "Valid, with ^[%lld warning](inflect: true)." : {
+
+    },
+    "Validate" : {
+
+    },
+    "Validated ^[%lld file](inflect: true)." : {
+
+    },
+    "Validating %lld of %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Validating %1$lld of %2$lld"
+          }
+        }
+      }
+    },
+    "Validation" : {
+
+    },
+    "Validation Report" : {
+
+    },
+    "Validation error" : {
+
+    },
+    "Validation warning" : {
+
+    },
+    "Validity" : {
+
+    },
+    "Verify" : {
+
+    },
+    "Vote" : {
+
+    },
+    "Voter" : {
+
+    },
+    "Votes" : {
+
+    },
+    "Waiting for the watch" : {
+
+    },
+    "Was %@" : {
+
+    },
+    "What If" : {
+
+    },
+    "What If…" : {
+
+    },
+    "Who it is from" : {
+
+    },
+    "Whole transaction" : {
+
+    },
+    "With its inputs unspent, at a slot in its validity window: for a transaction already on chain." : {
+
+    },
+    "Withdrawal" : {
+
+    },
+    "Withdrawals" : {
+
+    },
+    "Witness" : {
+
+    },
+    "Witnesses" : {
+
+    },
+    "Work" : {
+
+    },
+    "Write CDDL for this document, to check its CBOR against rules of your own. It is saved in the document." : {
+
+    },
+    "Written with a break marker instead of a length. The ledger accepts it; canonical CBOR does not." : {
+
+    },
+    "Yes" : {
+
+    },
+    "^[%lld input](inflect: true) chosen" : {
+
+    },
+    "^[%lld input](inflect: true) not found." : {
+
+    },
+    "^[%lld input](inflect: true) not looked up, so their signers are not listed. Fetch chain data in Validate." : {
+
+    },
+    "^[%lld mismatch](inflect: true) with `%@` in the %@ schema." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "^[%1$lld mismatch](inflect: true) with `%2$@` in the %3$@ schema."
+          }
+        }
+      }
+    },
+    "^[%lld native asset](inflect: true)" : {
+
+    },
+    "^[%lld trace](inflect: true)" : {
+
+    },
+    "array · ^[%lld item](inflect: true)" : {
+
+    },
+    "boolean" : {
+
+    },
+    "burns ^[%lld asset](inflect: true)" : {
+
+    },
+    "bytes · ^[%lld byte](inflect: true)" : {
+
+    },
+    "carries ^[%lld certificate](inflect: true)" : {
+
+    },
+    "casts ^[%lld vote](inflect: true)" : {
+
+    },
+    "creates ^[%lld output](inflect: true)" : {
+
+    },
+    "float" : {
+
+    },
+    "line %lld" : {
+
+    },
+    "makes ^[%lld proposal](inflect: true)" : {
+
+    },
+    "map · ^[%lld entry](inflect: true)" : {
+
+    },
+    "mints ^[%lld asset](inflect: true)" : {
+
+    },
+    "negative integer" : {
+
+    },
+    "null" : {
+
+    },
+    "runs ^[%lld script](inflect: true)" : {
+
+    },
+    "simple value" : {
+
+    },
+    "tag %llu" : {
+
+    },
+    "text · ^[%lld byte](inflect: true)" : {
+
+    },
+    "undefined" : {
+
+    },
+    "unsigned integer" : {
+
+    },
+    "withdraws rewards from ^[%lld account](inflect: true)" : {
+
+    }
+  },
+  "version" : "1.0"
 }
