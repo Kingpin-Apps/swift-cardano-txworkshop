@@ -215,6 +215,9 @@
     "Animated QR code with the transaction for the Keystone" : {
 
     },
+    "Appearance" : {
+
+    },
     "Apply" : {
 
     },
@@ -581,6 +584,9 @@
 
     },
     "Fungible token (CIP-68)" : {
+
+    },
+    "General" : {
 
     },
     "Give the script here" : {
@@ -1339,6 +1345,9 @@
     "Set the network in Overview to look inputs up." : {
 
     },
+    "Settings" : {
+
+    },
     "Share Transaction" : {
 
     },
@@ -1443,6 +1452,9 @@
 
     },
     "Succeeded in %lld machine steps." : {
+
+    },
+    "System follows your device's light or dark setting." : {
 
     },
     "Takes the deposit back." : {

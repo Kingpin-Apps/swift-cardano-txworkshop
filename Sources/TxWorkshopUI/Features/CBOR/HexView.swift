@@ -32,6 +32,7 @@ struct HexView: View {
                 }
                 .padding(TWSpacing.s)
             }
+            .background(TWColor.surface)
             .onChange(of: selection?.start, initial: true) { _, start in
                 guard let start else { return }
                 withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(start / bytesPerRow, anchor: .center) }
@@ -114,8 +115,8 @@ private struct HexRow: View {
         switch role {
         case .plain: .clear
         case .problem: TWColor.failure.opacity(0.5)
-        case .header: Color.accentColor.opacity(0.45)
-        case .payload: Color.accentColor.opacity(0.18)
+        case .header: TWColor.accent.opacity(0.45)
+        case .payload: TWColor.accent.opacity(0.18)
         case .key: TWColor.warning.opacity(0.3)
         case .error: TWColor.failure.opacity(0.22)
         case .warning: TWColor.warning.opacity(0.22)

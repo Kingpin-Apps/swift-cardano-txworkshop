@@ -8,6 +8,11 @@ struct SectionDetail: View {
     let inspection: LoadState<TransactionInspection>
 
     var body: some View {
+        content
+            .twScreenBackground()
+    }
+
+    @ViewBuilder private var content: some View {
         switch section {
         case .overview:
             OverviewView(document: document, inspection: inspection)

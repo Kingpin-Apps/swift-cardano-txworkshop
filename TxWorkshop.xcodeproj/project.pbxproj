@@ -11,8 +11,10 @@
 		0E2E3099EBDC5F7BAF4A4587 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 3B46B1A5C2CF8A9770FB3D81 /* Sparkle */; };
 		19DE7E2B2437C777300C97F2 /* TxWorkshopUI in Frameworks */ = {isa = PBXBuildFile; productRef = 283784CCCCCC5FF527B82D0D /* TxWorkshopUI */; };
 		2DAF3DFE25281AB5786AC371 /* TxWorkshopDirect in Frameworks */ = {isa = PBXBuildFile; productRef = 9099A1D0D21229074F7C96FA /* TxWorkshopDirect */; };
+		2FCC91EF70D1846F2BF86782 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4414433F2496F95D78F89A1A /* Assets.xcassets */; };
 		39758F20BF0E32129F97EDFE /* TxWorkshopCore in Frameworks */ = {isa = PBXBuildFile; productRef = CD904B83B2A02B6FE980AE1C /* TxWorkshopCore */; };
 		7004F93AFE5B453DC40636C8 /* TxWorkshopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */; };
+		8310BC6B3A5779E69A232465 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4414433F2496F95D78F89A1A /* Assets.xcassets */; };
 		A827A9DB54F03E350E8542FD /* TxWorkshopCore in Frameworks */ = {isa = PBXBuildFile; productRef = A9CF102464994FDC19B49526 /* TxWorkshopCore */; };
 		B6B5BA02EE90C93C2FB5D129 /* TxWorkshopDirectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */; };
 		DA038764F05E376CC59AA2BE /* TxWorkshopUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7F4C2104AF1CDC0C07DB644A /* TxWorkshopUI */; };
@@ -21,6 +23,7 @@
 
 /* Begin PBXFileReference section */
 		36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopDirectApp.swift; sourceTree = "<group>"; };
+		4414433F2496F95D78F89A1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopApp.swift; sourceTree = "<group>"; };
 		5901409EE1D9EE868F5A0386 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		91643936B8393B8CD4046109 /* TxWorkshop.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TxWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,6 +101,7 @@
 		B0193ED87AA5506FF06BB890 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				4414433F2496F95D78F89A1A /* Assets.xcassets */,
 				97C7717046104B6311FC201C /* Info.plist */,
 				C5D7F86C6DDD78E4458DD86B /* TxWorkshop-macOS.entitlements */,
 				97CB982DCFE36F65D6ABEAE7 /* TxWorkshop.entitlements */,
@@ -114,6 +118,7 @@
 			buildConfigurationList = CF789A50766201A76FF0631C /* Build configuration list for PBXNativeTarget "TxWorkshopDirect" */;
 			buildPhases = (
 				CD6313F8E2885CED0E0F8F8B /* Sources */,
+				63363258FF765AD0824FA1C8 /* Resources */,
 				1601A8FD36402D3B761307DB /* Frameworks */,
 			);
 			buildRules = (
@@ -137,6 +142,7 @@
 			buildConfigurationList = 7F99BA02E9B5D94916485E16 /* Build configuration list for PBXNativeTarget "TxWorkshop" */;
 			buildPhases = (
 				F74E47CE04076B56DD5B8AFA /* Sources */,
+				431C89D7E18431C3DBEAF15F /* Resources */,
 				BFB2C5697C00737AAB19904C /* Frameworks */,
 			);
 			buildRules = (
@@ -196,6 +202,25 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		431C89D7E18431C3DBEAF15F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2FCC91EF70D1846F2BF86782 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		63363258FF765AD0824FA1C8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8310BC6B3A5779E69A232465 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		CD6313F8E2885CED0E0F8F8B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -219,7 +244,8 @@
 		1EBFAD0D1B19D6F6CCE037FB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/TxWorkshop.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "App/TxWorkshop-macOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -249,6 +275,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AppDirect/TxWorkshopDirect.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -338,6 +365,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AppDirect/TxWorkshopDirect.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -358,7 +386,8 @@
 		76EAFF3909F04D47DBFE97A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/TxWorkshop.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "App/TxWorkshop-macOS.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";

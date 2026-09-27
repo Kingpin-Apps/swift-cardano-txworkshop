@@ -38,9 +38,9 @@ struct DocumentShell: View {
                         showsSettings = true
                     } label: {
                         Label {
-                            Text("Providers", bundle: #bundle)
+                            Text("Settings", bundle: #bundle)
                         } icon: {
-                            Image(systemName: "network")
+                            Image(systemName: "gearshape")
                         }
                     }
                 }
@@ -59,9 +59,8 @@ struct DocumentShell: View {
         }
         #if !os(macOS)
         .sheet(isPresented: $showsSettings) {
-            NavigationStack {
-                ProviderSettingsView()
-            }
+            SettingsView()
+                .twWindowStyle()
         }
         #endif
     }

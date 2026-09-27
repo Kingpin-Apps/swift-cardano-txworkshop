@@ -22,6 +22,7 @@ public struct TxWorkshopScenes: Scene {
                 .environment(signingKeys)
                 .environment(tracker)
                 .environment(hardwareAccounts)
+                .twWindowStyle()
                 .task {
                     tracker.start()
                 }
@@ -31,9 +32,10 @@ public struct TxWorkshopScenes: Scene {
 
         #if os(macOS)
         Settings {
-            ProviderSettingsView()
+            SettingsView()
                 .environment(providers)
                 .frame(minWidth: 520, minHeight: 360)
+                .twWindowStyle()
         }
         #endif
     }

@@ -48,7 +48,7 @@ struct SourceLinesView: View {
 
     private func background(_ line: Int) -> Color {
         if line == problemLine { return TWColor.failure.opacity(0.18) }
-        if highlight?.contains(line) == true { return Color.accentColor.opacity(0.15) }
+        if highlight?.contains(line) == true { return TWColor.accent.opacity(0.15) }
         return .clear
     }
 }

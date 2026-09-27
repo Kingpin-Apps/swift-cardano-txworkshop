@@ -21,6 +21,8 @@ and `just metadata` for the App Store text.
 - [ ] Review the drafted text in `fastlane/metadata/en-US`, and check the support and privacy
       URLs exist.
 - [ ] Add screenshots in App Store Connect (fastlane skips them for now).
+- [ ] Make the app icon (Icon Composer, in the Workbench palette), add it to `App/`, and set
+      `ASSETCATALOG_COMPILER_APPICON_NAME` in `project.yml`.
 - [ ] Answer the privacy questionnaire: no data collected. Chain providers are called with the
       person's own API keys.
 - [ ] Export compliance: the app uses only standard cryptography (signing, hashing, TLS).

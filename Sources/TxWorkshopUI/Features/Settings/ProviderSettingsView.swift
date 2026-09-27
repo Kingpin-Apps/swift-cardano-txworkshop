@@ -6,8 +6,12 @@ public struct ProviderSettingsView: View {
     @Environment(ProviderSettingsStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var editing: ProviderConfiguration?
+    /// Whether to offer Done, when this is the root of a sheet.
+    private let showsDone: Bool
 
-    public init() {}
+    public init(showsDone: Bool = true) {
+        self.showsDone = showsDone
+    }
 
     public var body: some View {
         Form {
@@ -46,14 +50,17 @@ public struct ProviderSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .twScreenBackground()
         .navigationTitle(Text("Providers", bundle: #bundle))
         #if !os(macOS)
         .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Done", bundle: #bundle)
+            if showsDone {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("Done", bundle: #bundle)
+                    }
                 }
             }
         }

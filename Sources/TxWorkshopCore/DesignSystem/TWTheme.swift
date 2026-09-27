@@ -1,8 +1,12 @@
 import SwiftUI
+#if os(macOS)
+import AppKit
+#endif
 
-/// The Tx Workshop design system: dense and developer-tool-like, monospaced
-/// where the data is bytes or hashes. Liquid Glass belongs to window chrome
-/// only, never to rows of data.
+/// The Tx Workshop design system, "Workbench": dense and developer-tool-like,
+/// monospaced where the data is bytes or hashes, on warm paper and charcoal
+/// neutrals with one amber accent. Serif is kept for document titles. Liquid
+/// Glass belongs to window chrome only, never to rows of data.
 public enum TWSpacing {
     public static let xxs: CGFloat = 2
     public static let xs: CGFloat = 4
@@ -19,15 +23,89 @@ public enum TWFont {
     /// Figures such as lovelace amounts, aligned in columns.
     public static let figure = Font.body.monospacedDigit()
     public static let sectionTitle = Font.headline
+    /// A document's title: the one serif on a screen.
+    public static let displayTitle = Font.system(.title2, design: .serif).weight(.semibold)
 }
 
-/// Semantic colours. System colours adapt to light, dark and increased
-/// contrast on every platform.
+/// Semantic colours, each with light, dark and increased-contrast variants.
+/// Status colours are the system's; the rest come from the Workbench palette
+/// in `Colors.xcassets`.
 public enum TWColor {
     public static let success = Color.green
     public static let warning = Color.orange
     public static let failure = Color.red
+    /// Amber: selection, links, primary actions and highlighted bytes.
+    public static let accent = Color("TWAccent", bundle: .module)
+    /// Warm paper in light, charcoal in dark, behind every screen.
+    public static let background = Color("TWBackground", bundle: .module)
+    /// Panels and cards drawn on the background.
+    public static let surface = Color("TWSurface", bundle: .module)
+    /// The system's, so it turns white on a selected row.
     public static let secondaryText = Color.secondary
+    public static let divider = Color("TWDivider", bundle: .module)
+}
+
+/// The app's appearance: the system's, or always light or dark.
+public enum TWAppearance: String, CaseIterable, Identifiable, Sendable {
+    case system, light, dark
+
+    public static let storageKey = "appearance"
+
+    public var id: Self { self }
+
+    public var colorScheme: ColorScheme? {
+        switch self {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+
+    public var title: LocalizedStringResource {
+        switch self {
+        case .system: LocalizedStringResource("System", bundle: #bundle)
+        case .light: LocalizedStringResource("Light", bundle: #bundle)
+        case .dark: LocalizedStringResource("Dark", bundle: #bundle)
+        }
+    }
+}
+
+extension View {
+    /// Applies the chosen appearance, the accent and the Workbench
+    /// background. Use once at the root of each window.
+    public func twWindowStyle() -> some View {
+        modifier(TWWindowStyle())
+    }
+
+    /// Puts a screen's lists and forms on the Workbench background.
+    public func twScreenBackground() -> some View {
+        scrollContentBackground(.hidden)
+            .background(TWColor.background)
+    }
+}
+
+private struct TWWindowStyle: ViewModifier {
+    @AppStorage(TWAppearance.storageKey) private var appearance = TWAppearance.system
+
+    func body(content: Content) -> some View {
+        #if os(macOS)
+        // On macOS, clearing `preferredColorScheme` does not return a window to
+        // the system appearance, so the app's appearance is set directly.
+        content
+            .tint(TWColor.accent)
+            .onChange(of: appearance, initial: true) { _, appearance in
+                NSApplication.shared.appearance = switch appearance {
+                case .system: nil
+                case .light: NSAppearance(named: .aqua)
+                case .dark: NSAppearance(named: .darkAqua)
+                }
+            }
+        #else
+        content
+            .tint(TWColor.accent)
+            .preferredColorScheme(appearance.colorScheme)
+        #endif
+    }
 }
 
 /// A label whose icon carries the status colour. The text stays in the
