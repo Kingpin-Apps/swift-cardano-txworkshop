@@ -72,6 +72,7 @@ struct DocumentShell: View {
         .environment(ProviderSettingsStore.preview)
         .environment(SigningKeyStore.inMemory())
         .environment(SubmissionTracker(defaults: UserDefaults(suiteName: "preview")!))
+        .environment(HardwareAccountStore(defaults: UserDefaults(suiteName: "preview")!))
 }
 
 extension DocumentShell {

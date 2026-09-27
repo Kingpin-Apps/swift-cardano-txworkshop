@@ -37,6 +37,9 @@ struct SignView: View {
                     if let problem {
                         Section { Text(verbatim: problem).foregroundStyle(TWColor.failure) }
                     }
+                    HardwareSection(
+                        document: document, missing: Set(needed.signers.filter { !$0.isSigned }.map(\.keyHash)), knownUTxOs: knownUTxOs
+                    )
                     WitnessesSection(document: document, onImport: { isImporting = true })
                     SubmitSection(document: document, isComplete: needed.isComplete)
                 }

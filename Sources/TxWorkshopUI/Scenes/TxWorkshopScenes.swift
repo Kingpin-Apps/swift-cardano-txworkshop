@@ -7,6 +7,7 @@ public struct TxWorkshopScenes: Scene {
     @State private var providers: ProviderSettingsStore
     @State private var signingKeys = SigningKeyStore()
     @State private var tracker = SubmissionTracker()
+    @State private var hardwareAccounts = HardwareAccountStore()
 
     /// - Parameter directDistribution: Whether this is the Developer ID build,
     ///   which may offer providers the App Sandbox rules out.
@@ -20,6 +21,7 @@ public struct TxWorkshopScenes: Scene {
                 .environment(providers)
                 .environment(signingKeys)
                 .environment(tracker)
+                .environment(hardwareAccounts)
                 .task { tracker.start() }
         } makeDocument: { _, _ in
             TxWorkshopDocument()
