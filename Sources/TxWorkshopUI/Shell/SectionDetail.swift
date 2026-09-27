@@ -45,18 +45,6 @@ struct SectionDetail: View {
                 document: document,
                 defaultEra: SchemaCheck.defaultEra(possibleEras: inspection.value?.summary.possibleEras ?? "")
             )
-        default:
-            ContentUnavailableView {
-                Label {
-                    Text(section.title)
-                } icon: {
-                    Image(systemName: section.systemImage)
-                }
-            } description: {
-                if let phase = section.comingInPhase {
-                    Text("Arrives in phase \(phase) of the build.", bundle: #bundle)
-                }
-            }
         }
     }
 }

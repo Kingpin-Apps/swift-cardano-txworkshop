@@ -65,7 +65,7 @@ extension TransactionComposer {
             case .abstain: .abstain
             }
             do {
-                try builder.addVote(
+                builder.addVote(
                     voter: Voter(credential: voter), govActionId: try govActionID(vote.action), vote: choice,
                     anchor: vote.anchorURL.isEmpty ? nil : try anchor(vote.anchorURL, vote.anchorHash)
                 )
@@ -87,7 +87,7 @@ extension TransactionComposer {
                 throw ComposeError.badGovernance("A proposal needs an anchor: its URL and the Blake2b-256 hash of its content.")
             }
             do {
-                try builder.addProposal(
+                builder.addProposal(
                     deposit: Int(parameters.govActionDeposit), rewardAccount: try rewardAccount(proposal.returnAddress),
                     govAction: action, anchor: proposalAnchor
                 )

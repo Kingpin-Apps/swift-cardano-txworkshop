@@ -30,7 +30,7 @@ public struct TransactionSubmitter: Sendable {
     public func isOnChain(_ id: String, provider: ProviderConfiguration, apiKey: String?) async throws -> Bool {
         guard let input = TransactionValidation.input("\(id)#0") else { throw SubmitError.badID(id) }
         let chain = try await makeContext(provider, apiKey)
-        if let found = try? await chain.utxo(input: input), found != nil { return true }
+        if (try? await chain.utxo(input: input)) != nil { return true }
         return (try? await chain.transactionCBOR(hash: input.transactionId)) != nil
     }
 }
