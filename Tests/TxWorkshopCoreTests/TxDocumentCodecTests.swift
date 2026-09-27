@@ -30,7 +30,8 @@ struct TxDocumentCodecTests {
                 message: "hi"
             ),
             witnesses: [CollectedWitness(label: "Alice", keyHash: "ab", witnessCBOR: "a0", addedAt: Date(timeIntervalSince1970: 1_790_000_100))],
-            validations: [ValidationRecord(ranAt: Date(timeIntervalSince1970: 1_790_000_200), errorCount: 0, warningCount: 2)]
+            validations: [ValidationRecord(ranAt: Date(timeIntervalSince1970: 1_790_000_200), errorCount: 0, warningCount: 2)],
+            submissions: [SubmissionRecord(transactionID: "ab", network: .preprod, provider: "Koios", submittedAt: Date(timeIntervalSince1970: 1_790_000_300))]
         )
     }
 

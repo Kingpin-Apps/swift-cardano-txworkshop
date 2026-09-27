@@ -27,6 +27,8 @@ public struct TxDocumentContent: Sendable, Equatable {
     public var witnesses: [CollectedWitness]
     /// Past validation runs, oldest first.
     public var validations: [ValidationRecord]
+    /// Times the transaction was submitted, and what became of it.
+    public var submissions: [SubmissionRecord]
 
     public init(
         transaction: Data? = nil,
@@ -37,7 +39,8 @@ public struct TxDocumentContent: Sendable, Equatable {
         schema: String? = nil,
         recipe: BuildRecipe? = nil,
         witnesses: [CollectedWitness] = [],
-        validations: [ValidationRecord] = []
+        validations: [ValidationRecord] = [],
+        submissions: [SubmissionRecord] = []
     ) {
         self.transaction = transaction
         self.envelope = envelope
@@ -48,6 +51,7 @@ public struct TxDocumentContent: Sendable, Equatable {
         self.recipe = recipe
         self.witnesses = witnesses
         self.validations = validations
+        self.submissions = submissions
     }
 
     /// Whether the document has no transaction yet.
@@ -197,4 +201,28 @@ public struct ValidationRecord: Codable, Sendable, Equatable, Identifiable {
     }
 
     public var passed: Bool { errorCount == 0 }
+}
+
+/// A submission of the document's transaction to a network.
+public struct SubmissionRecord: Codable, Sendable, Equatable, Identifiable {
+    public var id: UUID
+    public var transactionID: String
+    public var network: CardanoNetwork
+    /// The provider it went through, by name.
+    public var provider: String
+    public var submittedAt: Date
+    /// When it was first seen on chain.
+    public var confirmedAt: Date?
+
+    public init(
+        id: UUID = UUID(), transactionID: String, network: CardanoNetwork, provider: String, submittedAt: Date = .now,
+        confirmedAt: Date? = nil
+    ) {
+        self.id = id
+        self.transactionID = transactionID
+        self.network = network
+        self.provider = provider
+        self.submittedAt = submittedAt
+        self.confirmedAt = confirmedAt
+    }
 }

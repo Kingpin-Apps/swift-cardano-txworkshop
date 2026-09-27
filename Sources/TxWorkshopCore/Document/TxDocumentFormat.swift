@@ -90,6 +90,7 @@ public enum TxDocumentCodec {
         var network: CardanoNetwork?
         var witnesses: [CollectedWitness]
         var validations: [ValidationRecord]
+        var submissions: [SubmissionRecord]?
     }
 
     // MARK: Package
@@ -98,7 +99,8 @@ public enum TxDocumentCodec {
     public static func packageFiles(for content: TxDocumentContent) throws -> [String: Data] {
         let manifest = Manifest(
             version: packageVersion, envelope: content.envelope, notes: content.notes,
-            network: content.network, witnesses: content.witnesses, validations: content.validations
+            network: content.network, witnesses: content.witnesses, validations: content.validations,
+            submissions: content.submissions
         )
         var files = [PackageFile.manifest: try encoder.encode(manifest)]
         if let transaction = content.transaction {
@@ -134,7 +136,8 @@ public enum TxDocumentCodec {
             schema: files[PackageFile.schema].map { String(decoding: $0, as: UTF8.self) },
             recipe: try files[PackageFile.recipe].map { try decoder.decode(BuildRecipe.self, from: $0) },
             witnesses: manifest.witnesses,
-            validations: manifest.validations
+            validations: manifest.validations,
+            submissions: manifest.submissions ?? []
         )
     }
 
