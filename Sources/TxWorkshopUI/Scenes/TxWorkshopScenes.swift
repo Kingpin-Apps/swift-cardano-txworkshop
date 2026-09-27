@@ -22,7 +22,11 @@ public struct TxWorkshopScenes: Scene {
                 .environment(signingKeys)
                 .environment(tracker)
                 .environment(hardwareAccounts)
-                .task { tracker.start() }
+                .task {
+                    WatchLink.shared.activate()
+                    tracker.syncWatch()
+                    tracker.start()
+                }
         } makeDocument: { _, _ in
             TxWorkshopDocument()
         }

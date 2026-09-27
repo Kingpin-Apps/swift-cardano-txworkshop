@@ -75,5 +75,13 @@ final class SubmissionTracker {
         // Keep the last 50.
         tracked = Array(tracked.suffix(50))
         defaults.set(try? JSONEncoder().encode(tracked), forKey: key)
+        syncWatch()
+    }
+
+    /// Shows the tracked submissions on the watch.
+    func syncWatch() {
+        WatchLink.shared.update(submissions: tracked.map {
+            WatchSubmission(id: $0.transactionID, network: $0.provider.network.id, submittedAt: $0.submittedAt, confirmedAt: $0.confirmedAt)
+        })
     }
 }
