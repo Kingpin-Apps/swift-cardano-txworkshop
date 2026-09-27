@@ -55,6 +55,14 @@
 	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Tx Workshop connects to your Ledger over Bluetooth to sign transactions.</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/Kingpin-Apps/tx-workshop-releases/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string></string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

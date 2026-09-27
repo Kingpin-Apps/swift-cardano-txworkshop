@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0447B5973A7972EB6931B25D /* TxWorkshopWatchUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8ACA9B3B5E3EAC6DBC315E8F /* TxWorkshopWatchUI */; };
 		0C21BDF2EBF4F6D4B8D3B198 /* TxWorkshopEngine in Frameworks */ = {isa = PBXBuildFile; productRef = DEFC3E863F7F94B8028847BF /* TxWorkshopEngine */; };
+		0E2E3099EBDC5F7BAF4A4587 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 3B46B1A5C2CF8A9770FB3D81 /* Sparkle */; };
 		16F14469E25849DB43C1C6F8 /* TxWorkshopWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89F0AE91992A293386D2BBF /* TxWorkshopWatchApp.swift */; };
 		19DE7E2B2437C777300C97F2 /* TxWorkshopUI in Frameworks */ = {isa = PBXBuildFile; productRef = 283784CCCCCC5FF527B82D0D /* TxWorkshopUI */; };
 		2DAF3DFE25281AB5786AC371 /* TxWorkshopDirect in Frameworks */ = {isa = PBXBuildFile; productRef = 9099A1D0D21229074F7C96FA /* TxWorkshopDirect */; };
@@ -71,6 +72,7 @@
 				E4E63B86C115FA0B8EB7F5B0 /* TxWorkshopEngine in Frameworks */,
 				19DE7E2B2437C777300C97F2 /* TxWorkshopUI in Frameworks */,
 				2DAF3DFE25281AB5786AC371 /* TxWorkshopDirect in Frameworks */,
+				0E2E3099EBDC5F7BAF4A4587 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,6 +177,7 @@
 				24A2FA7CD389DAAB9865A3D0 /* TxWorkshopEngine */,
 				283784CCCCCC5FF527B82D0D /* TxWorkshopUI */,
 				9099A1D0D21229074F7C96FA /* TxWorkshopDirect */,
+				3B46B1A5C2CF8A9770FB3D81 /* Sparkle */,
 			);
 			productName = TxWorkshopDirect;
 			productReference = 9C504DAD812097C8A52346DF /* TxWorkshopDirect.app */;
@@ -256,6 +259,7 @@
 			mainGroup = 92C0C8049232E3A97A27B90D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				01270BFF698D5D3C88E52DFF /* XCRemoteSwiftPackageReference "Sparkle" */,
 				1D4A975DC123E8A4FF9B5C3B /* XCLocalSwiftPackageReference "." */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -632,6 +636,17 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		01270BFF698D5D3C88E52DFF /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		24A2FA7CD389DAAB9865A3D0 /* TxWorkshopEngine */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -640,6 +655,11 @@
 		283784CCCCCC5FF527B82D0D /* TxWorkshopUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TxWorkshopUI;
+		};
+		3B46B1A5C2CF8A9770FB3D81 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01270BFF698D5D3C88E52DFF /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 		7F4C2104AF1CDC0C07DB644A /* TxWorkshopUI */ = {
 			isa = XCSwiftPackageProductDependency;

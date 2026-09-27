@@ -21,6 +21,10 @@ options:
 packages:
   TxWorkshop:
     path: .
+  # Updates for the Developer ID build only.
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.10.0
 
 settings:
   base:
@@ -136,6 +140,13 @@ targets:
         CFBundleDisplayName: Tx Workshop
         LSApplicationCategoryType: public.app-category.developer-tools
         ITSAppUsesNonExemptEncryption: false
+        NSBluetoothAlwaysUsageDescription: Tx Workshop connects to your Ledger over Bluetooth to sign transactions.
+        # Sparkle: the appcast lives on the public releases repo's latest
+        # release. SUPublicEDKey is filled in by scripts/release-direct.sh
+        # setup (the private key stays in the login Keychain).
+        SUFeedURL: https://github.com/Kingpin-Apps/tx-workshop-releases/releases/latest/download/appcast.xml
+        SUPublicEDKey: ""
+        SUEnableAutomaticChecks: true
     dependencies:
       - package: TxWorkshop
         product: TxWorkshopCore
@@ -145,6 +156,8 @@ targets:
         product: TxWorkshopUI
       - package: TxWorkshop
         product: TxWorkshopDirect
+      - package: Sparkle
+        product: Sparkle
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.txworkshop
