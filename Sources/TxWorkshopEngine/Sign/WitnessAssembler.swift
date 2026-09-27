@@ -95,6 +95,11 @@ public enum WitnessAssembler {
         throw WitnessError.unreadable
     }
 
+    /// A witness's CBOR, hex, as a document keeps it.
+    public static func cborHex(_ witness: VerificationKeyWitness) throws -> String {
+        try witness.toCBORData().hex
+    }
+
     /// The key hash a witness signs for.
     public static func keyHash(_ witness: VerificationKeyWitness) throws -> String {
         let key = witness.vkey.payload.prefix(32)

@@ -5,6 +5,8 @@ import TxWorkshopCore
 /// The app targets wrap this in their `@main` type.
 public struct TxWorkshopScenes: Scene {
     @State private var providers: ProviderSettingsStore
+    @State private var signingKeys = SigningKeyStore()
+    @State private var tracker = SubmissionTracker()
 
     /// - Parameter directDistribution: Whether this is the Developer ID build,
     ///   which may offer providers the App Sandbox rules out.
@@ -16,6 +18,9 @@ public struct TxWorkshopScenes: Scene {
         DocumentGroup { document in
             DocumentShell(document: document)
                 .environment(providers)
+                .environment(signingKeys)
+                .environment(tracker)
+                .task { tracker.start() }
         } makeDocument: { _, _ in
             TxWorkshopDocument()
         }

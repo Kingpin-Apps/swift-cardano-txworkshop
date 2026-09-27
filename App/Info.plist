@@ -61,6 +61,8 @@
 	<string>Tx Workshop connects to your Ledger over Bluetooth to sign transactions.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Tx Workshop scans the animated QR codes a Keystone hardware wallet shows.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Tx Workshop asks for Face ID or Optic ID before signing with a key it keeps.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportsDocumentBrowser</key>

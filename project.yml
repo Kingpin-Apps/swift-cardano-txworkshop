@@ -97,6 +97,7 @@ targets:
         UILaunchScreen: {}
         NSCameraUsageDescription: Tx Workshop scans the animated QR codes a Keystone hardware wallet shows.
         NSBluetoothAlwaysUsageDescription: Tx Workshop connects to your Ledger over Bluetooth to sign transactions.
+        NSFaceIDUsageDescription: Tx Workshop asks for Face ID or Optic ID before signing with a key it keeps.
         ITSAppUsesNonExemptEncryption: false
     dependencies:
       - package: TxWorkshop

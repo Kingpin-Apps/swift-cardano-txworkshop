@@ -70,6 +70,8 @@ struct DocumentShell: View {
 #Preview {
     DocumentShell(document: .preview)
         .environment(ProviderSettingsStore.preview)
+        .environment(SigningKeyStore.inMemory())
+        .environment(SubmissionTracker(defaults: UserDefaults(suiteName: "preview")!))
 }
 
 extension DocumentShell {
