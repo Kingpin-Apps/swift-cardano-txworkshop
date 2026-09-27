@@ -42,7 +42,10 @@ struct HexView: View {
                 }
                 .padding(TWSpacing.s)
             }
+            #if !os(visionOS)
+            // visionOS keeps the window's glass.
             .background(TWColor.surface)
+            #endif
             .onChange(of: selection?.start, initial: true) { _, start in
                 guard let start else { return }
                 withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(start / bytesPerRow, anchor: .center) }

@@ -249,9 +249,6 @@
     "array · ^[%lld item](inflect: true)" : {
 
     },
-    "Arrives in phase %lld of the build." : {
-
-    },
     "As written" : {
 
     },

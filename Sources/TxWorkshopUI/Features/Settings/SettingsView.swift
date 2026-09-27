@@ -2,7 +2,8 @@ import SwiftUI
 import TxWorkshopCore
 
 /// The app's settings: appearance and chain data providers. A Settings
-/// window with tabs on macOS; a sheet elsewhere.
+/// window with tabs on macOS; a sheet elsewhere, which on visionOS is just
+/// the providers.
 public struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -32,13 +33,22 @@ public struct SettingsView: View {
                 }
             }
         }
+        #elseif os(visionOS)
+        // visionOS has no light or dark appearance to choose, so the only
+        // settings are the providers.
+        NavigationStack {
+            ProviderSettingsView(showsDone: false)
+                .twSheetRoot()
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(role: .close) { dismiss() }
+                    }
+                }
+        }
         #else
         NavigationStack {
             Form {
-                #if !os(visionOS)
-                // visionOS has no light or dark appearance to choose.
                 AppearanceSection()
-                #endif
                 Section {
                     NavigationLink {
                         ProviderSettingsView(showsDone: false)
