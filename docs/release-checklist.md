@@ -7,7 +7,7 @@ and `just metadata` for the App Store text.
 ## Signing
 
 - [ ] Set `DEVELOPMENT_TEAM: "G88W6X4TCA"` in `project.yml`, then `just generate`.
-- [ ] Register the App ID `com.kingpinapps.txworkshop` (and `.watchkitapp`) in the Developer
+- [ ] Register the App ID `com.kingpinapps.txworkshop` in the Developer
       portal with Keychain Sharing, Bluetooth and the hardened-process capabilities.
 - [ ] Have a Developer ID Application certificate in the login Keychain.
 

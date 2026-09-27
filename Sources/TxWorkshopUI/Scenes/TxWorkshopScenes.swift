@@ -23,8 +23,6 @@ public struct TxWorkshopScenes: Scene {
                 .environment(tracker)
                 .environment(hardwareAccounts)
                 .task {
-                    WatchLink.shared.activate()
-                    tracker.syncWatch()
                     tracker.start()
                 }
         } makeDocument: { _, _ in

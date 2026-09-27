@@ -23,8 +23,7 @@ Security build settings decisions for Cardano Tx Workshop. Settings live in `pro
 
 ## Disabled settings
 
-- `ENABLE_POINTER_AUTHENTICATION` to `NO` on `TxWorkshop`, `TxWorkshopDirect` and
-  `TxWorkshopWatch`: the stack links libsodium (swift-nacl `Clibsodium.xcframework`) and BLST
+- `ENABLE_POINTER_AUTHENTICATION` to `NO` on `TxWorkshop` and `TxWorkshopDirect`: the stack links libsodium (swift-nacl `Clibsodium.xcframework`) and BLST
   (swift-blst `CBlst.xcframework`) as prebuilt binaries with no `arm64e` slice, so an `arm64e`
   build cannot link. Lift this once both frameworks ship `arm64e`.
 - `ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE` to `NO` on the same targets: the
@@ -37,6 +36,5 @@ Security build settings decisions for Cardano Tx Workshop. Settings live in `pro
   needs the `arm64e.x1` slice, so it waits on pointer authentication.
 - Hardware memory tagging enforcement (turning soft mode off): after the simulated crash
   reports from soft mode have been reviewed on supported hardware.
-- The watch companion: Enhanced Security does not cover watchOS apps.
 - Compiler, static analyzer and clang-tidy warning groups: they apply to C-family code, and
   the app is Swift only. Revisit if C, C++ or Objective-C is added.

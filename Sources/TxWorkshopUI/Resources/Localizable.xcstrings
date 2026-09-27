@@ -218,16 +218,10 @@
     "Apply" : {
 
     },
-    "Approved on Apple Watch %@" : {
-
-    },
     "Arrives in phase %lld of the build." : {
 
     },
     "As written" : {
-
-    },
-    "Ask Apple Watch to Review" : {
 
     },
     "Asks %@ for the outputs the inputs spend, and the %@ token registry for asset names. What it finds is saved in the document." : {
@@ -407,9 +401,6 @@
 
     },
     "Datums" : {
-
-    },
-    "Declined on Apple Watch %@" : {
 
     },
     "Decodes as one CBOR item of ^[%lld byte](inflect: true)." : {
@@ -1360,9 +1351,6 @@
     "Show in CBOR" : {
 
     },
-    "Shows the transaction on your Apple Watch to approve before you sign here." : {
-
-    },
     "Sign" : {
 
     },
@@ -1707,9 +1695,6 @@
 
     },
     "Votes" : {
-
-    },
-    "Waiting for the watch" : {
 
     },
     "Warning" : {

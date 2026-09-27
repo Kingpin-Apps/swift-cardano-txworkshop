@@ -3,15 +3,14 @@ import PackageDescription
 
 // Cardano Tx Workshop — inspect, validate, build, sign and submit Cardano transactions.
 //
-//   • TxWorkshopCore    — platform-neutral and watch-safe: the document format, models, provider
+//   • TxWorkshopCore    — platform-neutral: the document format, models, provider
 //                         settings, design system. Depends on swift-cardano-core only.
 //   • TxWorkshopEngine  — decoding, inspection, validation and chain providers over the
-//                         swift-cardano-* stack. Not on watchOS (its chain clients are not).
+//                         swift-cardano-* stack.
 //   • TxWorkshopUI      — the SwiftUI app: document scene, adaptive shell, features.
-//   • TxWorkshopWatchUI — the watchOS companion.
 //   • TxWorkshopDirect  — what only the Developer ID build may do: a local node, cardano-cli.
 //
-// The installable apps are XcodeGen targets under App/, AppDirect/ and AppWatch/ (project.yml).
+// The installable apps are XcodeGen targets under App/ and AppDirect/ (project.yml).
 let package = Package(
     name: "TxWorkshop",
     defaultLocalization: "en",
@@ -19,13 +18,11 @@ let package = Package(
         .macOS(.v27),
         .iOS(.v27),
         .visionOS(.v27),
-        .watchOS(.v27),
     ],
     products: [
         .library(name: "TxWorkshopCore", targets: ["TxWorkshopCore"]),
         .library(name: "TxWorkshopEngine", targets: ["TxWorkshopEngine"]),
         .library(name: "TxWorkshopUI", targets: ["TxWorkshopUI"]),
-        .library(name: "TxWorkshopWatchUI", targets: ["TxWorkshopWatchUI"]),
         .library(name: "TxWorkshopDirect", targets: ["TxWorkshopDirect"]),
     ],
     dependencies: [
@@ -79,11 +76,6 @@ let package = Package(
                 .product(name: "CardanoHWKit", package: "swift-cardano-hw-wallet"),
                 .product(name: "CardanoHWWalletKeystone", package: "swift-cardano-hw-wallet", condition: .when(platforms: [.iOS])),
             ],
-            resources: [.process("Resources")]
-        ),
-        .target(
-            name: "TxWorkshopWatchUI",
-            dependencies: ["TxWorkshopCore"],
             resources: [.process("Resources")]
         ),
         .target(

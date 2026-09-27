@@ -24,7 +24,6 @@ SIGN AND SUBMIT
 • Sign with keys from a recovery phrase, kept in the Keychain behind Face ID or Touch ID
 • Sign with a Ledger, Trezor or Keystone hardware wallet
 • Submit through Blockfrost, Koios, Ogmios or Yaci DevKit, and track confirmation
-• Review and approve on Apple Watch
 
 Your documents stay on your device. API keys and signing keys stay in the Keychain and are never written to a document.
 

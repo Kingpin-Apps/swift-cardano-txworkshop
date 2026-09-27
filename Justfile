@@ -18,9 +18,8 @@ build-apps:
     {{xcodebuild}} -scheme TxWorkshopDirect -destination "generic/platform=macOS" build
     {{xcodebuild}} -scheme TxWorkshop -destination "generic/platform=iOS Simulator" build
     {{xcodebuild}} -scheme TxWorkshop -destination "generic/platform=visionOS Simulator" build
-    {{xcodebuild}} -scheme TxWorkshopWatch -destination "generic/platform=watchOS Simulator" build
 
-# Fill the String Catalogs from the source (builds macOS, iOS and watchOS)
+# Fill the String Catalogs from the source (builds macOS and iOS)
 strings:
     scripts/sync-strings.sh
 

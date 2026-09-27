@@ -40,9 +40,6 @@ struct SignView: View {
                     HardwareSection(
                         document: document, missing: Set(needed.signers.filter { !$0.isSigned }.map(\.keyHash)), knownUTxOs: knownUTxOs
                     )
-                    #if os(iOS)
-                    WatchReviewSection(document: document)
-                    #endif
                     WitnessesSection(document: document, onImport: { isImporting = true })
                     SubmitSection(document: document, isComplete: needed.isComplete)
                 }

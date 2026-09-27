@@ -6,7 +6,6 @@
 #   • TxWorkshop        — iOS, iPadOS, macOS (App Store, sandboxed) and visionOS.
 #   • TxWorkshopDirect  — macOS, Developer ID: outside the sandbox, built with
 #                         DIRECT_DISTRIBUTION and linking TxWorkshopDirect.
-#   • TxWorkshopWatch   — the watchOS companion, embedded in the iOS app.
 name: TxWorkshop
 options:
   bundleIdPrefix: com.kingpinapps
@@ -14,7 +13,6 @@ options:
     iOS: "27.0"
     macOS: "27.0"
     visionOS: "27.0"
-    watchOS: "27.0"
   createIntermediateGroups: true
   localPackagesGroup: Packages
 
@@ -110,8 +108,6 @@ targets:
         product: TxWorkshopEngine
       - package: TxWorkshop
         product: TxWorkshopUI
-      - target: TxWorkshopWatch
-        destinationFilters: [iOS]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.txworkshop
@@ -172,31 +168,6 @@ targets:
         ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE: NO
         CODE_SIGN_ENTITLEMENTS: AppDirect/TxWorkshopDirect.entitlements
 
-  TxWorkshopWatch:
-    type: application
-    platform: watchOS
-    sources:
-      - AppWatch
-    info:
-      path: AppWatch/Info.plist
-      properties:
-        CFBundleDisplayName: Tx Workshop
-        WKApplication: true
-        WKCompanionAppBundleIdentifier: com.kingpinapps.txworkshop
-        WKRunsIndependentlyOfCompanionApp: false
-    dependencies:
-      - package: TxWorkshop
-        product: TxWorkshopCore
-      - package: TxWorkshop
-        product: TxWorkshopWatchUI
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.txworkshop.watchkitapp
-        PRODUCT_NAME: Tx Workshop
-        # libsodium and BLST ship as prebuilt binaries with no arm64e slice,
-        # so pointer authentication (and the arm64e.x1 slice) must stay off.
-        ENABLE_POINTER_AUTHENTICATION: NO
-        ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE: NO
 
 schemes:
   TxWorkshop:
@@ -209,7 +180,3 @@ schemes:
     build:
       targets:
         TxWorkshopDirect: all
-  TxWorkshopWatch:
-    build:
-      targets:
-        TxWorkshopWatch: all

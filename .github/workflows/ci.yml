@@ -27,7 +27,6 @@ jobs:
           - { scheme: TxWorkshopDirect, platform: macOS }
           - { scheme: TxWorkshop, platform: iOS Simulator }
           - { scheme: TxWorkshop, platform: visionOS Simulator }
-          - { scheme: TxWorkshopWatch, platform: watchOS Simulator }
     steps:
       - uses: actions/checkout@v7
       - name: Select Xcode 27

@@ -1,7 +1,7 @@
 # Cardano Tx Workshop
 
 A native app for Cardano transactions: inspect, validate, build, sign, submit and track them.
-Runs on macOS, iPadOS, iOS and visionOS, with a watchOS companion. Open source under
+Runs on macOS, iPadOS, iOS and visionOS. Open source under
 Apache-2.0.
 
 It works on documents. A `.txworkshop` document holds one transaction as it was written, the
@@ -16,20 +16,19 @@ validation history. The app also opens bare transactions: cardano-cli text envel
 ## Requirements
 
 - Xcode 27 (Swift 6.4)
-- macOS, iOS, iPadOS, visionOS or watchOS 27
+- macOS, iOS, iPadOS or visionOS 27
 
 ## Layout
 
 | Module | What it holds |
 |---|---|
-| `TxWorkshopCore` | The document format, models, provider settings and design system. Watch-safe. |
+| `TxWorkshopCore` | The document format, models, provider settings and design system. |
 | `TxWorkshopEngine` | Decoding, inspection, validation and chain providers over the swift-cardano stack. |
 | `TxWorkshopUI` | The SwiftUI app: document scene, shell and features. |
-| `TxWorkshopWatchUI` | The watchOS companion. |
 | `TxWorkshopDirect` | What only the Developer ID build may do: a local node, cardano-cli. |
 
 The apps are XcodeGen targets (`project.yml`): `TxWorkshop` for the App Store on every platform,
-`TxWorkshopDirect` for the notarised Developer ID Mac build, and `TxWorkshopWatch`.
+`TxWorkshopDirect` for the notarised Developer ID Mac build.
 
 ## Building
 

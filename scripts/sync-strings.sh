@@ -26,6 +26,4 @@ for destination in "platform=macOS" "generic/platform=iOS Simulator"; do
   sync TxWorkshopUI
   rm -rf "$DD"/Build
 done
-build TxWorkshopWatch "generic/platform=watchOS Simulator"
-sync TxWorkshopWatchUI
 echo "String Catalogs synced."

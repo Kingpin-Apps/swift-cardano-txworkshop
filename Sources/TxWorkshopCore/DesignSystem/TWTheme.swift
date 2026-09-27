@@ -59,17 +59,13 @@ public struct TWErrorText: View {
     }
 
     public var body: some View {
-        let label = Label {
+        Label {
             Text(verbatim: message)
         } icon: {
             Image(systemName: "exclamationmark.triangle")
         }
         .labelStyle(.status(TWColor.failure))
-        #if os(watchOS)
-        label
-        #else
-        label.textSelection(.enabled)
-        #endif
+        .textSelection(.enabled)
     }
 }
 
@@ -90,11 +86,7 @@ public struct TWBytesText: View {
             .font(font)
             .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
             .truncationMode(.middle)
-        #if os(watchOS)
-        text
-        #else
         text.textSelection(.enabled)
-        #endif
     }
 }
 
