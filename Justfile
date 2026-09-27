@@ -31,3 +31,11 @@ changelog:
 # Bump the version from the commits since the last tag
 bump: changelog
     cz bump
+
+# Build, notarise and package the Developer ID Mac build (add --publish to release it)
+release-direct *args:
+    scripts/release-direct.sh {{args}}
+
+# Upload the App Store text for every platform (source ~/.secrets.zsh first)
+metadata:
+    LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 fastlane upload_metadata_all

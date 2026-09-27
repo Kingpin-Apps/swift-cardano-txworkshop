@@ -1,0 +1,3 @@
+# Xcode Cloud ships the binary; deliver only manages the App Store text.
+app_identifier("com.kingpinapps.txworkshop")
+skip_binary_upload(true)

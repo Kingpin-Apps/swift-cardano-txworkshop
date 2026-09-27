@@ -1,0 +1,1 @@
+Open any Cardano transaction and see exactly what it does — then fix it, sign it and send it.

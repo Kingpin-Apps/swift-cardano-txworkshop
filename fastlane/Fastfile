@@ -1,0 +1,73 @@
+default_platform(:ios)
+
+# Fastlane here does only App Store metadata. Xcode Cloud builds, signs, tests and ships to
+# TestFlight; the Developer ID Mac build ships with scripts/release-direct.sh. Do not add gym,
+# match or pilot lanes.
+#
+# Before running: `source ~/.secrets.zsh` for the App Store Connect API key, and
+# `export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8` (the description has em dashes). Each platform
+# needs an editable version in App Store Connect first.
+
+platform :ios do
+  desc "Upload iPhone and iPad metadata"
+  lane :upload_metadata do
+    deliver_metadata(platform: "ios")
+  end
+
+  desc "Upload Mac metadata"
+  lane :upload_metadata_macos do
+    deliver_metadata(platform: "osx")
+  end
+
+  desc "Upload Apple Vision Pro metadata"
+  lane :upload_metadata_visionos do
+    deliver_metadata(platform: "xros")
+  end
+
+  desc "Upload metadata for every store platform"
+  lane :upload_metadata_all do
+    upload_metadata
+    upload_metadata_macos
+    upload_metadata_visionos
+  end
+
+  desc "Check the metadata for common App Review problems"
+  lane :check do
+    precheck
+  end
+
+  # deliver uploads one platform per run; the text in ./fastlane/metadata is shared.
+  def deliver_metadata(platform:)
+    deliver(
+      api_key: app_store_connect_api_key_if_present,
+      platform: platform,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      force: true,
+      run_precheck_before_submit: false,
+      precheck_include_in_app_purchases: false,
+      app_review_information: {
+        first_name: "Hareem",
+        last_name: "Adderley",
+        phone_number: "REDACTED",
+        email_address: "hadderley@kingpinapps.com",
+        notes: "Tx Workshop is a developer tool for Cardano transactions. It holds no funds and " \
+               "moves none on its own: it reads, validates and builds transactions, and signs one " \
+               "only when the person adds a key or connects a hardware wallet and confirms. Paste any " \
+               "transaction hex into a new document to try it offline; no account is needed. " \
+               "Sample transactions can be supplied on request."
+      }
+    )
+  end
+
+  # An App Store Connect API key (.p8) from the environment, when set; otherwise the
+  # interactive Apple ID login.
+  def app_store_connect_api_key_if_present
+    key_id = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"]
+    issuer_id = ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"]
+    key_content = ENV["APP_STORE_CONNECT_API_KEY_KEY"]
+    return nil unless key_id && issuer_id && key_content
+
+    app_store_connect_api_key(key_id: key_id, issuer_id: issuer_id, key_content: key_content, in_house: false)
+  end
+end

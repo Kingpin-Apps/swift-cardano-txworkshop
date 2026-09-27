@@ -1,0 +1,1 @@
+cardano,transaction,cbor,cddl,plutus,ledger,trezor,keystone,blockchain,developer

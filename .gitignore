@@ -15,3 +15,4 @@ fastlane/test_output/
 *.p8
 *.env
 secrets/
+/build/

@@ -1,0 +1,31 @@
+Cardano Tx Workshop is a workbench for Cardano transactions. Open one, see exactly what it does, check it against the ledger's rules, change it, sign it and send it.
+
+INSPECT
+• Inputs, outputs, assets, mints, certificates, votes and proposals, laid out plainly
+• Token names from the transaction's own metadata and the Cardano token registry
+• Scripts as readable UPLC, redeemers and datums as trees, metadata with CIP labels
+• Compare two transactions, and export as JSON, Markdown or a PDF report
+
+CBOR AND CDDL
+• A CBOR explorer that ties every item to its bytes, names each field and flags non-canonical encoding
+• Edit bytes in place, with undo
+• Check any item against the ledger's CDDL for its era, or against a schema you write
+
+VALIDATE
+• The ledger's Phase 1 rules and Plutus script evaluation, offline, from saved chain data
+• Budgets per redeemer, a step-by-step script trace, and what-if runs with changed data
+• Validate a whole folder of transactions at once
+
+BUILD
+• Build a transaction from outputs, mints, script inputs, certificates, withdrawals, votes and proposals
+• Fees, collateral and script budgets worked out for you
+
+SIGN AND SUBMIT
+• Sign with keys from a recovery phrase, kept in the Keychain behind Face ID or Touch ID
+• Sign with a Ledger, Trezor or Keystone hardware wallet
+• Submit through Blockfrost, Koios, Ogmios or Yaci DevKit, and track confirmation
+• Review and approve on Apple Watch
+
+Your documents stay on your device. API keys and signing keys stay in the Keychain and are never written to a document.
+
+Open source under the Apache 2.0 license.
