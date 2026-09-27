@@ -1,4 +1,5 @@
 import Foundation
+import SwiftCardanoChain
 import SwiftCardanoCore
 import Testing
 import TxWorkshopCore
@@ -110,5 +111,48 @@ struct SigningTests {
         let envelope = try payment.toTextEnvelope() ?? ""
         let ring = try KeyRing(.envelope(json: envelope))
         #expect(ring.keyHashes == [wallet.keyHash])
+    }
+}
+
+@Suite("Submitting")
+struct SubmittingTests {
+    /// A chain that accepts what is submitted and then knows it.
+    final class Chain: @unchecked Sendable {
+        var submitted: Data?
+    }
+
+    struct Context: ChainContext {
+        let chain: Chain
+        var name: String { "stub" }
+        var type: ContextType { .online }
+        var networkId: NetworkId { .testnet }
+        func submitTxCBOR(cbor: Data) async throws -> String {
+            chain.submitted = cbor
+            return "\"" + (try Transaction.fromCBOR(data: cbor).id?.payload.hex ?? "") + "\""
+        }
+        func utxo(input: TransactionInput) async throws -> (UTxO, isSpent: Bool)? {
+            guard let bytes = chain.submitted, let transaction = try? Transaction.fromCBOR(data: bytes),
+                transaction.id == input.transactionId
+            else { return nil }
+            return (UTxO(input: input, output: transaction.transactionBody.outputs[0]), false)
+        }
+        func protocolParameters() async throws -> ProtocolParameters { throw CardanoChainError.notImplemented(nil) }
+        func genesisParameters() async throws -> GenesisParameters { throw CardanoChainError.notImplemented(nil) }
+        func epoch() async throws -> Int { 0 }
+        func era() async throws -> Era? { nil }
+        func lastBlockSlot() async throws -> Int { 0 }
+    }
+
+    @Test("A submitted transaction is reported by id, then found on chain")
+    func submitAndConfirm() async throws {
+        let chain = Chain()
+        let submitter = TransactionSubmitter { _, _ in Context(chain: chain) }
+        let provider = ProviderConfiguration(name: "stub", kind: .koios, network: .preprod)
+        let bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let id = try await TransactionInspector().inspect(bytes).id
+        #expect(try await !submitter.isOnChain(id, provider: provider, apiKey: nil))
+        #expect(try await submitter.submit(bytes, provider: provider, apiKey: nil) == id)
+        #expect(chain.submitted == bytes)
+        #expect(try await submitter.isOnChain(id, provider: provider, apiKey: nil))
     }
 }
