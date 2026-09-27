@@ -36,7 +36,10 @@ let package = Package(
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-uplc.git", from: "0.7.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txbuilder.git", from: "1.1.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-token-registry.git", from: "0.2.1"),
-        .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.0"),
+        // swift-cardano-hw-wallet's Keystone SDK brings a target named `SortedCollections`, as
+        // swift-collections does from 1.2: two same-named targets are an SPM error, so hold 1.1.x.
+        .package(url: "https://github.com/apple/swift-collections.git", "1.1.0" ..< "1.2.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-hw-wallet.git", from: "0.2.0"),
         .package(url: "https://github.com/Kingpin-Apps/swift-nacl.git", .upToNextMinor(from: "1.0.2")),
     ],
     targets: [
@@ -60,6 +63,10 @@ let package = Package(
                 .product(name: "SwiftCardanoTokenRegistryClient", package: "swift-cardano-token-registry"),
                 .product(name: "SwiftCardanoTxBuilder", package: "swift-cardano-txbuilder"),
                 .product(name: "OrderedCollections", package: "swift-collections"),
+                .product(name: "CardanoHWKit", package: "swift-cardano-hw-wallet"),
+                .product(name: "CardanoHWWalletLedger", package: "swift-cardano-hw-wallet"),
+                .product(name: "CardanoHWWalletTrezor", package: "swift-cardano-hw-wallet"),
+                .product(name: "CardanoHWWalletKeystone", package: "swift-cardano-hw-wallet"),
                 .product(name: "SwiftNaCl", package: "swift-nacl"),
             ]
         ),
