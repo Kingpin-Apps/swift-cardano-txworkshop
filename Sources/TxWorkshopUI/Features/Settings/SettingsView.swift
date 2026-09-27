@@ -35,7 +35,10 @@ public struct SettingsView: View {
         #else
         NavigationStack {
             Form {
+                #if !os(visionOS)
+                // visionOS has no light or dark appearance to choose.
                 AppearanceSection()
+                #endif
                 Section {
                     NavigationLink {
                         ProviderSettingsView(showsDone: false)

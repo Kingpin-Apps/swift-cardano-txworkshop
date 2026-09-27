@@ -85,16 +85,19 @@ extension View {
         navigationBarBackButtonHidden()
     }
 
-    /// Puts a screen's lists and forms on the Workbench background, as the
-    /// navigation container's background so large titles still track the
-    /// scroll view.
+    /// Puts a screen's lists and forms on the Workbench background. On iOS
+    /// it is the navigation container's background, so titles still track
+    /// the scroll view; visionOS keeps its glass.
     public func twScreenBackground() -> some View {
         #if os(macOS)
         scrollContentBackground(.hidden)
             .background(TWColor.background)
-        #else
+        #elseif os(iOS)
         scrollContentBackground(.hidden)
             .containerBackground(TWColor.background, for: .navigation)
+        #else
+        // visionOS windows are glass; an opaque background would hide it.
+        self
         #endif
     }
 }
