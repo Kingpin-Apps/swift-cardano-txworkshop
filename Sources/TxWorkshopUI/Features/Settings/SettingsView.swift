@@ -51,13 +51,10 @@ public struct SettingsView: View {
             .formStyle(.grouped)
             .twScreenBackground()
             .navigationTitle(Text("Settings", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Done", bundle: #bundle)
-                    }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(role: .close) { dismiss() }
                 }
             }
         }

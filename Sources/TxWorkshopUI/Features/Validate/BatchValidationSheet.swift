@@ -55,6 +55,7 @@ struct BatchValidationSheet: View {
                 }
             }
             .navigationTitle(Text("Batch Validation", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem {
                     Button {

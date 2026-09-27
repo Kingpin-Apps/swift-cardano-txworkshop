@@ -37,7 +37,9 @@ struct CBORExplorerView: View {
             }
             if exploration.value == nil { exploration = .loading }
             let explored = await CBORExploration.explore(bytes)
-            guard !Task.isCancelled else { return }
+            // Keep the result unless the document has changed since; on
+            // iPhone the push can cancel this task without starting another.
+            guard explored.bytes == document.content.transaction else { return }
             exploration = .loaded(explored)
         }
     }

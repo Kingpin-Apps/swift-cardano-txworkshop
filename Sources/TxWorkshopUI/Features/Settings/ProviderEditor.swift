@@ -83,6 +83,7 @@ struct ProviderEditor: View {
         }
         .formStyle(.grouped)
         .navigationTitle(isNew ? Text("New Provider", bundle: #bundle) : Text(verbatim: draft.name))
+        .twSheetRoot()
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(role: .cancel) { dismiss() } label: { Text("Cancel", bundle: #bundle) }

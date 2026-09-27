@@ -36,6 +36,7 @@ struct ScriptTraceSheet: View {
                 }
             }
             .navigationTitle(Text("Script Trace", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button { dismiss() } label: { Text("Done", bundle: #bundle) }

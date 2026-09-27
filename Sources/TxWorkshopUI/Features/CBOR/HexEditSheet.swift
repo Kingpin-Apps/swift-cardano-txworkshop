@@ -67,6 +67,7 @@ struct HexEditSheet: View {
             }
             .formStyle(.grouped)
             .navigationTitle(Text("Edit Bytes", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { dismiss() } label: { Text("Cancel", bundle: #bundle) }

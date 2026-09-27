@@ -165,6 +165,7 @@ struct ImportHardwareAccountSheet: View {
             }
             .formStyle(.grouped)
             .navigationTitle(Text("Import Hardware Account", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { dismiss() } label: { Text("Cancel", bundle: #bundle) }

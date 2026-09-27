@@ -58,6 +58,7 @@ struct CompareSheet: View {
             }
             .formStyle(.grouped)
             .navigationTitle(Text("Compare", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {

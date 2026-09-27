@@ -67,6 +67,7 @@ struct ImportWitnessSheet: View {
             }
             .formStyle(.grouped)
             .navigationTitle(Text("Add Witness", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { dismiss() } label: { Text("Cancel", bundle: #bundle) }

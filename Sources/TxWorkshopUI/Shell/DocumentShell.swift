@@ -9,6 +9,7 @@ struct DocumentShell: View {
     @State private var session = WorkshopSession()
     @State private var showsSettings = false
     @State private var inspection: LoadState<TransactionInspection> = .idle
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
         @Bindable var session = session
@@ -31,6 +32,9 @@ struct DocumentShell: View {
             }
             .navigationTitle(Text("Tx Workshop", bundle: #bundle))
             .navigationSplitViewColumnWidth(min: 200, ideal: 230)
+            // On iPhone the sidebar is a full page; elsewhere it keeps the
+            // system's sidebar material.
+            .modifier(CompactScreenBackground(isCompact: sizeClass == .compact))
             #if !os(macOS)
             .toolbar {
                 ToolbarItem {
@@ -50,11 +54,7 @@ struct DocumentShell: View {
             SectionDetail(section: session.selection ?? .overview, document: document, inspection: inspection)
         }
         .environment(session)
-        .task(id: InspectionKey(
-            transaction: document.content.transaction,
-            network: document.content.network,
-            chainContext: document.content.chainContext
-        )) {
+        .task(id: currentKey) {
             await inspect()
         }
         #if !os(macOS)
@@ -82,6 +82,14 @@ extension DocumentShell {
         let chainContext: ChainContextSnapshot?
     }
 
+    private var currentKey: InspectionKey {
+        InspectionKey(
+            transaction: document.content.transaction,
+            network: document.content.network,
+            chainContext: document.content.chainContext
+        )
+    }
+
     /// Decodes and inspects the document's transaction once, for every section.
     private func inspect() async {
         guard let transaction = document.content.transaction else {
@@ -91,17 +99,32 @@ extension DocumentShell {
         // Keep showing the last inspection while chain data or the network
         // changes; it is replaced in place.
         if case .loaded = inspection {} else { inspection = .loading }
+        let key = currentKey
         do {
             let result = try await TransactionInspector().inspection(
                 of: transaction, network: document.content.network, chainContext: document.content.chainContext
             )
-            // A newer inspection has started; this one is stale.
-            guard !Task.isCancelled else { return }
+            // Stale if the document changed meanwhile. Cancellation alone is
+            // not enough: a cancelled task is not always restarted.
+            guard currentKey == key else { return }
             inspection = .loaded(result)
         } catch is CancellationError {
         } catch {
-            guard !Task.isCancelled else { return }
+            guard currentKey == key else { return }
             inspection = .failed(String(describing: error))
+        }
+    }
+}
+
+/// The Workbench background, only when the view fills the screen.
+private struct CompactScreenBackground: ViewModifier {
+    let isCompact: Bool
+
+    func body(content: Content) -> some View {
+        if isCompact {
+            content.twScreenBackground()
+        } else {
+            content
         }
     }
 }

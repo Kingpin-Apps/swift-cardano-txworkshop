@@ -73,10 +73,13 @@ struct CDDLWorkspaceView: View {
                 try? await Task.sleep(for: .milliseconds(400))
                 guard !Task.isCancelled else { return }
             }
+            let key = ParseKey(source: source, text: text)
             let bundledEra: String? = if case .era(let era) = source { era } else { nil }
             if parsed.value == nil { parsed = .loading }
             let result = await CDDLSource.parse(text, bundledEra: bundledEra)
-            guard !Task.isCancelled else { return }
+            // Keep the result unless the schema changed meanwhile; a cancelled
+            // task is not always restarted (as on iPhone).
+            guard ParseKey(source: source, text: text) == key else { return }
             parsed = .loaded(result)
         }
     }

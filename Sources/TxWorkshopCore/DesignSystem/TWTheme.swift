@@ -79,10 +79,23 @@ extension View {
         modifier(TWWindowStyle())
     }
 
-    /// Puts a screen's lists and forms on the Workbench background.
+    /// For the root of a sheet's navigation stack: on iPhone and iPad the
+    /// document window's back-to-browser button otherwise shows in the sheet.
+    public func twSheetRoot() -> some View {
+        navigationBarBackButtonHidden()
+    }
+
+    /// Puts a screen's lists and forms on the Workbench background, as the
+    /// navigation container's background so large titles still track the
+    /// scroll view.
     public func twScreenBackground() -> some View {
+        #if os(macOS)
         scrollContentBackground(.hidden)
             .background(TWColor.background)
+        #else
+        scrollContentBackground(.hidden)
+            .containerBackground(TWColor.background, for: .navigation)
+        #endif
     }
 }
 

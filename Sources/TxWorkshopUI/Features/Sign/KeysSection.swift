@@ -101,6 +101,7 @@ struct AddKeySheet: View {
             }
             .formStyle(.grouped)
             .navigationTitle(Text("Add Signing Key", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { dismiss() } label: { Text("Cancel", bundle: #bundle) }

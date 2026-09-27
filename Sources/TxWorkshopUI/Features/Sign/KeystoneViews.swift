@@ -98,6 +98,7 @@ struct KeystoneSignSheet: View {
                 .padding(TWSpacing.l)
             }
             .navigationTitle(Text("Sign with Keystone", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { dismiss() } label: { Text("Cancel", bundle: #bundle) }

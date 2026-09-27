@@ -72,6 +72,7 @@ struct ManualChainDataSheet: View {
             }
             .formStyle(.grouped)
             .navigationTitle(Text("Chain Data", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { dismiss() } label: { Text("Cancel", bundle: #bundle) }

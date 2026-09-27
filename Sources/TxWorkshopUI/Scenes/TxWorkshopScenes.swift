@@ -1,7 +1,8 @@
 import SwiftUI
 import TxWorkshopCore
 
-/// The app's scenes: a document group, plus a Settings window on macOS.
+/// The app's scenes: a launch screen on iPhone, iPad and visionOS, a
+/// document group, and a Settings window on macOS.
 /// The app targets wrap this in their `@main` type.
 public struct TxWorkshopScenes: Scene {
     @State private var providers: ProviderSettingsStore
@@ -16,6 +17,17 @@ public struct TxWorkshopScenes: Scene {
     }
 
     public var body: some Scene {
+        #if os(iOS) || os(visionOS)
+        DocumentGroupLaunchScene(LocalizedStringResource("Tx Workshop", bundle: #bundle)) {
+            NewDocumentButton(LocalizedStringResource("New Transaction", bundle: #bundle))
+        } background: {
+            // Also applies the chosen appearance before any document opens.
+            TWColor.background
+                .ignoresSafeArea()
+                .twWindowStyle()
+        }
+        #endif
+
         DocumentGroup { document in
             DocumentShell(document: document)
                 .environment(providers)

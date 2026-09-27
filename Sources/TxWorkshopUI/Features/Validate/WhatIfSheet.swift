@@ -67,6 +67,7 @@ struct WhatIfSheet: View {
             }
             .formStyle(.grouped)
             .navigationTitle(Text("What If", bundle: #bundle))
+            .twSheetRoot()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button { dismiss() } label: { Text("Done", bundle: #bundle) }

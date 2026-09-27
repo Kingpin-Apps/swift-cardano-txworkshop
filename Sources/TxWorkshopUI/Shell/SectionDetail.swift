@@ -10,6 +10,11 @@ struct SectionDetail: View {
     var body: some View {
         content
             .twScreenBackground()
+            #if os(iOS)
+            // A document's sections are pages of one window, not places to
+            // arrive at: small titles, as in other document apps.
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
     }
 
     @ViewBuilder private var content: some View {
