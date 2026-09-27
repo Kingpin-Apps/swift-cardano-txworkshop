@@ -49,6 +49,11 @@ struct HardwareSigningTests {
         #expect(request.spentUTxOs.map { InputResolver.id($0.input) } == [InputResolver.id(utxo.input)])
         #expect(request.certificates.isEmpty)
         #expect(request.unsigned.id?.payload.hex == built.id)
+        // txbuilder writes its sets with tag 258, as Conway transactions on
+        // chain usually do; Alonzo ones do not.
+        #expect(HardwareSigning.usesTaggedSets(built.transaction))
+        #expect(HardwareSigning.usesTaggedSets(try TransactionInspectionTests.bytes("conway-tx")))
+        #expect(!HardwareSigning.usesTaggedSets(try TransactionInspectionTests.bytes("alonzo-plutus-v1")))
 
         // A stranger's address has no path on this account.
         let stranger = try SigningTests.testWallet().address

@@ -3,6 +3,7 @@ import CardanoHWWalletLedger
 import CardanoHWWalletTrezor
 import Foundation
 import SwiftCardanoCore
+import SwiftCDDL
 import TxWorkshopCore
 
 /// A hardware wallet connection the app can sign through.
@@ -49,7 +50,25 @@ public struct HardwareSigning: Sendable {
 
     public static func networkID(_ network: CardanoNetwork) -> NetworkId { network == .mainnet ? .mainnet : .testnet }
 
-    static func signer(_ connection: HardwareConnection, network: CardanoNetwork, account: HardwareAccountModel?) throws -> any HardwareSigner {
+    /// Whether the body writes its sets (inputs first) with tag 258. A
+    /// device rebuilds the body from its fields and must be told, or it
+    /// hashes, and signs, different bytes.
+    public static func usesTaggedSets(_ bytes: Data) -> Bool {
+        let raw = [UInt8](bytes)
+        let decoding = CBORNode.decodeAnnotated(raw)
+        guard let body = decoding.root?.children.first, case .map? = body.node else { return false }
+        for index in stride(from: 0, to: body.children.count - 1, by: 2) {
+            if case .unsigned(0)? = body.children[index].node {
+                let value = body.children[index + 1].span.start
+                return value + 2 < raw.count && raw[value] == 0xd9 && raw[value + 1] == 0x01 && raw[value + 2] == 0x02
+            }
+        }
+        return false
+    }
+
+    static func signer(
+        _ connection: HardwareConnection, network: CardanoNetwork, account: HardwareAccountModel?, taggedSets: Bool = false
+    ) throws -> any HardwareSigner {
         let id: UInt8 = network == .mainnet ? 1 : 0
         switch connection {
         case .ledgerUSB:
@@ -58,6 +77,7 @@ public struct HardwareSigning: Sendable {
             try transport.open()
             return LedgerSignSession(
                 transport: transport, network: LedgerNetwork(networkId: id, protocolMagic: magic(network)),
+                options: LedgerSigningOptions(tagCborSets: taggedSets),
                 derivation: try account.map(PublicHDDerivation.init(account:))
             )
             #else
@@ -66,11 +86,15 @@ public struct HardwareSigning: Sendable {
         case .ledgerBluetooth:
             return LedgerSignSession(
                 transport: BleLedgerTransport(), network: LedgerNetwork(networkId: id, protocolMagic: magic(network)),
+                options: LedgerSigningOptions(tagCborSets: taggedSets),
                 derivation: try account.map(PublicHDDerivation.init(account:))
             )
         case .trezorUSB:
             #if os(macOS)
-            return TrezorSignSession(link: TrezorHIDPacketLink(), network: TrezorNetwork(networkId: UInt32(id), protocolMagic: magic(network)))
+            return TrezorSignSession(
+                link: TrezorHIDPacketLink(), network: TrezorNetwork(networkId: UInt32(id), protocolMagic: magic(network)),
+                options: TrezorSigningOptions(tagCborSets: taggedSets)
+            )
             #else
             throw HardwareSigningError.unavailable
             #endif
@@ -94,8 +118,16 @@ public struct HardwareSigning: Sendable {
     public func sign(
         _ bytes: Data, utxos: [String], account: HardwareAccountModel, connection: HardwareConnection, network: CardanoNetwork
     ) async throws -> [VerificationKeyWitness] {
+        let signer = try Self.signer(connection, network: network, account: account, taggedSets: Self.usesTaggedSets(bytes))
+        return try await sign(bytes, utxos: utxos, account: account, signer: signer)
+    }
+
+    /// Signs `bytes` with `account` through `signer`: any device session,
+    /// such as one over an emulator.
+    public func sign(
+        _ bytes: Data, utxos: [String], account: HardwareAccountModel, signer: any HardwareSigner
+    ) async throws -> [VerificationKeyWitness] {
         let request = try Self.request(for: bytes, utxos: utxos, account: account)
-        let signer = try Self.signer(connection, network: network, account: account)
         let witnessSet: String
         do {
             witnessSet = try await signer.sign(request)
