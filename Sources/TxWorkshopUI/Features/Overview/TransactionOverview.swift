@@ -20,7 +20,7 @@ struct TransactionOverview: View {
                     } icon: {
                         Image(systemName: "xmark.octagon")
                     }
-                    .foregroundStyle(TWColor.failure)
+                    .labelStyle(.status(TWColor.failure))
                 }
             case .loaded(let inspection):
                 InShortSection(inspection: inspection)

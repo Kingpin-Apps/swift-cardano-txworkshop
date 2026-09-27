@@ -23,7 +23,7 @@ struct WatchReviewSection: View {
                 } icon: {
                     Image(systemName: reply.approved ? "applewatch.radiowaves.left.and.right" : "applewatch.slash")
                 }
-                .foregroundStyle(reply.approved ? TWColor.success : TWColor.failure)
+                .labelStyle(.status(reply.approved ? TWColor.success : TWColor.failure))
             } else if requestID != nil {
                 Label {
                     Text("Waiting for the watch", bundle: #bundle)
@@ -32,7 +32,7 @@ struct WatchReviewSection: View {
                 }
             }
             if let problem {
-                Text(verbatim: problem).foregroundStyle(TWColor.failure)
+                TWErrorText(problem)
             }
             Button(action: ask) {
                 Label {

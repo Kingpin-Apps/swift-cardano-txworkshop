@@ -9,7 +9,7 @@ DD="$(mktemp -d)"
 trap 'rm -rf "$DD"' EXIT
 
 build() { # scheme destination
-  xcodebuild -project TxWorkshop.xcodeproj -scheme "$1" -destination "$2" -derivedDataPath "$DD" \
+  xcodebuild -project TxWorkshop.xcodeproj -scheme "$1" -destination "$2" -derivedDataPath "$DD" -packageAuthorizationProvider netrc \
     -skipPackagePluginValidation -skipMacroValidation SWIFT_EMIT_LOC_STRINGS=YES build >/dev/null
 }
 

@@ -65,8 +65,7 @@ struct ManualChainDataSheet: View {
                 if !problems.isEmpty {
                     Section {
                         ForEach(problems, id: \.self) { problem in
-                            Text(verbatim: problem)
-                                .foregroundStyle(TWColor.failure)
+                            TWErrorText(problem)
                         }
                     }
                 }

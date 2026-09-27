@@ -31,11 +31,11 @@ struct SignView: View {
                 case .idle, .loading:
                     Section { ProgressView() }
                 case .failed(let message):
-                    Section { Text(verbatim: message).foregroundStyle(TWColor.failure) }
+                    Section { TWErrorText(message) }
                 case .loaded(let needed):
                     SignaturesSection(needed: needed, keys: keys.keys, onSign: sign)
                     if let problem {
-                        Section { Text(verbatim: problem).foregroundStyle(TWColor.failure) }
+                        Section { TWErrorText(problem) }
                     }
                     HardwareSection(
                         document: document, missing: Set(needed.signers.filter { !$0.isSigned }.map(\.keyHash)), knownUTxOs: knownUTxOs

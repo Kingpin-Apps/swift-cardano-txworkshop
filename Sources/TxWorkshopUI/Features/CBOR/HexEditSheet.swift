@@ -154,14 +154,14 @@ private struct CheckLabel: View {
             } icon: {
                 Image(systemName: "xmark.octagon")
             }
-            .foregroundStyle(TWColor.failure)
+            .labelStyle(.status(TWColor.failure))
         case .decodes(let count):
             Label {
                 Text(AttributedString(localized: "Decodes as one CBOR item of ^[\(count) byte](inflect: true).", bundle: #bundle))
             } icon: {
                 Image(systemName: "checkmark.circle")
             }
-            .foregroundStyle(TWColor.success)
+            .labelStyle(.status(TWColor.success))
         case .stops(let offset, let message):
             Label {
                 if let offset {
@@ -172,7 +172,7 @@ private struct CheckLabel: View {
             } icon: {
                 Image(systemName: "exclamationmark.triangle")
             }
-            .foregroundStyle(TWColor.warning)
+            .labelStyle(.status(TWColor.warning))
         }
     }
 }

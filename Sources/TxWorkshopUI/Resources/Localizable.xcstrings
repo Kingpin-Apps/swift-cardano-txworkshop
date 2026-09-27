@@ -212,6 +212,9 @@
     "Anchor hash (Blake2b-256, hex)" : {
 
     },
+    "Animated QR code with the transaction for the Keystone" : {
+
+    },
     "Apply" : {
 
     },
@@ -505,6 +508,9 @@
 
     },
     "Era" : {
+
+    },
+    "Error" : {
 
     },
     "Every input's UTxO" : {
@@ -916,6 +922,9 @@
     "Not canonical" : {
 
     },
+    "Not checked" : {
+
+    },
     "Not found, or already spent" : {
 
     },
@@ -923,6 +932,9 @@
 
     },
     "Not signed" : {
+
+    },
+    "Not valid" : {
 
     },
     "Not valid: ^[%lld error](inflect: true) and ^[%lld warning](inflect: true)." : {
@@ -953,6 +965,66 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Offset %1$lld: %2$@"
+          }
+        }
+      }
+    },
+    "Offset %lld: %@, decoding stopped here" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Offset %1$lld: %2$@, decoding stopped here"
+          }
+        }
+      }
+    },
+    "Offset %lld: %@, in an item with a validation error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Offset %1$lld: %2$@, in an item with a validation error"
+          }
+        }
+      }
+    },
+    "Offset %lld: %@, in an item with a validation warning" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Offset %1$lld: %2$@, in an item with a validation warning"
+          }
+        }
+      }
+    },
+    "Offset %lld: %@, selected item" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Offset %1$lld: %2$@, selected item"
+          }
+        }
+      }
+    },
+    "Offset %lld: %@, selected item's head" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Offset %1$lld: %2$@, selected item's head"
+          }
+        }
+      }
+    },
+    "Offset %lld: %@, selected item's map key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Offset %1$lld: %2$@, selected item's map key"
           }
         }
       }
@@ -1573,6 +1645,9 @@
     "Uses the schema written in the CDDL section." : {
 
     },
+    "Valid" : {
+
+    },
     "Valid from" : {
 
     },
@@ -1635,6 +1710,9 @@
 
     },
     "Waiting for the watch" : {
+
+    },
+    "Warning" : {
 
     },
     "Was %@" : {

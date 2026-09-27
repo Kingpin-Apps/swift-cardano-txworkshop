@@ -47,7 +47,7 @@ struct ChainDataSection: View {
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                 }
-                .foregroundStyle(TWColor.failure)
+                .labelStyle(.status(TWColor.failure))
             }
             Button(action: fetch) {
                 Text("Fetch Chain Data", bundle: #bundle)

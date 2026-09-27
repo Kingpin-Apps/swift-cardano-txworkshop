@@ -30,10 +30,55 @@ public enum TWColor {
     public static let secondaryText = Color.secondary
 }
 
+/// A label whose icon carries the status colour. The text stays in the
+/// primary colour: green, orange and red text fail contrast on the system
+/// backgrounds.
+public struct TWStatusLabelStyle: LabelStyle {
+    let color: Color
+
+    public func makeBody(configuration: Configuration) -> some View {
+        Label {
+            configuration.title
+        } icon: {
+            configuration.icon.foregroundStyle(color)
+        }
+    }
+}
+
+extension LabelStyle where Self == TWStatusLabelStyle {
+    /// Colours only the icon.
+    public static func status(_ color: Color) -> TWStatusLabelStyle { TWStatusLabelStyle(color: color) }
+}
+
+/// An error message, with a red icon so it does not rely on colour alone.
+public struct TWErrorText: View {
+    private let message: String
+
+    public init(_ message: String) {
+        self.message = message
+    }
+
+    public var body: some View {
+        let label = Label {
+            Text(verbatim: message)
+        } icon: {
+            Image(systemName: "exclamationmark.triangle")
+        }
+        .labelStyle(.status(TWColor.failure))
+        #if os(watchOS)
+        label
+        #else
+        label.textSelection(.enabled)
+        #endif
+    }
+}
+
 /// A hash, id or hex string: monospaced, middle-truncated, selectable.
+/// At accessibility text sizes it wraps instead of truncating.
 public struct TWBytesText: View {
     private let value: String
     private let font: Font
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     public init(_ value: String, font: Font = TWFont.bytes) {
         self.value = value
@@ -43,7 +88,7 @@ public struct TWBytesText: View {
     public var body: some View {
         let text = Text(verbatim: value)
             .font(font)
-            .lineLimit(1)
+            .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
             .truncationMode(.middle)
         #if os(watchOS)
         text
@@ -70,5 +115,17 @@ public struct TWFieldRow<Value: View>: View {
             Text(title)
                 .foregroundStyle(TWColor.secondaryText)
         }
+    }
+}
+
+extension View {
+    /// Grows a small control to the 44-point touch target on touch
+    /// platforms; the pointer platforms keep their dense layout.
+    public func twHitTarget() -> some View {
+        #if os(iOS) || os(visionOS)
+        frame(minWidth: 44, minHeight: 44).contentShape(.rect)
+        #else
+        self
+        #endif
     }
 }

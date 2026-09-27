@@ -69,7 +69,7 @@ struct ValidateView: View {
                         } icon: {
                             Image(systemName: "xmark.octagon")
                         }
-                        .foregroundStyle(TWColor.failure)
+                        .labelStyle(.status(TWColor.failure))
                     }
                 }
                 if let outcome {

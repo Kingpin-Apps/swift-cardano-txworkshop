@@ -10,25 +10,9 @@ struct MintDraftSection: View {
         Section {
             ScriptDraftEditor(script: $mint.script)
             ForEach($mint.assets) { $asset in
-                HStack {
-                    TextField(text: $asset.assetNameHex) { Text("Asset name (hex)", bundle: #bundle) }
-                        .font(TWFont.bytesSmall)
-                    TextField(value: $asset.quantity, format: .number) { Text("Quantity", bundle: #bundle) }
-                        .font(TWFont.figure)
-                        .frame(maxWidth: 140)
-                    Button {
-                        mint.assets.removeAll { $0.id == asset.id }
-                    } label: {
-                        Label {
-                            Text("Remove Asset", bundle: #bundle)
-                        } icon: {
-                            Image(systemName: "minus.circle")
-                        }
-                        .labelStyle(.iconOnly)
-                    }
-                    .buttonStyle(.borderless)
+                AssetDraftRow(asset: $asset, showsPolicy: false) {
+                    mint.assets.removeAll { $0.id == asset.id }
                 }
-                .autocorrectionDisabled()
             }
             Button {
                 mint.assets.append(AssetDraft())
@@ -106,6 +90,7 @@ struct RemovableHeader: View {
             Spacer()
             Button(role: .destructive, action: onRemove) {
                 Text("Remove", bundle: #bundle)
+                    .twHitTarget()
             }
             .buttonStyle(.borderless)
             .font(.caption)

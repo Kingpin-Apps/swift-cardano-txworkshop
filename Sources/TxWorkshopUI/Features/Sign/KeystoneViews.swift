@@ -62,36 +62,41 @@ struct KeystoneSignSheet: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: TWSpacing.l) {
-                if let problem {
-                    Text(verbatim: problem).foregroundStyle(TWColor.failure)
-                }
-                if isScanning {
-                    if QRScanner.isAvailable {
-                        QRScanner(onScan: ingest)
-                            .clipShape(.rect(cornerRadius: 12))
-                        ProgressView(value: Double(progress), total: 100) {
-                            Text("Scan the signature the Keystone shows", bundle: #bundle)
+            ScrollView {
+                VStack(spacing: TWSpacing.l) {
+                    if let problem {
+                        TWErrorText(problem)
+                    }
+                    if isScanning {
+                        if QRScanner.isAvailable {
+                            QRScanner(onScan: ingest)
+                                .aspectRatio(1, contentMode: .fit)
+                                .frame(maxWidth: 360)
+                                .clipShape(.rect(cornerRadius: 12))
+                            ProgressView(value: Double(progress), total: 100) {
+                                Text("Scan the signature the Keystone shows", bundle: #bundle)
+                            }
+                        } else {
+                            Text("This device has no camera the scanner can use.", bundle: #bundle)
                         }
-                    } else {
-                        Text("This device has no camera the scanner can use.", bundle: #bundle)
+                    } else if !frame.isEmpty {
+                        QRCodeImage(text: frame)
+                            .accessibilityLabel(Text("Animated QR code with the transaction for the Keystone", bundle: #bundle))
+                            .padding(TWSpacing.m)
+                            .background(Color.white, in: .rect(cornerRadius: 12))
+                            .frame(maxWidth: 360)
+                        Text("Scan this with the Keystone and approve the transaction on it.", bundle: #bundle)
+                            .multilineTextAlignment(.center)
+                        Button {
+                            isScanning = true
+                        } label: {
+                            Text("Scan the Keystone's Signature", bundle: #bundle)
+                        }
+                        .buttonStyle(.borderedProminent)
                     }
-                } else if !frame.isEmpty {
-                    QRCodeImage(text: frame)
-                        .padding(TWSpacing.m)
-                        .background(Color.white, in: .rect(cornerRadius: 12))
-                        .frame(maxWidth: 360)
-                    Text("Scan this with the Keystone and approve the transaction on it.", bundle: #bundle)
-                        .multilineTextAlignment(.center)
-                    Button {
-                        isScanning = true
-                    } label: {
-                        Text("Scan the Keystone's Signature", bundle: #bundle)
-                    }
-                    .buttonStyle(.borderedProminent)
                 }
+                .padding(TWSpacing.l)
             }
-            .padding(TWSpacing.l)
             .navigationTitle(Text("Sign with Keystone", bundle: #bundle))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -167,7 +172,7 @@ struct KeystoneImportView: View {
                 Text("This device has no camera the scanner can use.", bundle: #bundle)
             }
             if let problem {
-                Text(verbatim: problem).foregroundStyle(TWColor.failure)
+                TWErrorText(problem)
             }
         }
         .onAppear { session = KeystoneAccountImportSession(network: HardwareSigning.networkID(network)) }

@@ -59,21 +59,21 @@ private struct AnchorResult: View {
                 } icon: {
                     Image(systemName: "checkmark.seal.fill")
                 }
-                .foregroundStyle(TWColor.success)
+                .labelStyle(.status(TWColor.success))
             case .mismatch(let computed):
                 Label {
                     Text("The content does not match: it hashes to \(computed).", bundle: #bundle)
                 } icon: {
                     Image(systemName: "xmark.seal.fill")
                 }
-                .foregroundStyle(TWColor.failure)
+                .labelStyle(.status(TWColor.failure))
             case .unreachable(let reason):
                 Label {
                     Text("Could not fetch the content: \(reason)", bundle: #bundle)
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                 }
-                .foregroundStyle(TWColor.warning)
+                .labelStyle(.status(TWColor.warning))
             }
             if let title = check.title {
                 Text(verbatim: title).font(.subheadline.weight(.semibold))

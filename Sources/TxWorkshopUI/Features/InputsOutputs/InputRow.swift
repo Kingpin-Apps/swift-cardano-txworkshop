@@ -57,7 +57,7 @@ private struct InputStatusLabel: View {
                 Image(systemName: "checkmark.circle")
             }
             .font(.caption)
-            .foregroundStyle(TWColor.success)
+            .labelStyle(.status(TWColor.success))
         case .spent:
             Label {
                 Text("Already spent", bundle: #bundle)
@@ -65,7 +65,7 @@ private struct InputStatusLabel: View {
                 Image(systemName: "xmark.circle")
             }
             .font(.caption)
-            .foregroundStyle(TWColor.failure)
+            .labelStyle(.status(TWColor.failure))
         case .notFound:
             Label {
                 Text("Not found, or already spent", bundle: #bundle)
@@ -73,7 +73,7 @@ private struct InputStatusLabel: View {
                 Image(systemName: "questionmark.circle")
             }
             .font(.caption)
-            .foregroundStyle(TWColor.warning)
+            .labelStyle(.status(TWColor.warning))
         }
     }
 }

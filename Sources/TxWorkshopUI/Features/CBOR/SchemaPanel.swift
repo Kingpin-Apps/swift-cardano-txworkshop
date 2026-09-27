@@ -80,7 +80,7 @@ struct SchemaPanel: View {
                     } icon: {
                         Image(systemName: "xmark.octagon")
                     }
-                    .foregroundStyle(TWColor.failure)
+                    .labelStyle(.status(TWColor.failure))
                 }
             case .loaded(let report):
                 SchemaReportSections(report: report, onSelectPath: onSelectPath)
@@ -147,7 +147,7 @@ private struct SchemaReportSections: View {
             } icon: {
                 Image(systemName: report.isValid ? "checkmark.seal" : "xmark.seal")
             }
-            .foregroundStyle(report.isValid ? TWColor.success : TWColor.failure)
+            .labelStyle(.status(report.isValid ? TWColor.success : TWColor.failure))
         }
         if !report.issues.isEmpty {
             Section {
@@ -179,12 +179,12 @@ private struct SchemaIssueRow: View {
             if issue.ledgerAccepts {
                 Text("The ledger accepts this: long Plutus byte strings are written in 64-byte chunks.", bundle: #bundle)
                     .font(.caption)
-                    .foregroundStyle(TWColor.warning)
+                    .foregroundStyle(TWColor.secondaryText)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(.rect)
         .accessibilityElement(children: .combine)
-        .accessibilityHint(issue.itemPath == nil ? Text("") : Text("Selects the item", bundle: #bundle))
+        .accessibilityHint(issue.itemPath == nil ? Text(verbatim: "") : Text("Selects the item", bundle: #bundle))
     }
 }

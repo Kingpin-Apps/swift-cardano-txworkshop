@@ -20,7 +20,7 @@ struct SubmitSection: View {
     var body: some View {
         Section {
             if let problem {
-                Text(verbatim: problem).foregroundStyle(TWColor.failure)
+                TWErrorText(problem)
             }
             Button {
                 isConfirmingSubmit = true

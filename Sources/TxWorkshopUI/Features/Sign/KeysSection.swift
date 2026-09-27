@@ -30,6 +30,7 @@ struct KeysSection: View {
                             Image(systemName: "trash")
                         }
                         .labelStyle(.iconOnly)
+                        .twHitTarget()
                     }
                     .buttonStyle(.borderless)
                 }
@@ -95,7 +96,7 @@ struct AddKeySheet: View {
                     Text("Keys are derived for the first 20 external and change addresses of each account, and its stake and DRep keys.", bundle: #bundle)
                 }
                 if let problem {
-                    Section { Text(verbatim: problem).foregroundStyle(TWColor.failure) }
+                    Section { TWErrorText(problem) }
                 }
             }
             .formStyle(.grouped)

@@ -27,7 +27,7 @@ struct SourcesSection: View {
             }
             .disabled(isFetching || provider == nil || recipe.sourceAddresses.isEmpty)
             if let problem {
-                Text(verbatim: problem).foregroundStyle(TWColor.failure)
+                TWErrorText(problem)
             }
         } header: {
             Text("Source addresses", bundle: #bundle)
@@ -53,7 +53,7 @@ struct SourcesSection: View {
                     } icon: {
                         Image(systemName: "exclamationmark.triangle")
                     }
-                    .foregroundStyle(TWColor.warning)
+                    .labelStyle(.status(TWColor.warning))
                 }
             }
         } header: {

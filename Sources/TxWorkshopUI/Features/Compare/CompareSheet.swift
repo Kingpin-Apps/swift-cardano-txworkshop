@@ -50,7 +50,7 @@ struct CompareSheet: View {
                         } icon: {
                             Image(systemName: "exclamationmark.triangle")
                         }
-                        .foregroundStyle(TWColor.failure)
+                        .labelStyle(.status(TWColor.failure))
                     }
                 case .loaded(let diff):
                     DiffSections(diff: diff)

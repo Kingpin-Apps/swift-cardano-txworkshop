@@ -144,7 +144,7 @@ struct BuildView: View {
                     } icon: {
                         Image(systemName: "xmark.octagon")
                     }
-                    .foregroundStyle(TWColor.failure)
+                    .labelStyle(.status(TWColor.failure))
                 }
             case .loaded(let built):
                 CompositionSections(composition: built, onUse: { use(built) })

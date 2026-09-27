@@ -37,7 +37,7 @@ struct SignaturesSection: View {
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                 }
-                .foregroundStyle(TWColor.warning)
+                .labelStyle(.status(TWColor.warning))
             }
             ForEach(keys.filter { !Set(missing).isDisjoint(with: $0.keyHashes) }) { key in
                 Button {

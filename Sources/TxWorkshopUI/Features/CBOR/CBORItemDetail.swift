@@ -37,7 +37,7 @@ struct CBORItemDetail: View {
                     } icon: {
                         Image(systemName: "exclamationmark.octagon")
                     }
-                    .foregroundStyle(TWColor.failure)
+                    .labelStyle(.status(TWColor.failure))
                 }
                 if item.childrenOmitted {
                     Text("Nested too deep to show as a tree; the notation below has it all.", bundle: #bundle)

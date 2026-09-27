@@ -41,7 +41,7 @@ public struct ProviderSettingsView: View {
             }
             if let error = store.lastError {
                 Section {
-                    Text(verbatim: error).foregroundStyle(TWColor.failure)
+                    TWErrorText(error)
                 }
             }
         }

@@ -29,7 +29,7 @@ struct PasteTransactionView: View {
                     } icon: {
                         Image(systemName: "exclamationmark.triangle")
                     }
-                    .foregroundStyle(TWColor.failure)
+                    .labelStyle(.status(TWColor.failure))
                 }
                 Button {
                     decode()

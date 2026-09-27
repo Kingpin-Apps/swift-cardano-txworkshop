@@ -36,7 +36,7 @@ struct VoteRow: View {
                     .foregroundStyle(TWColor.secondaryText)
                 Spacer()
                 Text(verbatim: vote.vote.capitalized)
-                    .foregroundStyle(vote.vote == "yes" ? TWColor.success : vote.vote == "no" ? TWColor.failure : TWColor.secondaryText)
+                    .fontWeight(.medium)
             }
             TWBytesText(vote.voter, font: TWFont.bytesSmall)
             TWBytesText(vote.govActionId, font: TWFont.bytesSmall)

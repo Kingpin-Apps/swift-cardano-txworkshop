@@ -32,16 +32,21 @@ struct CBORItemLabel: View {
     let mark: Bool?
     /// Whether an item inside this one has a finding.
     let holdsMark: Bool
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: TWSpacing.s) {
+        // At accessibility sizes the parts stack so none is squeezed out.
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: TWSpacing.xs))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: TWSpacing.s))
+        layout {
             if let label = item.label {
                 Text(verbatim: label)
                     .font(TWFont.bytesSmall)
-                    .lineLimit(1)
+                    .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
                     .truncationMode(.middle)
-                    .frame(maxWidth: 160, alignment: .leading)
-                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(maxWidth: typeSize.isAccessibilitySize ? nil : 160, alignment: .leading)
+                    .fixedSize(horizontal: !typeSize.isAccessibilitySize, vertical: false)
             }
             VStack(alignment: .leading, spacing: TWSpacing.xxs) {
                 if let name = item.name {

@@ -62,7 +62,7 @@ struct ImportWitnessSheet: View {
                     Text("A witness set or witness in CBOR hex, or a cardano-cli witness file.", bundle: #bundle)
                 }
                 if let problem {
-                    Section { Text(verbatim: problem).foregroundStyle(TWColor.failure) }
+                    Section { TWErrorText(problem) }
                 }
             }
             .formStyle(.grouped)

@@ -26,6 +26,7 @@ struct RuleLinks: View {
                 title
                     .font(.caption)
                     .foregroundStyle(TWColor.secondaryText)
+                    .accessibilityAddTraits(.isHeader)
                 ScrollView(.horizontal) {
                     HStack {
                         ForEach(names, id: \.self) { name in
@@ -36,7 +37,9 @@ struct RuleLinks: View {
                                     .font(TWFont.bytesSmall)
                             }
                             .buttonStyle(.bordered)
+                            #if os(macOS)
                             .controlSize(.small)
+                            #endif
                         }
                     }
                 }

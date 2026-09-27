@@ -32,6 +32,7 @@ struct ProviderRow: View {
                     Image(systemName: "pencil")
                 }
                 .labelStyle(.iconOnly)
+                .twHitTarget()
             }
             .buttonStyle(.borderless)
         }

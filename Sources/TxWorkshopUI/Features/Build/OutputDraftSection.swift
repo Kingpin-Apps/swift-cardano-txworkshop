@@ -28,28 +28,9 @@ struct OutputDraftSection: View {
                     .foregroundStyle(TWColor.secondaryText)
             }
             ForEach($output.assets) { $asset in
-                HStack {
-                    TextField(text: $asset.policyID) { Text("Policy id", bundle: #bundle) }
-                        .font(TWFont.bytesSmall)
-                    TextField(text: $asset.assetNameHex) { Text("Name (hex)", bundle: #bundle) }
-                        .font(TWFont.bytesSmall)
-                        .frame(maxWidth: 160)
-                    TextField(value: $asset.quantity, format: .number) { Text("Quantity", bundle: #bundle) }
-                        .font(TWFont.figure)
-                        .frame(maxWidth: 110)
-                    Button {
-                        output.assets.removeAll { $0.id == asset.id }
-                    } label: {
-                        Label {
-                            Text("Remove Asset", bundle: #bundle)
-                        } icon: {
-                            Image(systemName: "minus.circle")
-                        }
-                        .labelStyle(.iconOnly)
-                    }
-                    .buttonStyle(.borderless)
+                AssetDraftRow(asset: $asset) {
+                    output.assets.removeAll { $0.id == asset.id }
                 }
-                .autocorrectionDisabled()
             }
             Button {
                 output.assets.append(AssetDraft())

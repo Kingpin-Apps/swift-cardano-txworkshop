@@ -154,7 +154,7 @@ struct CDDLWorkspaceView: View {
                 } icon: {
                     Image(systemName: "exclamationmark.octagon")
                 }
-                .foregroundStyle(TWColor.failure)
+                .labelStyle(.status(TWColor.failure))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(TWSpacing.s)
                 .background(TWColor.failure.opacity(0.08))

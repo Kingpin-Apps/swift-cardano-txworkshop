@@ -53,8 +53,7 @@ struct WhatIfSheet: View {
                     EmptyView()
                 case .failed(let message):
                     Section {
-                        Text(verbatim: message)
-                            .foregroundStyle(TWColor.failure)
+                        TWErrorText(message)
                     }
                 case .loaded(let rows):
                     Section {
@@ -131,7 +130,6 @@ private struct ComparisonRow: View {
             if let error = comparison.after?.error, comparison.after?.passed == false {
                 Text(verbatim: error)
                     .font(TWFont.bytesSmall)
-                    .foregroundStyle(TWColor.failure)
                     .textSelection(.enabled)
             }
         }

@@ -48,6 +48,7 @@ struct HardwareSection: View {
                             Image(systemName: "trash")
                         }
                         .labelStyle(.iconOnly)
+                        .twHitTarget()
                     }
                     .buttonStyle(.borderless)
                 }
@@ -60,7 +61,7 @@ struct HardwareSection: View {
                 }
             }
             if let problem {
-                Text(verbatim: problem).foregroundStyle(TWColor.failure)
+                TWErrorText(problem)
             }
             Button {
                 isImporting = true
@@ -159,7 +160,7 @@ struct ImportHardwareAccountSheet: View {
                 }
                 #endif
                 if let problem {
-                    Section { Text(verbatim: problem).foregroundStyle(TWColor.failure) }
+                    Section { TWErrorText(problem) }
                 }
             }
             .formStyle(.grouped)

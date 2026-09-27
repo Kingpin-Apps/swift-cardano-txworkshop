@@ -8,6 +8,7 @@ struct SourceLinesView: View {
     /// 1-based lines to highlight.
     let highlight: ClosedRange<Int>?
     let problemLine: Int?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var lines: [Substring] { text.split(separator: "\n", omittingEmptySubsequences: false) }
 
@@ -36,7 +37,7 @@ struct SourceLinesView: View {
             }
             .onChange(of: highlight?.lowerBound, initial: true) { _, line in
                 guard let line else { return }
-                withAnimation { proxy.scrollTo(line, anchor: .top) }
+                withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(line, anchor: .top) }
             }
             .onChange(of: problemLine, initial: true) { _, line in
                 guard let line, highlight == nil else { return }

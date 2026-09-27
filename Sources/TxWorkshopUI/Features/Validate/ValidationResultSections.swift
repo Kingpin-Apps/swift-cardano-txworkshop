@@ -19,7 +19,7 @@ struct ValidationResultSections: View {
             } icon: {
                 Image(systemName: outcome.isValid ? "checkmark.seal" : "xmark.seal")
             }
-            .foregroundStyle(outcome.isValid ? TWColor.success : TWColor.failure)
+            .labelStyle(.status(outcome.isValid ? TWColor.success : TWColor.failure))
             TWFieldRow(LocalizedStringResource("Ran", bundle: #bundle)) {
                 Text(outcome.ranAt, format: .relative(presentation: .named))
             }
@@ -66,6 +66,7 @@ struct FindingRow: View {
             } icon: {
                 Image(systemName: finding.isWarning ? "exclamationmark.triangle" : "xmark.octagon")
                     .foregroundStyle(finding.isWarning ? TWColor.warning : TWColor.failure)
+                    .accessibilityLabel(finding.isWarning ? Text("Warning", bundle: #bundle) : Text("Error", bundle: #bundle))
             }
             Text(verbatim: finding.message)
                 .textSelection(.enabled)

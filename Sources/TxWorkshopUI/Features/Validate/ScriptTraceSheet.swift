@@ -70,7 +70,7 @@ struct ScriptTraceSheet: View {
                 } icon: {
                     Image(systemName: trace.failure == nil ? "checkmark.circle" : "xmark.circle")
                 }
-                .foregroundStyle(trace.failure == nil ? TWColor.success : TWColor.failure)
+                .labelStyle(.status(trace.failure == nil ? TWColor.success : TWColor.failure))
                 BudgetChart(trace: trace)
                     .frame(height: 180)
             } header: {
@@ -171,7 +171,7 @@ private struct EventRow: View {
                 } icon: {
                     Image(systemName: "text.bubble")
                 }
-                .foregroundStyle(TWColor.warning)
+                .labelStyle(.status(TWColor.warning))
                 Spacer()
             }
         }

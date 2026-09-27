@@ -23,7 +23,7 @@ struct BatchValidationSheet: View {
             List {
                 Section {
                     if let problem {
-                        Text(verbatim: problem).foregroundStyle(TWColor.failure)
+                        TWErrorText(problem)
                     } else if items.count < total {
                         ProgressView(value: Double(items.count), total: Double(total)) {
                             Text("Validating \(items.count + 1) of \(total)", bundle: #bundle)
@@ -39,6 +39,7 @@ struct BatchValidationSheet: View {
                         HStack {
                             Image(systemName: item.outcome.map { $0.isValid ? "checkmark.circle" : "xmark.circle" } ?? "questionmark.circle")
                                 .foregroundStyle(item.outcome.map { $0.isValid ? TWColor.success : TWColor.failure } ?? TWColor.warning)
+                                .accessibilityLabel(item.outcome.map { $0.isValid ? Text("Valid", bundle: #bundle) : Text("Not valid", bundle: #bundle) } ?? Text("Not checked", bundle: #bundle))
                             VStack(alignment: .leading) {
                                 Text(verbatim: item.file)
                                 if let problem = item.problem {

@@ -17,6 +17,7 @@ struct RedeemerBudgetRow: View {
                 } icon: {
                     Image(systemName: redeemer.passed ? "checkmark.circle" : "xmark.circle")
                         .foregroundStyle(redeemer.passed ? TWColor.success : TWColor.failure)
+                        .accessibilityLabel(redeemer.passed ? Text("Passes", bundle: #bundle) : Text("Fails", bundle: #bundle))
                 }
                 Spacer()
                 if let purpose = redeemer.purpose {
@@ -44,7 +45,6 @@ struct RedeemerBudgetRow: View {
             if let error = redeemer.error {
                 Text(verbatim: error)
                     .font(TWFont.bytesSmall)
-                    .foregroundStyle(TWColor.failure)
                     .textSelection(.enabled)
             }
             Button(action: onTrace) {
@@ -103,7 +103,6 @@ struct BudgetBar: View {
             if isOver, let declared {
                 Text("Over by \(used - declared, format: .number): the ledger stops the script at its declared units.", bundle: #bundle)
                     .font(.caption)
-                    .foregroundStyle(TWColor.failure)
             }
         }
         .accessibilityElement(children: .combine)

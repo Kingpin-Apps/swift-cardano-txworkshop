@@ -53,10 +53,13 @@ private struct CBORWorkspace: View {
     @Environment(\.undoManager) private var undoManager
     @Environment(WorkshopSession.self) private var session
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selection: String?
     @State private var expanded: Set<String> = [""]
     @State private var pane = Pane.tree
     @State private var inspector = Inspector.item
+    /// Too narrow for the tree beside the hex, as in a slim iPad window.
+    @State private var isNarrow = false
 
     enum Pane: Hashable { case tree, hex, detail, schema }
     enum Inspector: Hashable { case item, schema }
@@ -76,7 +79,7 @@ private struct CBORWorkspace: View {
             if let problem = exploration.problem {
                 ProblemBanner(problem: problem) { offset in select(byte: offset) }
             }
-            if sizeClass == .compact {
+            if sizeClass == .compact || isNarrow {
                 Picker(selection: $pane) {
                     Text("Tree", bundle: #bundle).tag(Pane.tree)
                     Text("Hex", bundle: #bundle).tag(Pane.hex)
@@ -120,6 +123,7 @@ private struct CBORWorkspace: View {
                 }
             }
         }
+        .onGeometryChange(for: Bool.self) { $0.size.width < 640 } action: { isNarrow = $0 }
         .toolbar {
             ToolbarItem {
                 Button {
@@ -178,7 +182,7 @@ private struct CBORWorkspace: View {
             }
             .onChange(of: selection) { _, id in
                 guard let id else { return }
-                withAnimation { proxy.scrollTo(id) }
+                withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(id) }
             }
         }
     }
@@ -240,7 +244,7 @@ private struct ProblemBanner: View {
             } icon: {
                 Image(systemName: "exclamationmark.octagon")
             }
-            .foregroundStyle(TWColor.failure)
+            .labelStyle(.status(TWColor.failure))
             Spacer()
             if let offset = problem.offset {
                 Button {

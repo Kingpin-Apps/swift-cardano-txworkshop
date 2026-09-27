@@ -29,7 +29,7 @@ struct ChainLookupSection: View {
                 } icon: {
                     Image(systemName: "exclamationmark.triangle")
                 }
-                .foregroundStyle(TWColor.failure)
+                .labelStyle(.status(TWColor.failure))
             }
             Button(action: lookUp) {
                 Group {
