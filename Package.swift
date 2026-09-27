@@ -77,6 +77,7 @@ let package = Package(
                 "TxWorkshopEngine",
                 .product(name: "SwiftCardanoTxValidator", package: "swift-cardano-txvalidator"),
                 .product(name: "CardanoHWKit", package: "swift-cardano-hw-wallet"),
+                .product(name: "CardanoHWWalletKeystone", package: "swift-cardano-hw-wallet", condition: .when(platforms: [.iOS])),
             ],
             resources: [.process("Resources")]
         ),

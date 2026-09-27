@@ -14,6 +14,7 @@ struct HardwareSection: View {
     @State private var isImporting = false
     @State private var signing: HardwareAccountStore.Account?
     @State private var problem: String?
+    @State private var keystoneSigning: HardwareAccountStore.Account?
 
     var body: some View {
         Section {
@@ -28,7 +29,7 @@ struct HardwareSection: View {
                     Spacer()
                     if !missing.isDisjoint(with: account.keyHashes) {
                         Button {
-                            sign(with: account)
+                            if account.connection.isQR { keystoneSigning = account } else { sign(with: account) }
                         } label: {
                             if signing?.id == account.id {
                                 ProgressView()
@@ -74,13 +75,18 @@ struct HardwareSection: View {
         } header: {
             Text("Hardware wallets", bundle: #bundle)
         } footer: {
-            Text("Ledger over USB or Bluetooth, and Trezor over USB on the Mac. Payments, stake registration and delegation, vote delegation and withdrawals.", bundle: #bundle)
+            Text("Ledger over USB or Bluetooth, Trezor over USB on the Mac, and Keystone by QR code on iPhone and iPad. Payments, stake registration and delegation, vote delegation and withdrawals.", bundle: #bundle)
         }
         .sheet(isPresented: $isImporting) {
             if let network = document.content.network {
                 ImportHardwareAccountSheet(network: network)
             }
         }
+        #if os(iOS)
+        .sheet(item: $keystoneSigning) { account in
+            KeystoneSignSheet(document: document, account: account, knownUTxOs: knownUTxOs, undoManager: undoManager)
+        }
+        #endif
     }
 
     private func sign(with account: HardwareAccountStore.Account) {
@@ -113,13 +119,13 @@ struct HardwareSection: View {
 /// Reads an account's public key from a connected device.
 struct ImportHardwareAccountSheet: View {
     let network: CardanoNetwork
-    @Environment(HardwareAccountStore.self) private var accounts
-    @Environment(\.dismiss) private var dismiss
-    @State private var name = ""
+    @Environment(HardwareAccountStore.self) var accounts
+    @Environment(\.dismiss) var dismiss
+    @State var name = ""
     @State private var connection = HardwareConnection.available[0]
     @State private var index = 0
     @State private var isImporting = false
-    @State private var problem: String?
+    @State var problem: String?
 
     var body: some View {
         NavigationStack {
@@ -133,12 +139,25 @@ struct ImportHardwareAccountSheet: View {
                     } label: {
                         Text("Device", bundle: #bundle)
                     }
-                    Stepper(value: $index, in: 0...20) {
-                        Text("Account \(index)", bundle: #bundle)
+                    if !connection.isQR {
+                        Stepper(value: $index, in: 0...20) {
+                            Text("Account \(index)", bundle: #bundle)
+                        }
                     }
                 } footer: {
-                    Text("Connect and unlock the device, open its Cardano app, then approve exporting the public key.", bundle: #bundle)
+                    if connection.isQR {
+                        Text("Scan the account QR code the Keystone shows.", bundle: #bundle)
+                    } else {
+                        Text("Connect and unlock the device, open its Cardano app, then approve exporting the public key.", bundle: #bundle)
+                    }
                 }
+                #if os(iOS)
+                if connection.isQR {
+                    Section {
+                        KeystoneImportView(network: network, name: name) { model in add(model, connection: .keystoneQR) }
+                    }
+                }
+                #endif
                 if let problem {
                     Section { Text(verbatim: problem).foregroundStyle(TWColor.failure) }
                 }
@@ -153,7 +172,7 @@ struct ImportHardwareAccountSheet: View {
                     Button(action: importAccount) {
                         if isImporting { ProgressView() } else { Text("Import", bundle: #bundle) }
                     }
-                    .disabled(isImporting || name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(isImporting || connection.isQR || name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
         }
@@ -171,12 +190,23 @@ struct ImportHardwareAccountSheet: View {
             defer { isImporting = false }
             do {
                 let model = try await HardwareSigning().importAccount(connection, network: network, index: index)
-                let hashes = try HardwareSigning.keyHashes(of: model)
-                accounts.add(.init(name: name.trimmingCharacters(in: .whitespaces), connection: connection, model: model, keyHashes: hashes.sorted()))
-                dismiss()
+                add(model, connection: connection)
             } catch {
                 problem = String(describing: error)
             }
+        }
+    }
+}
+
+extension ImportHardwareAccountSheet {
+    func add(_ model: HardwareAccountModel, connection: HardwareConnection) {
+        do {
+            let hashes = try HardwareSigning.keyHashes(of: model)
+            let named = name.trimmingCharacters(in: .whitespaces)
+            accounts.add(.init(name: named.isEmpty ? model.deviceKind.displayName : named, connection: connection, model: model, keyHashes: hashes.sorted()))
+            dismiss()
+        } catch {
+            problem = String(describing: error)
         }
     }
 }
@@ -187,6 +217,7 @@ extension HardwareConnection {
         case .ledgerUSB: LocalizedStringResource("Ledger over USB", bundle: #bundle)
         case .ledgerBluetooth: LocalizedStringResource("Ledger over Bluetooth", bundle: #bundle)
         case .trezorUSB: LocalizedStringResource("Trezor over USB", bundle: #bundle)
+        case .keystoneQR: LocalizedStringResource("Keystone (QR codes)", bundle: #bundle)
         }
     }
 }

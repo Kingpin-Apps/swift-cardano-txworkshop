@@ -13,15 +13,23 @@ public enum HardwareConnection: String, CaseIterable, Sendable, Codable {
     case ledgerBluetooth
     /// A Trezor over USB (macOS; Model One and the older THP-less firmware).
     case trezorUSB
+    /// A Keystone, air-gapped, through animated QR codes (iOS).
+    case keystoneQR
 
     /// The connections this platform has.
     public static var available: [HardwareConnection] {
         #if os(macOS)
         [.ledgerUSB, .ledgerBluetooth, .trezorUSB]
+        #elseif os(iOS)
+        [.ledgerBluetooth, .keystoneQR]
         #else
         [.ledgerBluetooth]
         #endif
     }
+
+    /// Whether signing is a QR exchange the person drives, rather than a
+    /// connection the app talks over.
+    public var isQR: Bool { self == .keystoneQR }
 }
 
 /// Signs through a hardware wallet: imports its account key, describes the
@@ -39,7 +47,7 @@ public struct HardwareSigning: Sendable {
         }
     }
 
-    static func networkID(_ network: CardanoNetwork) -> NetworkId { network == .mainnet ? .mainnet : .testnet }
+    public static func networkID(_ network: CardanoNetwork) -> NetworkId { network == .mainnet ? .mainnet : .testnet }
 
     static func signer(_ connection: HardwareConnection, network: CardanoNetwork, account: HardwareAccountModel?) throws -> any HardwareSigner {
         let id: UInt8 = network == .mainnet ? 1 : 0
@@ -66,6 +74,9 @@ public struct HardwareSigning: Sendable {
             #else
             throw HardwareSigningError.unavailable
             #endif
+        case .keystoneQR:
+            // Keystone signs through a QR session the UI drives.
+            throw HardwareSigningError.unavailable
         }
     }
 
@@ -128,7 +139,7 @@ public struct HardwareSigning: Sendable {
     /// The request a device signs: the unsigned transaction, the outputs its
     /// inputs spend, their paths, and its certificates and withdrawals in the
     /// device's terms.
-    static func request(for bytes: Data, utxos: [String], account: HardwareAccountModel) throws -> HardwareSignRequest {
+    public static func request(for bytes: Data, utxos: [String], account: HardwareAccountModel) throws -> HardwareSignRequest {
         let transaction = try TransactionValidation.decode(bytes)
         let body = transaction.transactionBody
         let known = Dictionary(
