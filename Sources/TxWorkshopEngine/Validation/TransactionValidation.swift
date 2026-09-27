@@ -54,9 +54,7 @@ public struct TransactionValidation: Sendable {
         let transaction = try Self.decode(bytes)
         guard let parameters = Self.protocolParameters(snapshot) else { throw ValidationRunError.noProtocolParameters }
         // Only the UTxOs this transaction spends, references or puts up as
-        // collateral: a snapshot may hold others, and the validator's fee
-        // rule (before swift-cardano-txvalidator 0.4.1) charged for every
-        // reference script it was given.
+        // collateral: a snapshot may hold others.
         let needed = Set(TxValidator().necessaryData(transaction: transaction).inputs.map { "\($0.transactionId)#\($0.index)" })
         let utxos = Self.utxos(snapshot).filter { needed.contains(InputResolver.id($0.input)) }
         let ledger = LedgerState.decode(snapshot.ledgerState)

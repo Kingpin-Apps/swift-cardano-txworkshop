@@ -182,10 +182,7 @@ struct GovernanceBuildingTests {
         #expect(!outcome.errors.contains { $0.kind == "valueNotConserved" || $0.kind == "feeTooSmall" })
     }
 
-    @Test(
-        "A treasury donation comes out of the change and decodes",
-        .disabled("Needs swift-cardano-core 0.8.3 (PositiveCoin decoding) and swift-cardano-txbuilder 1.1.1 (donation balancing)")
-    )
+    @Test("A treasury donation comes out of the change and decodes")
     func donation() async throws {
         let (snapshot, utxo, address) = try TransactionComposerTests.setup()
         let recipe = BuildRecipe(
