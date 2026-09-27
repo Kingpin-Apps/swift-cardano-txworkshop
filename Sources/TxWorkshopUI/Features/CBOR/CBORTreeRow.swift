@@ -6,21 +6,30 @@ import TxWorkshopEngine
 struct CBORTreeRow: View {
     let item: CBORItem
     let markers: CBORMarkers
+    /// The selected item, drawn in the accent on touch platforms, where a
+    /// list's own selection is a faint grey.
+    var selection: String? = nil
     @Binding var expanded: Set<String>
 
     var body: some View {
         if let children = item.children, !children.isEmpty {
             DisclosureGroup(isExpanded: $expanded.contains(item.id)) {
                 ForEach(children) { child in
-                    CBORTreeRow(item: child, markers: markers, expanded: $expanded)
+                    CBORTreeRow(item: child, markers: markers, selection: selection, expanded: $expanded)
                 }
             } label: {
                 CBORItemLabel(item: item, mark: markers.mark(item.id), holdsMark: markers.contains(item.id))
             }
             .tag(item.id)
+            #if os(iOS) || os(visionOS)
+            .listRowBackground(selection == item.id ? TWColor.accent.opacity(0.18) : nil)
+            #endif
         } else {
             CBORItemLabel(item: item, mark: markers.mark(item.id), holdsMark: false)
                 .tag(item.id)
+                #if os(iOS) || os(visionOS)
+                .listRowBackground(selection == item.id ? TWColor.accent.opacity(0.18) : nil)
+                #endif
         }
     }
 }

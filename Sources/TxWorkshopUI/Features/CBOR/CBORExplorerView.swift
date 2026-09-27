@@ -177,7 +177,7 @@ private struct CBORWorkspace: View {
         ScrollViewReader { proxy in
             List(selection: $selection) {
                 if let root = exploration.root {
-                    CBORTreeRow(item: root, markers: markers, expanded: $expanded)
+                    CBORTreeRow(item: root, markers: markers, selection: selection, expanded: $expanded)
                 }
             }
             .onChange(of: selection) { _, id in

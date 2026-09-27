@@ -1,6 +1,8 @@
 import SwiftUI
 #if os(macOS)
 import AppKit
+#elseif os(iOS)
+import UIKit
 #endif
 
 /// The Tx Workshop design system, "Workbench": dense and developer-tool-like,
@@ -98,6 +100,23 @@ private struct TWWindowStyle: ViewModifier {
                 case .system: nil
                 case .light: NSAppearance(named: .aqua)
                 case .dark: NSAppearance(named: .darkAqua)
+                }
+            }
+        #elseif os(iOS)
+        // On iOS, `preferredColorScheme` from a sheet reaches only the sheet,
+        // so every window's style is set directly.
+        content
+            .tint(TWColor.accent)
+            .onChange(of: appearance, initial: true) { _, appearance in
+                let style: UIUserInterfaceStyle = switch appearance {
+                case .system: .unspecified
+                case .light: .light
+                case .dark: .dark
+                }
+                for scene in UIApplication.shared.connectedScenes {
+                    for window in (scene as? UIWindowScene)?.windows ?? [] {
+                        window.overrideUserInterfaceStyle = style
+                    }
                 }
             }
         #else

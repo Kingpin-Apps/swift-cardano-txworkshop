@@ -79,6 +79,10 @@ struct AppearanceSection: View {
                 Text("Appearance", bundle: #bundle)
             }
             .pickerStyle(.segmented)
+        } header: {
+            #if !os(macOS)
+            Text("Appearance", bundle: #bundle)
+            #endif
         } footer: {
             Text("System follows your device's light or dark setting.", bundle: #bundle)
         }

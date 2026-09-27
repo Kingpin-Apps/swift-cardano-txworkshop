@@ -2,8 +2,8 @@ import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
 
-/// The bytes, sixteen to a row (eight on a phone), with the selected item's
-/// head and payload highlighted. Tapping a byte selects the item it belongs
+/// The bytes, sixteen to a row (eight when that does not fit), with the
+/// selected item's head and payload highlighted. Tapping a byte selects the item it belongs
 /// to.
 struct HexView: View {
     let bytes: Data
@@ -12,10 +12,20 @@ struct HexView: View {
     let problemOffset: Int?
     var markers: CBORMarkers = .none
     let onSelectByte: (Int) -> Void
-    @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var width: CGFloat = 0
 
-    private var bytesPerRow: Int { sizeClass == .compact ? 8 : 16 }
+    /// A byte cell's width: larger on touch platforms.
+    #if os(iOS) || os(visionOS)
+    private static let cellWidth: CGFloat = 36
+    #else
+    private static let cellWidth: CGFloat = 22
+    #endif
+
+    /// Sixteen when a full row and its offset fit the width, else eight.
+    private var bytesPerRow: Int {
+        width == 0 || width >= 96 + 16 * Self.cellWidth ? 16 : 8
+    }
     private var rowCount: Int { (bytes.count + bytesPerRow - 1) / bytesPerRow }
 
     var body: some View {
@@ -37,8 +47,14 @@ struct HexView: View {
                 guard let start else { return }
                 withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(start / bytesPerRow, anchor: .center) }
             }
+            // Rows change when the width does; keep the selection in view.
+            .onChange(of: bytesPerRow) { _, perRow in
+                guard let start = selection?.start else { return }
+                proxy.scrollTo(start / perRow, anchor: .center)
+            }
         }
         .font(TWFont.bytesSmall)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
     }
 }
 
