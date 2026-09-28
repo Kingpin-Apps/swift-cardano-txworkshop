@@ -7,6 +7,7 @@ struct TransactionOverview: View {
     let document: TxWorkshopDocument
     let inspection: LoadState<TransactionInspection>
     @State private var isComparing = false
+    @State private var isFetching = false
 
     var body: some View {
         Form {
@@ -53,11 +54,25 @@ struct TransactionOverview: View {
                     }
                 }
             }
+            ToolbarItem {
+                Button {
+                    isFetching = true
+                } label: {
+                    Label {
+                        Text("Fetch by ID…", bundle: #bundle)
+                    } icon: {
+                        Image(systemName: "arrow.down.circle")
+                    }
+                }
+            }
             if let transaction = document.content.transaction {
                 ToolbarItem {
                     ShareTransactionLink(transaction: transaction, envelope: document.content.envelope)
                 }
             }
+        }
+        .sheet(isPresented: $isFetching) {
+            FetchByHashSheet(document: document)
         }
         .sheet(isPresented: $isComparing) {
             if let current = inspection.value {

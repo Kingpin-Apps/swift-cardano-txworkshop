@@ -2,9 +2,13 @@ import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
 
-/// Looks a transaction up by id on every network with a provider.
+/// Looks a transaction up by id, or an explorer link to it, on every public
+/// network: with the network's own Blockfrost or Koios provider, or else
+/// Koios's public API, so it works before any provider is set up.
 struct FetchByHashSection: View {
     let document: TxWorkshopDocument
+    /// Called once the transaction is in the document.
+    var onFetched: () -> Void = {}
     @Environment(ProviderSettingsStore.self) private var providers
     @Environment(\.undoManager) private var undoManager
     @State private var hash = ""
@@ -14,7 +18,7 @@ struct FetchByHashSection: View {
     var body: some View {
         Section {
             TextField(text: $hash) {
-                Text("Transaction id", bundle: #bundle)
+                Text("Transaction id or explorer link", bundle: #bundle)
             }
             .font(TWFont.bytesSmall)
             .autocorrectionDisabled()
@@ -39,17 +43,17 @@ struct FetchByHashSection: View {
         } header: {
             Text("Fetch by id", bundle: #bundle)
         } footer: {
-            Text("Searches mainnet, preprod and preview with each network's Blockfrost or Koios provider.", bundle: #bundle)
+            Text("Searches mainnet, preprod and preview, with your Blockfrost or Koios provider where you have one and Koios's public API elsewhere.", bundle: #bundle)
         }
     }
 
     private func fetch() {
         guard !isFetching, !hash.trimmingCharacters(in: .whitespaces).isEmpty else { return }
-        let sources = CardanoNetwork.allCases.compactMap { network in
+        let sources = TransactionFetcher.withPublicFallback(CardanoNetwork.allCases.compactMap { network in
             providers.selectedProvider(for: network).map {
                 TransactionFetcher.Source(provider: $0, apiKey: providers.apiKey(for: $0))
             }
-        }
+        })
         let hash = hash
         isFetching = true
         problem = nil
@@ -62,6 +66,7 @@ struct FetchByHashSection: View {
                     content.envelope = nil
                     content.network = fetched.network
                 }, actionName: LocalizedStringResource("Fetch Transaction", bundle: #bundle), undoManager: undoManager)
+                onFetched()
             } catch {
                 problem = String(describing: error)
             }

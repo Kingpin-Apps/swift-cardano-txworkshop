@@ -68,3 +68,48 @@ private struct StubContext: ChainContext {
     func era() async throws -> Era? { nil }
     func lastBlockSlot() async throws -> Int { 0 }
 }
+
+@Suite("Finding the transaction id")
+struct TransactionIDTests {
+    static let hash = TransactionFetcherTests.hash
+
+    @Test("A bare id, in any case and with spaces")
+    func bare() {
+        #expect(TransactionFetcher.transactionID(in: "  \(Self.hash.uppercased())\n") == Self.hash)
+    }
+
+    @Test("An explorer link")
+    func link() {
+        #expect(TransactionFetcher.transactionID(in: "https://preprod.cardanoscan.io/transaction/\(Self.hash)?tab=utxo") == Self.hash)
+        #expect(TransactionFetcher.transactionID(in: "https://cexplorer.io/tx/\(Self.hash)#data") == Self.hash)
+    }
+
+    @Test("Nothing that is not exactly 64 hexadecimal characters")
+    func rejects() {
+        #expect(TransactionFetcher.transactionID(in: "abc") == nil)
+        #expect(TransactionFetcher.transactionID(in: Self.hash + "0") == nil)
+    }
+
+    @Test("Public Koios fills in the networks with no lookup provider")
+    func fallback() {
+        let sources = TransactionFetcher.withPublicFallback([
+            TransactionFetcherTests.source(.preprod, kind: .blockfrost),
+            TransactionFetcherTests.source(.mainnet, kind: .ogmios),
+        ])
+        let lookups = sources.filter { $0.provider.kind == .blockfrost || $0.provider.kind == .koios }
+        #expect(Set(lookups.map(\.provider.network)) == Set(CardanoNetwork.allCases))
+        #expect(lookups.filter { $0.provider.network == .preprod }.map(\.provider.kind) == [.blockfrost])
+    }
+}
+
+/// Against Koios's public API, with no provider set up. Set `LIVE_KOIOS=1`.
+@Suite("Fetching from public Koios", .enabled(if: ProcessInfo.processInfo.environment["LIVE_KOIOS"] != nil))
+struct PublicKoiosTests {
+    @Test("A preprod transaction, from a pasted explorer link, with its exact bytes")
+    func fetch() async throws {
+        let link = "https://preprod.cardanoscan.io/transaction/\(TransactionFetcherTests.hash)"
+        let fetched = try await TransactionFetcher().fetch(hash: link, from: TransactionFetcher.withPublicFallback([]))
+        #expect(fetched.network == .preprod)
+        #expect(try await TransactionInspector().inspect(fetched.cbor).id == TransactionFetcherTests.hash)
+    }
+}
