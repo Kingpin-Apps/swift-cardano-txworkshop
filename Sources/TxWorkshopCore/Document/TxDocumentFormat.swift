@@ -164,12 +164,22 @@ public enum TxDocumentCodec {
         }
     }
 
+    /// The file types a transaction can be opened from: the transaction
+    /// formats, JSON (text envelopes are often saved as `.json`) and plain
+    /// text.
+    public static let importableContentTypes: [UTType] = [
+        .cardanoTextEnvelope, .cardanoTransactionCBOR, .cardanoTransactionHex, .json, .plainText,
+    ]
+
     /// A dropped or imported file, whatever its name. Read by its extension
-    /// when that names a transaction format; otherwise by what is in it: a
-    /// text envelope (tools often save these as `.json`), hex or base64, and
-    /// last of all raw CBOR that starts like a transaction.
+    /// when that names a transaction format; a `.json` file must be a text
+    /// envelope; anything else by what is in it: a text envelope, hex or
+    /// base64, and last of all raw CBOR that starts like a transaction.
     public static func content(fromDroppedFile data: Data, fileExtension: String) throws -> TxDocumentContent {
         guard !data.isEmpty else { throw TxDocumentError.empty }
+        if fileExtension.lowercased() == "json" {
+            return try content(fromFile: data, format: .textEnvelope)
+        }
         if let type = UTType(filenameExtension: fileExtension), let format = TxDocumentFormat(contentType: type),
             format != .package, let content = try? content(fromFile: data, format: format) {
             return content

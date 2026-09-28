@@ -107,8 +107,11 @@ struct TxDocumentCodecTests {
         #expect(try TxDocumentCodec.content(fromDroppedFile: Data(hex.utf8), fileExtension: "txt").transaction == bytes)
         #expect(try TxDocumentCodec.content(fromDroppedFile: bytes, fileExtension: "bin").transaction == bytes)
         #expect(try TxDocumentCodec.content(fromDroppedFile: envelope, fileExtension: "tx").transaction == bytes)
+        #expect(throws: TxDocumentError.notATextEnvelope) {
+            try TxDocumentCodec.content(fromDroppedFile: Data(#"{"name": "not a transaction"}"#.utf8), fileExtension: "json")
+        }
         #expect(throws: TxDocumentError.noTransaction) {
-            try TxDocumentCodec.content(fromDroppedFile: Data("hello".utf8), fileExtension: "json")
+            try TxDocumentCodec.content(fromDroppedFile: Data("hello".utf8), fileExtension: "txt")
         }
     }
 

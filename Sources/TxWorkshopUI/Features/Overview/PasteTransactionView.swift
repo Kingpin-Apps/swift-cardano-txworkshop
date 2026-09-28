@@ -3,12 +3,13 @@ import TxWorkshopCore
 import UniformTypeIdentifiers
 
 /// Takes a transaction for an empty document: pasted as hex, base64 or a
-/// text envelope, fetched by id, or dropped as a file.
+/// text envelope, opened from or dropped as a file, or fetched by id.
 struct PasteTransactionView: View {
     let document: TxWorkshopDocument
     @Environment(\.undoManager) private var undoManager
     @State private var text = ""
     @State private var problem: String?
+    @State private var isImporting = false
 
     var body: some View {
         Form {
@@ -31,18 +32,33 @@ struct PasteTransactionView: View {
                     }
                     .labelStyle(.status(TWColor.failure))
                 }
-                Button {
-                    decode()
-                } label: {
-                    Text("Open Transaction", bundle: #bundle)
+                HStack {
+                    Button {
+                        decode()
+                    } label: {
+                        Text("Open Transaction", bundle: #bundle)
+                    }
+                    .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    Spacer()
+                    Button {
+                        isImporting = true
+                    } label: {
+                        Label {
+                            Text("Open from File…", bundle: #bundle)
+                        } icon: {
+                            Image(systemName: "doc.badge.plus")
+                        }
+                    }
                 }
-                .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             } header: {
                 Text("Paste a transaction", bundle: #bundle)
             } footer: {
-                Text("Hex, base64, or a cardano-cli text envelope. You can also drop a transaction file here, such as a .tx, .signed, .json, .cbor or .hex file.", bundle: #bundle)
+                Text("Hex, base64, or a cardano-cli text envelope. Or open or drop a transaction file: .tx, .signed, .json, .cbor or .hex.", bundle: #bundle)
             }
             FetchByHashSection(document: document)
+        }
+        .fileImporter(isPresented: $isImporting, allowedContentTypes: TxDocumentCodec.importableContentTypes) { result in
+            if case .success(let url) = result { _ = load(url) }
         }
         .dropDestination(for: URL.self) { urls, _ in
             guard let url = urls.first else { return false }
@@ -59,9 +75,16 @@ struct PasteTransactionView: View {
     private func load(_ url: URL) -> Bool {
         let accessing = url.startAccessingSecurityScopedResource()
         defer { if accessing { url.stopAccessingSecurityScopedResource() } }
-        guard let data = try? Data(contentsOf: url),
-            let dropped = try? TxDocumentCodec.content(fromDroppedFile: data, fileExtension: url.pathExtension)
-        else {
+        let dropped: TxDocumentContent
+        do {
+            dropped = try TxDocumentCodec.content(fromDroppedFile: try Data(contentsOf: url), fileExtension: url.pathExtension)
+        } catch TxDocumentError.notATextEnvelope {
+            problem = String(localized: "That JSON file is not a cardano-cli text envelope: it needs a cborHex field.", bundle: #bundle)
+            return false
+        } catch TxDocumentError.notHex {
+            problem = String(localized: "That file's transaction is not valid hex.", bundle: #bundle)
+            return false
+        } catch {
             problem = String(localized: "That file is not a transaction.", bundle: #bundle)
             return false
         }
