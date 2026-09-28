@@ -13,11 +13,7 @@ struct OutputDraftSection: View {
 
     var body: some View {
         Section {
-            TextField(text: $output.address) {
-                Text("Address", bundle: #bundle)
-            }
-            .font(TWFont.bytesSmall)
-            .autocorrectionDisabled()
+            ValueField(kind: .address, text: $output.address, prompt: Text("Address, hex or payment key", bundle: #bundle))
             TextField(value: $output.lovelace, format: .number) {
                 Text("Lovelace (empty for the minimum)", bundle: #bundle)
             }
@@ -45,12 +41,14 @@ struct OutputDraftSection: View {
             } label: {
                 Text("Datum", bundle: #bundle)
             }
-            if datumKind != .none {
+            if datumKind == .hash {
                 TextField(text: $datumHex) {
-                    datumKind == .hash ? Text("Hash (hex)", bundle: #bundle) : Text("Plutus data (CBOR hex)", bundle: #bundle)
+                    Text("Hash (hex)", bundle: #bundle)
                 }
                 .font(TWFont.bytesSmall)
                 .autocorrectionDisabled()
+            } else if datumKind == .inline {
+                ValueField(kind: .plutusData, text: $datumHex, prompt: Text("Plutus data (CBOR hex, JSON or a file)", bundle: #bundle))
             }
         } header: {
             RemovableHeader(title: Text("Output", bundle: #bundle), onRemove: onRemove)
@@ -67,11 +65,11 @@ struct OutputDraftSection: View {
     }
 
     private func syncDatum() {
-        let hex = datumHex.filter { !$0.isWhitespace }
         output.datum = switch datumKind {
         case .none: .none
-        case .hash: .hash(hex)
-        case .inline: .inline(hex)
+        case .hash: .hash(datumHex.filter { !$0.isWhitespace })
+        // Read in any form when built: CBOR hex, JSON or an integer.
+        case .inline: .inline(datumHex.trimmingCharacters(in: .whitespacesAndNewlines))
         }
     }
 }

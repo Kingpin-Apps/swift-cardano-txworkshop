@@ -4,16 +4,10 @@ import TxWorkshopCore
 /// Change, coin selection, validity, message, signers and fee buffer.
 struct BuildOptionsSection: View {
     @Binding var recipe: BuildRecipe
-    @State private var signers = ""
-    @State private var collateral = ""
 
     var body: some View {
         Section {
-            TextField(text: $recipe.changeAddress) {
-                Text("Change address (first source address if empty)", bundle: #bundle)
-            }
-            .font(TWFont.bytesSmall)
-            .autocorrectionDisabled()
+            ValueField(kind: .address, text: $recipe.changeAddress, prompt: Text("Change address (first source address if empty)", bundle: #bundle))
             Picker(selection: $recipe.coinSelection) {
                 Text("Random-improve", bundle: #bundle).tag(BuildRecipe.CoinSelection.randomImprove)
                 Text("Largest first", bundle: #bundle).tag(BuildRecipe.CoinSelection.largestFirst)
@@ -43,32 +37,18 @@ struct BuildOptionsSection: View {
             Text("Message (CIP-20)", bundle: #bundle)
         }
         Section {
-            TextEditor(text: $signers)
-                .font(TWFont.bytesSmall)
-                .frame(minHeight: 44, maxHeight: 100)
-                .autocorrectionDisabled()
-                .accessibilityLabel(Text("Required signers, one key hash per line", bundle: #bundle))
+            ValueLinesEditor(kind: .keyHash, lines: $recipe.requiredSigners, label: Text("Required signers, one per line", bundle: #bundle))
         } header: {
             Text("Required signers", bundle: #bundle)
         } footer: {
-            Text("Key hashes in hex, one per line.", bundle: #bundle)
+            Text("One per line: a key hash, an address, or read from a key file.", bundle: #bundle)
         }
         Section {
-            TextEditor(text: $collateral)
-                .font(TWFont.bytesSmall)
-                .frame(minHeight: 44, maxHeight: 100)
-                .autocorrectionDisabled()
-                .accessibilityLabel(Text("Collateral inputs, one per line", bundle: #bundle))
+            ValueLinesEditor(kind: .transactionInput, lines: $recipe.collateral, label: Text("Collateral inputs, one per line", bundle: #bundle))
         } header: {
             Text("Collateral", bundle: #bundle)
         } footer: {
             Text("Inputs (transaction id#index), one per line. Left empty, the builder picks collateral from the source addresses when scripts run.", bundle: #bundle)
         }
-        .onAppear {
-            signers = recipe.requiredSigners.joined(separator: "\n")
-            collateral = recipe.collateral.joined(separator: "\n")
-        }
-        .onChange(of: signers) { _, text in recipe.requiredSigners = SourcesSection.lines(text) }
-        .onChange(of: collateral) { _, text in recipe.collateral = SourcesSection.lines(text) }
     }
 }

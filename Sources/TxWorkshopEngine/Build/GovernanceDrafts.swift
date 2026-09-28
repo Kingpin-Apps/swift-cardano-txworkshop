@@ -55,8 +55,8 @@ extension TransactionComposer {
 
         for vote in recipe.votes {
             let voter: VoterType = switch vote.voter {
-            case .drep: .drepKeyhash(try keyHash(vote.voterID))
-            case .committee: .constitutionalCommitteeHotKeyhash(try keyHash(vote.voterID))
+            case .drep: .drepKeyhash(try keyHash(ValueReader.value(.drepKeyHash, vote.voterID) { ComposeError.badGovernance($0) }))
+            case .committee: .constitutionalCommitteeHotKeyhash(try keyHash(ValueReader.value(.committeeHotKeyHash, vote.voterID) { ComposeError.badGovernance($0) }))
             case .stakePool: .stakePoolKeyhash(VerificationKeyHash(payload: try poolKeyHash(vote.voterID).payload))
             }
             let choice: Vote = switch vote.choice {
@@ -112,7 +112,8 @@ extension TransactionComposer {
     // MARK: Credentials and ids
 
     static func stakeAddress(_ text: String) throws -> Address {
-        let address = try address(text)
+        let value = try ValueReader.value(.stakeAddress, text) { ComposeError.badGovernance("\(text): \($0)") }
+        guard let address = try? Address(from: .string(value)) else { throw ComposeError.badAddress(text) }
         guard address.stakingPart != nil else { throw ComposeError.badGovernance("\(text) has no stake credential.") }
         return address
     }
@@ -139,12 +140,13 @@ extension TransactionComposer {
         return VerificationKeyHash(payload: bytes)
     }
 
-    static func drepCredential(_ hex: String) throws -> DRepCredential {
-        DRepCredential(credential: .verificationKeyHash(try keyHash(hex)))
+    static func drepCredential(_ text: String) throws -> DRepCredential {
+        let hex = try ValueReader.value(.drepKeyHash, text) { ComposeError.badGovernance($0) }
+        return DRepCredential(credential: .verificationKeyHash(try keyHash(hex)))
     }
 
     static func poolKeyHash(_ text: String) throws -> PoolKeyHash {
-        let trimmed = text.trimmingCharacters(in: .whitespaces)
+        let trimmed = try ValueReader.value(.pool, text) { ComposeError.badGovernance($0) }
         if trimmed.hasPrefix("pool") {
             guard let pool = try? PoolOperator(from: trimmed) else { throw ComposeError.badGovernance("\(text) is not a pool id.") }
             return pool.poolKeyHash
@@ -156,7 +158,7 @@ extension TransactionComposer {
     }
 
     static func drep(_ text: String) throws -> DRep {
-        let trimmed = text.trimmingCharacters(in: .whitespaces)
+        let trimmed = try ValueReader.value(.drep, text) { ComposeError.badGovernance($0) }
         switch trimmed.lowercased() {
         case "abstain": return DRep(credential: .alwaysAbstain)
         case "no-confidence", "noconfidence": return DRep(credential: .alwaysNoConfidence)
@@ -170,7 +172,7 @@ extension TransactionComposer {
     }
 
     static func govActionID(_ text: String) throws -> GovActionID {
-        let parts = text.split(separator: "#")
+        let parts = try ValueReader.value(.govActionID, text) { ComposeError.badGovernance($0) }.split(separator: "#")
         guard parts.count == 2, let index = UInt16(parts[1]), let id = try? TxDocumentCodec.bytes(fromHex: String(parts[0])), id.count == 32 else {
             throw ComposeError.badGovernance("\(text) is not a governance action id (transaction id#index).")
         }
@@ -180,8 +182,9 @@ extension TransactionComposer {
     /// An anchor from its URL and hash; `nil` when both are empty.
     static func anchor(_ url: String, _ hash: String) throws -> Anchor? {
         let url = url.trimmingCharacters(in: .whitespaces)
-        let hash = hash.trimmingCharacters(in: .whitespaces)
+        var hash = hash.trimmingCharacters(in: .whitespaces)
         if url.isEmpty, hash.isEmpty { return nil }
+        hash = try ValueReader.value(.anchorHash, hash) { ComposeError.badGovernance($0) }
         guard let bytes = try? TxDocumentCodec.bytes(fromHex: hash), bytes.count == 32 else {
             throw ComposeError.badGovernance("An anchor hash is the 32-byte Blake2b-256 of the anchor's content, in hex.")
         }

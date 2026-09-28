@@ -16,11 +16,13 @@ extension TransactionComposer {
             } catch {
                 throw ComposeError.badScript("The native script JSON does not parse: \(error)")
             }
-        case .plutus(let version, let hex):
+        case .plutus(let version, let text):
+            let hex = try ValueReader.value(.plutusScript(version: version), text) { ComposeError.badScript($0) }
             let script = try plutusScript(version: version, hex: hex)
             return (script, .script(script))
         case .reference(let id):
-            guard let input = TransactionValidation.input(id), let (utxo, _) = try await context.utxo(input: input) else {
+            let reference = try ValueReader.value(.transactionInput, id) { _ in ComposeError.unknownInput(id) }
+            guard let input = TransactionValidation.input(reference), let (utxo, _) = try await context.utxo(input: input) else {
                 throw ComposeError.unknownInput(id)
             }
             guard let script = utxo.output.script else { throw ComposeError.badScript("\(id) carries no reference script.") }
@@ -49,7 +51,8 @@ extension TransactionComposer {
         }
     }
 
-    static func plutusData(_ hex: String, what: String) throws -> PlutusData {
+    static func plutusData(_ text: String, what: String) throws -> PlutusData {
+        let hex = try ValueReader.value(.plutusData, text) { _ in ComposeError.badPlutusData(what) }
         guard let bytes = try? TxDocumentCodec.bytes(fromHex: hex), let data = try? PlutusData.fromCBOR(data: bytes) else {
             throw ComposeError.badPlutusData(what)
         }
@@ -82,7 +85,8 @@ extension TransactionComposer {
         }
 
         for draft in recipe.scriptInputs {
-            guard let input = TransactionValidation.input(draft.input), let (utxo, _) = try await context.utxo(input: input) else {
+            let reference = try ValueReader.value(.transactionInput, draft.input) { _ in ComposeError.unknownInput(draft.input) }
+            guard let input = TransactionValidation.input(reference), let (utxo, _) = try await context.utxo(input: input) else {
                 throw ComposeError.unknownInput(draft.input)
             }
             let source = try await draft.script.asyncMap { try await Self.script($0, context: context).source }
@@ -97,7 +101,8 @@ extension TransactionComposer {
         }
 
         for id in recipe.collateral {
-            guard let input = TransactionValidation.input(id), let (utxo, _) = try await context.utxo(input: input) else {
+            let reference = try ValueReader.value(.transactionInput, id) { _ in ComposeError.unknownInput(id) }
+            guard let input = TransactionValidation.input(reference), let (utxo, _) = try await context.utxo(input: input) else {
                 throw ComposeError.unknownInput(id)
             }
             builder.collaterals.append(utxo)

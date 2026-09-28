@@ -18,13 +18,12 @@ struct AssetDraftRow: View {
         HStack(alignment: .center) {
             layout {
                 if showsPolicy {
-                    TextField(text: $asset.policyID) { Text("Policy id", bundle: #bundle) }
-                        .font(TWFont.bytesSmall)
+                    ValueField(kind: .policyID, text: $asset.policyID, prompt: Text("Policy id or policy script", bundle: #bundle))
                 }
-                TextField(text: $asset.assetNameHex) {
-                    showsPolicy ? Text("Name (hex)", bundle: #bundle) : Text("Asset name (hex)", bundle: #bundle)
-                }
-                .font(TWFont.bytesSmall)
+                ValueField(
+                    kind: .assetName, text: $asset.assetNameHex,
+                    prompt: showsPolicy ? Text("Name (hex or text)", bundle: #bundle) : Text("Asset name (hex or text)", bundle: #bundle)
+                )
                 .frame(maxWidth: isStacked || !showsPolicy ? .infinity : 160)
                 TextField(value: $asset.quantity, format: .number) { Text("Quantity", bundle: #bundle) }
                     .font(TWFont.figure)

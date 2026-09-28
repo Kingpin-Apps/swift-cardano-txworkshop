@@ -45,6 +45,34 @@ struct TransactionComposerTests {
         #expect(outcome.errors.map(\.kind) == ["missingVKeyWitness"], "\(outcome.errors.map(\.message))")
     }
 
+    @Test("Values build from any form: a payment key file, hex, a stake key, pool.json and a DRep key")
+    func flexibleValues() async throws {
+        let (snapshot, utxo, address) = try Self.setup()
+        let payee: PaymentVerificationKey = try PaymentSigningKey.generate().toVerificationKey()
+        let stake: StakeVerificationKey = try StakeSigningKey.generate().toVerificationKey()
+        let pool = try StakePoolKeyPair.generate()
+        let poolID = try PoolOperator(poolKeyHash: pool.verificationKey.poolKeyHash()).toBech32()
+        let drep: DRepVerificationKey = try DRepSigningKey.generate().toVerificationKey()
+        let changeHex = try Address(from: .string(address)).toBytes().hex
+
+        let recipe = BuildRecipe(
+            utxos: [try utxo.toCBORData().hex],
+            outputs: [OutputDraft(address: try #require(try payee.toTextEnvelope()), lovelace: 5_000_000)],
+            changeAddress: changeHex,
+            certificates: [
+                CertificateItem(certificate: .registerStake(stakeAddress: try #require(try stake.toTextEnvelope()))),
+                CertificateItem(certificate: .delegateStake(stakeAddress: try stake.hash().payload.hex, pool: #"{"name": "p", "id_bech": "\#(poolID)"}"#)),
+                CertificateItem(certificate: .delegateVote(stakeAddress: try stake.hash().payload.hex, drep: try #require(try drep.toTextEnvelope()))),
+            ]
+        )
+        let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
+        let enterprise = try Address(paymentPart: .verificationKeyHash(payee.hash()), network: .testnet).toBech32()
+        #expect(inspection.outputs.first?.address.text == enterprise)
+        #expect(inspection.outputs.last?.address.text == address)
+        #expect(built.transaction.count > 0)
+    }
+
     @Test("An output without an amount gets the least the ledger allows")
     func minimumAda() async throws {
         let (snapshot, utxo, address) = try Self.setup()

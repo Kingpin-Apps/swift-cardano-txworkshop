@@ -151,6 +151,7 @@ struct BuildView: View {
             }
         }
         .formStyle(.grouped)
+        .environment(\.documentNetwork, document.content.network)
         .navigationTitle(Text("Build", bundle: #bundle))
     }
 

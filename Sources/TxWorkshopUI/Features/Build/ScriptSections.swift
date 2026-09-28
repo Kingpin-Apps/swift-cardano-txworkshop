@@ -21,11 +21,7 @@ struct MintDraftSection: View {
             }
             .buttonStyle(.borderless)
             if case .native = mint.script {} else {
-                TextField(text: $mint.redeemer) {
-                    Text("Redeemer (Plutus data CBOR hex)", bundle: #bundle)
-                }
-                .font(TWFont.bytesSmall)
-                .autocorrectionDisabled()
+                ValueField(kind: .plutusData, text: $mint.redeemer, prompt: Text("Redeemer (CBOR hex, JSON or a file)", bundle: #bundle))
             }
         } header: {
             RemovableHeader(title: Text("Mint or burn", bundle: #bundle), onRemove: onRemove)
@@ -44,27 +40,15 @@ struct ScriptInputSection: View {
 
     var body: some View {
         Section {
-            TextField(text: $input.input) {
-                Text("UTxO (transaction id#index)", bundle: #bundle)
-            }
-            .font(TWFont.bytesSmall)
-            .autocorrectionDisabled()
+            ValueField(kind: .transactionInput, text: $input.input, prompt: Text("UTxO (transaction id#index)", bundle: #bundle))
             Toggle(isOn: $hasScript) {
                 Text("Give the script here", bundle: #bundle)
             }
             if hasScript {
                 ScriptDraftEditor(script: $script)
             }
-            TextField(text: $input.datum) {
-                Text("Datum (CBOR hex; only for a datum hash)", bundle: #bundle)
-            }
-            .font(TWFont.bytesSmall)
-            .autocorrectionDisabled()
-            TextField(text: $input.redeemer) {
-                Text("Redeemer (Plutus data CBOR hex)", bundle: #bundle)
-            }
-            .font(TWFont.bytesSmall)
-            .autocorrectionDisabled()
+            ValueField(kind: .plutusData, text: $input.datum, prompt: Text("Datum (only for a datum hash; CBOR hex, JSON or a file)", bundle: #bundle))
+            ValueField(kind: .plutusData, text: $input.redeemer, prompt: Text("Redeemer (CBOR hex, JSON or a file)", bundle: #bundle))
         } header: {
             RemovableHeader(title: Text("Script input", bundle: #bundle), onRemove: onRemove)
         } footer: {

@@ -31,17 +31,17 @@ struct CertificateDraftSection: View {
             }
             switch kind {
             case .registerStake, .deregisterStake, .delegateStake, .delegateVote:
-                field($stakeAddress, Text("Stake address (stake…)", bundle: #bundle))
+                ValueField(kind: .stakeAddress, text: $stakeAddress, prompt: Text("Stake address, key hash or stake key", bundle: #bundle))
                 if kind == .delegateStake {
-                    field($target, Text("Pool (pool1… or hex)", bundle: #bundle))
+                    ValueField(kind: .pool, text: $target, prompt: Text("Pool id, hex, cold key or pool.json", bundle: #bundle))
                 } else if kind == .delegateVote {
-                    field($target, Text("DRep (drep1…, key hash, abstain or no-confidence)", bundle: #bundle))
+                    ValueField(kind: .drep, text: $target, prompt: Text("DRep id, key hash, key file, abstain or no-confidence", bundle: #bundle))
                 }
             case .registerDRep, .unregisterDRep, .updateDRep:
-                field($keyHash, Text("DRep key hash (hex)", bundle: #bundle))
+                ValueField(kind: .drepKeyHash, text: $keyHash, prompt: Text("DRep id, key hash or DRep key file", bundle: #bundle))
                 if kind != .unregisterDRep {
                     field($anchorURL, Text("Anchor URL (optional)", bundle: #bundle))
-                    field($anchorHash, Text("Anchor hash (Blake2b-256, hex)", bundle: #bundle))
+                    AnchorHashField(hash: $anchorHash, url: anchorURL, prompt: Text("Anchor hash (hex, or choose the anchor file)", bundle: #bundle))
                 }
             }
         } header: {

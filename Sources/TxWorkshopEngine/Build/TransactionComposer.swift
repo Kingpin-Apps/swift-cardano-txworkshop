@@ -55,6 +55,17 @@ public struct TransactionComposer: Sendable {
         _ recipe: BuildRecipe, snapshot: ChainContextSnapshot?, network: CardanoNetwork?,
         provider: ProviderConfiguration? = nil, apiKey: String? = nil
     ) async throws -> Composition {
+        // The recipe's values are read in any form they were given in; some
+        // (a key hash for an address) need the network.
+        try await ValueReader.$buildNetwork.withValue(network) {
+            try await build(recipe, snapshot: snapshot, network: network, provider: provider, apiKey: apiKey)
+        }
+    }
+
+    private func build(
+        _ recipe: BuildRecipe, snapshot: ChainContextSnapshot?, network: CardanoNetwork?,
+        provider: ProviderConfiguration?, apiKey: String?
+    ) async throws -> Composition {
         let live: (any ChainContext)? = if let provider {
             try await ChainContextFactory().makeContext(for: provider, apiKey: apiKey)
         } else {
@@ -93,7 +104,8 @@ public struct TransactionComposer: Sendable {
             builder.addInputAddress(.address(address))
         }
         for id in recipe.fixedInputs {
-            guard let input = TransactionValidation.input(id), let (utxo, _) = try await context.utxo(input: input) else {
+            let reference = try ValueReader.value(.transactionInput, id) { _ in ComposeError.unknownInput(id) }
+            guard let input = TransactionValidation.input(reference), let (utxo, _) = try await context.utxo(input: input) else {
                 throw ComposeError.unknownInput(id)
             }
             builder.addInput(utxo)
@@ -102,7 +114,8 @@ public struct TransactionComposer: Sendable {
             try builder.addOutput(try await Self.output(draft, context: context))
         }
         if !recipe.requiredSigners.isEmpty {
-            builder.requiredSigners = try recipe.requiredSigners.map { hex in
+            builder.requiredSigners = try recipe.requiredSigners.map { text in
+                let hex = try ValueReader.value(.keyHash, text) { _ in ComposeError.badKeyHash(text) }
                 guard let bytes = try? TxDocumentCodec.bytes(fromHex: hex), bytes.count == 28 else { throw ComposeError.badKeyHash(hex) }
                 return VerificationKeyHash(payload: bytes)
             }
@@ -164,8 +177,9 @@ public struct TransactionComposer: Sendable {
     // MARK: Drafts to ledger values
 
     static func address(_ text: String) throws -> Address {
+        let value = try ValueReader.value(.address, text) { _ in ComposeError.badAddress(text) }
         do {
-            return try Address(from: .string(text.trimmingCharacters(in: .whitespacesAndNewlines)))
+            return try Address(from: .string(value))
         } catch {
             throw ComposeError.badAddress(text)
         }
@@ -191,7 +205,8 @@ public struct TransactionComposer: Sendable {
         case .hash(let hex):
             guard let bytes = try? TxDocumentCodec.bytes(fromHex: hex), bytes.count == 32 else { throw ComposeError.badDatum }
             output.datumOption = DatumOption(datum: .datumHash(DatumHash(payload: bytes)))
-        case .inline(let hex):
+        case .inline(let text):
+            let hex = try ValueReader.value(.plutusData, text) { _ in ComposeError.badDatum }
             guard let bytes = try? TxDocumentCodec.bytes(fromHex: hex), let data = try? PlutusData.fromCBOR(data: bytes) else {
                 throw ComposeError.badDatum
             }
@@ -213,10 +228,12 @@ public struct TransactionComposer: Sendable {
     static func multiAsset(_ assets: [(policy: String, nameHex: String, quantity: Int64)]) throws -> MultiAsset {
         var policies: [ScriptHash: OrderedDictionary<AssetName, Int64>] = [:]
         for (policy, nameHex, quantity) in assets where quantity != 0 {
-            guard let policyBytes = try? TxDocumentCodec.bytes(fromHex: policy), policyBytes.count == 28 else {
+            let policyHex = try ValueReader.value(.policyID, policy) { ComposeError.badAsset("\(policy): \($0)") }
+            guard let policyBytes = try? TxDocumentCodec.bytes(fromHex: policyHex), policyBytes.count == 28 else {
                 throw ComposeError.badAsset("\(policy) is not a 28-byte policy id.")
             }
-            let nameBytes = nameHex.isEmpty ? Data() : (try? TxDocumentCodec.bytes(fromHex: nameHex))
+            let nameValue = nameHex.isEmpty ? "" : try ValueReader.value(.assetName, nameHex) { ComposeError.badAsset("\(nameHex): \($0)") }
+            let nameBytes = nameValue.isEmpty ? Data() : (try? TxDocumentCodec.bytes(fromHex: nameValue))
             guard let nameBytes, nameBytes.count <= 32, let name = try? AssetName(payload: nameBytes) else {
                 throw ComposeError.badAsset("\(nameHex) is not an asset name of up to 32 bytes in hex.")
             }

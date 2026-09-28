@@ -8,18 +8,13 @@ struct SourcesSection: View {
     @Binding var recipe: BuildRecipe
     let provider: ProviderConfiguration?
     @Environment(ProviderSettingsStore.self) private var providers
-    @State private var addresses = ""
     @State private var utxos = ""
     @State private var isFetching = false
     @State private var problem: String?
 
     var body: some View {
         Section {
-            TextEditor(text: $addresses)
-                .font(TWFont.bytesSmall)
-                .frame(minHeight: 44, maxHeight: 120)
-                .autocorrectionDisabled()
-                .accessibilityLabel(Text("Source addresses, one per line", bundle: #bundle))
+            ValueLinesEditor(kind: .address, lines: $recipe.sourceAddresses, label: Text("Source addresses, one per line", bundle: #bundle))
             Button(action: fetch) {
                 Text("Fetch Their UTxOs", bundle: #bundle)
                     .opacity(isFetching ? 0 : 1)
@@ -32,7 +27,7 @@ struct SourcesSection: View {
         } header: {
             Text("Source addresses", bundle: #bundle)
         } footer: {
-            Text("One per line. Fetching saves their UTxOs in the recipe, so it builds offline later.", bundle: #bundle)
+            Text("One per line: bech32, hex, or read from .addr or payment key files. Fetching saves their UTxOs in the recipe, so it builds offline later.", bundle: #bundle)
         }
         Section {
             TextEditor(text: $utxos)
@@ -62,10 +57,8 @@ struct SourcesSection: View {
             Text("Each a whole UTxO in CBOR hex, one per line.", bundle: #bundle)
         }
         .onAppear {
-            addresses = recipe.sourceAddresses.joined(separator: "\n")
             utxos = recipe.utxos.joined(separator: "\n")
         }
-        .onChange(of: addresses) { _, text in recipe.sourceAddresses = Self.lines(text) }
         .onChange(of: utxos) { _, text in recipe.utxos = Self.lines(text) }
     }
 

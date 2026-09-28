@@ -8,9 +8,7 @@ struct WithdrawalDraftSection: View {
 
     var body: some View {
         Section {
-            TextField(text: $withdrawal.stakeAddress) { Text("Stake address (stake…)", bundle: #bundle) }
-                .font(TWFont.bytesSmall)
-                .autocorrectionDisabled()
+            ValueField(kind: .stakeAddress, text: $withdrawal.stakeAddress, prompt: Text("Stake address, key hash or stake key", bundle: #bundle))
             TextField(value: $withdrawal.lovelace, format: .number) { Text("Lovelace", bundle: #bundle) }
                 .font(TWFont.figure)
         } header: {
@@ -35,14 +33,15 @@ struct VoteDraftSection: View {
             } label: {
                 Text("Voter", bundle: #bundle)
             }
-            TextField(text: $vote.voterID) {
-                vote.voter == .stakePool ? Text("Pool (pool1… or hex)", bundle: #bundle) : Text("Key hash (hex)", bundle: #bundle)
+            switch vote.voter {
+            case .drep:
+                ValueField(kind: .drepKeyHash, text: $vote.voterID, prompt: Text("DRep id, key hash or key file", bundle: #bundle))
+            case .stakePool:
+                ValueField(kind: .pool, text: $vote.voterID, prompt: Text("Pool id, hex, cold key or pool.json", bundle: #bundle))
+            case .committee:
+                ValueField(kind: .committeeHotKeyHash, text: $vote.voterID, prompt: Text("Committee hot id, key hash or hot key file", bundle: #bundle))
             }
-            .font(TWFont.bytesSmall)
-            .autocorrectionDisabled()
-            TextField(text: $vote.action) { Text("Governance action (transaction id#index)", bundle: #bundle) }
-                .font(TWFont.bytesSmall)
-                .autocorrectionDisabled()
+            ValueField(kind: .govActionID, text: $vote.action, prompt: Text("Governance action (gov_action1… or transaction id#index)", bundle: #bundle))
             Picker(selection: $vote.choice) {
                 Text("Yes", bundle: #bundle).tag(VoteDraft.Choice.yes)
                 Text("No", bundle: #bundle).tag(VoteDraft.Choice.no)
@@ -54,9 +53,7 @@ struct VoteDraftSection: View {
             TextField(text: $vote.anchorURL) { Text("Rationale URL (optional)", bundle: #bundle) }
                 .font(TWFont.bytesSmall)
                 .autocorrectionDisabled()
-            TextField(text: $vote.anchorHash) { Text("Rationale hash (Blake2b-256, hex)", bundle: #bundle) }
-                .font(TWFont.bytesSmall)
-                .autocorrectionDisabled()
+            AnchorHashField(hash: $vote.anchorHash, url: vote.anchorURL, prompt: Text("Rationale hash (hex, or choose the rationale file)", bundle: #bundle))
         } header: {
             RemovableHeader(title: Text("Vote", bundle: #bundle), onRemove: onRemove)
         }
@@ -80,21 +77,15 @@ struct ProposalDraftSection: View {
                 Text("Action", bundle: #bundle)
             }
             if isTreasury {
-                TextField(text: $payee) { Text("Pay to stake address", bundle: #bundle) }
-                    .font(TWFont.bytesSmall)
-                    .autocorrectionDisabled()
+                ValueField(kind: .stakeAddress, text: $payee, prompt: Text("Pay to stake address", bundle: #bundle))
                 TextField(value: $amount, format: .number) { Text("Lovelace", bundle: #bundle) }
                     .font(TWFont.figure)
             }
-            TextField(text: $proposal.returnAddress) { Text("Deposit return stake address", bundle: #bundle) }
-                .font(TWFont.bytesSmall)
-                .autocorrectionDisabled()
+            ValueField(kind: .stakeAddress, text: $proposal.returnAddress, prompt: Text("Deposit return stake address", bundle: #bundle))
             TextField(text: $proposal.anchorURL) { Text("Anchor URL", bundle: #bundle) }
                 .font(TWFont.bytesSmall)
                 .autocorrectionDisabled()
-            TextField(text: $proposal.anchorHash) { Text("Anchor hash (Blake2b-256, hex)", bundle: #bundle) }
-                .font(TWFont.bytesSmall)
-                .autocorrectionDisabled()
+            AnchorHashField(hash: $proposal.anchorHash, url: proposal.anchorURL, prompt: Text("Anchor hash (hex, or choose the anchor file)", bundle: #bundle))
         } header: {
             RemovableHeader(title: Text("Proposal", bundle: #bundle), onRemove: onRemove)
         } footer: {
