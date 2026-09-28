@@ -619,6 +619,9 @@
     "Hex, base64, or a cardano-cli text envelope. You can also drop a .tx, .signed, .cbor or .hex file here." : {
 
     },
+    "Hex, base64, or a cardano-cli text envelope. You can also drop a transaction file here, such as a .tx, .signed, .json, .cbor or .hex file." : {
+
+    },
     "ID" : {
 
     },
@@ -1310,9 +1313,6 @@
 
     },
     "Scripts used by reference are listed with the outputs that carry them." : {
-
-    },
-    "Searches mainnet, preprod and preview with each network's Blockfrost or Koios provider." : {
 
     },
     "Searches mainnet, preprod and preview, with your Blockfrost or Koios provider where you have one and Koios's public API elsewhere." : {

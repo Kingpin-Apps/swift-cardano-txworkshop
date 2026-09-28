@@ -96,6 +96,22 @@ struct TxDocumentCodecTests {
         #expect(throws: TxDocumentError.empty) { try TxDocumentCodec.content(fromPastedText: "  ") }
     }
 
+    @Test("Dropped files open by their content when the extension is unknown")
+    func droppedFiles() throws {
+        let hex = try Self.transactionHex()
+        let bytes = try TxDocumentCodec.bytes(fromHex: hex)
+        let envelope = Data(#"{"type": "Tx ConwayEra", "description": "", "cborHex": "\#(hex)"}"#.utf8)
+        let fromJSON = try TxDocumentCodec.content(fromDroppedFile: envelope, fileExtension: "json")
+        #expect(fromJSON.transaction == bytes)
+        #expect(fromJSON.envelope?.type == "Tx ConwayEra")
+        #expect(try TxDocumentCodec.content(fromDroppedFile: Data(hex.utf8), fileExtension: "txt").transaction == bytes)
+        #expect(try TxDocumentCodec.content(fromDroppedFile: bytes, fileExtension: "bin").transaction == bytes)
+        #expect(try TxDocumentCodec.content(fromDroppedFile: envelope, fileExtension: "tx").transaction == bytes)
+        #expect(throws: TxDocumentError.noTransaction) {
+            try TxDocumentCodec.content(fromDroppedFile: Data("hello".utf8), fileExtension: "json")
+        }
+    }
+
     @Test("Each format maps to its content type and back")
     func contentTypes() {
         for format in TxDocumentFormat.allCases {

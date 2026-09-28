@@ -40,7 +40,7 @@ struct PasteTransactionView: View {
             } header: {
                 Text("Paste a transaction", bundle: #bundle)
             } footer: {
-                Text("Hex, base64, or a cardano-cli text envelope. You can also drop a .tx, .signed, .cbor or .hex file here.", bundle: #bundle)
+                Text("Hex, base64, or a cardano-cli text envelope. You can also drop a transaction file here, such as a .tx, .signed, .json, .cbor or .hex file.", bundle: #bundle)
             }
             FetchByHashSection(document: document)
         }
@@ -59,10 +59,8 @@ struct PasteTransactionView: View {
     private func load(_ url: URL) -> Bool {
         let accessing = url.startAccessingSecurityScopedResource()
         defer { if accessing { url.stopAccessingSecurityScopedResource() } }
-        guard let type = UTType(filenameExtension: url.pathExtension),
-            let format = TxDocumentFormat(contentType: type), format != .package,
-            let data = try? Data(contentsOf: url),
-            let dropped = try? TxDocumentCodec.content(fromFile: data, format: format)
+        guard let data = try? Data(contentsOf: url),
+            let dropped = try? TxDocumentCodec.content(fromDroppedFile: data, fileExtension: url.pathExtension)
         else {
             problem = String(localized: "That file is not a transaction.", bundle: #bundle)
             return false

@@ -164,6 +164,26 @@ public enum TxDocumentCodec {
         }
     }
 
+    /// A dropped or imported file, whatever its name. Read by its extension
+    /// when that names a transaction format; otherwise by what is in it: a
+    /// text envelope (tools often save these as `.json`), hex or base64, and
+    /// last of all raw CBOR that starts like a transaction.
+    public static func content(fromDroppedFile data: Data, fileExtension: String) throws -> TxDocumentContent {
+        guard !data.isEmpty else { throw TxDocumentError.empty }
+        if let type = UTType(filenameExtension: fileExtension), let format = TxDocumentFormat(contentType: type),
+            format != .package, let content = try? content(fromFile: data, format: format) {
+            return content
+        }
+        if let text = String(data: data, encoding: .utf8), let content = try? content(fromPastedText: text) {
+            return content
+        }
+        // A transaction is a CBOR array of three (Shelley to Mary) or four items.
+        if data.first == 0x83 || data.first == 0x84 {
+            return TxDocumentContent(transaction: data)
+        }
+        throw TxDocumentError.noTransaction
+    }
+
     /// `content` as a single file in `format`.
     public static func file(for content: TxDocumentContent, format: TxDocumentFormat) throws -> Data {
         guard let transaction = content.transaction else { throw TxDocumentError.noTransaction }
