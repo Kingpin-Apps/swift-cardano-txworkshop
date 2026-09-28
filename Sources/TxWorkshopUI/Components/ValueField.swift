@@ -2,6 +2,13 @@ import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
 
+/// A testnet named in the file an address was read from, such as
+/// `alice.preview.addr`, to tell preprod from preview.
+@MainActor @Observable
+final class BuildNetworkHints {
+    var fromFileName: CardanoNetwork?
+}
+
 extension EnvironmentValues {
     /// The network of the document being edited, for reading keys and key
     /// hashes as addresses and refusing addresses from another network.
@@ -18,6 +25,7 @@ struct ValueField: View {
     let prompt: Text
     var axis: Axis = .horizontal
     @Environment(\.documentNetwork) private var network
+    @Environment(BuildNetworkHints.self) private var networkHints: BuildNetworkHints?
     @State private var isImporting = false
     /// The form of the last file read, while the field still holds its value.
     @State private var loaded: ReadValue?
@@ -82,8 +90,13 @@ struct ValueField: View {
     private func load(_ url: URL) {
         let accessing = url.startAccessingSecurityScopedResource()
         defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+        let data = (try? Data(contentsOf: url)) ?? Data()
+        if let named = NetworkGuess.network(inFileName: url.lastPathComponent), let text = String(data: data, encoding: .utf8),
+            NetworkGuess.hint(for: kind, text: text) != nil {
+            networkHints?.fromFileName = named
+        }
         do {
-            let read = try ValueReader.read(kind, file: try Data(contentsOf: url), name: url.lastPathComponent, network: network)
+            let read = try ValueReader.read(kind, file: data, name: url.lastPathComponent, network: network)
             loaded = read
             fileProblem = nil
             text = read.value

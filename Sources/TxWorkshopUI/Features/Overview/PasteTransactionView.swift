@@ -1,5 +1,6 @@
 import SwiftUI
 import TxWorkshopCore
+import TxWorkshopEngine
 import UniformTypeIdentifiers
 
 /// Takes a transaction for an empty document: pasted as hex, base64 or a
@@ -91,6 +92,7 @@ struct PasteTransactionView: View {
         document.update({ content in
             content.transaction = dropped.transaction
             content.envelope = dropped.envelope
+            content.network = content.network ?? Self.network(of: dropped.transaction)
         }, actionName: LocalizedStringResource("Drop Transaction", bundle: #bundle), undoManager: undoManager)
         problem = nil
         return true
@@ -102,10 +104,17 @@ struct PasteTransactionView: View {
             document.update({ content in
                 content.transaction = pasted.transaction
                 content.envelope = pasted.envelope
+                content.network = content.network ?? Self.network(of: pasted.transaction)
             }, actionName: LocalizedStringResource("Paste Transaction", bundle: #bundle), undoManager: undoManager)
             problem = nil
         } catch {
             problem = String(localized: "That is not a transaction in hex, base64 or a text envelope.", bundle: #bundle)
         }
+    }
+
+    /// The network a transaction is certainly for, to fill in an unknown one.
+    private static func network(of transaction: Data?) -> CardanoNetwork? {
+        guard let transaction, case .network(let network)? = NetworkGuess.hint(forTransaction: transaction) else { return nil }
+        return network
     }
 }

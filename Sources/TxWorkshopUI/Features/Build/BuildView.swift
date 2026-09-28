@@ -13,6 +13,7 @@ struct BuildView: View {
     @State private var recipe: BuildRecipe
     @State private var composition: LoadState<TransactionComposer.Composition> = .idle
     @State private var usesProvider = true
+    @State private var networkHints = BuildNetworkHints()
 
     init(document: TxWorkshopDocument) {
         self.document = document
@@ -25,6 +26,12 @@ struct BuildView: View {
 
     var body: some View {
         Form {
+            Section {
+                NetworkPicker(document: document)
+                if let hint = recipeHint {
+                    NetworkSuggestion(document: document, hint: hint, source: Text("The addresses here", bundle: #bundle))
+                }
+            }
             SourcesSection(recipe: $recipe, provider: provider)
             ForEach($recipe.outputs) { $output in
                 OutputDraftSection(output: $output) {
@@ -152,7 +159,30 @@ struct BuildView: View {
         }
         .formStyle(.grouped)
         .environment(\.documentNetwork, document.content.network)
+        .environment(networkHints)
+        .onChange(of: recipeHint, initial: true) { _, hint in
+            // An unknown network is taken from the addresses when they say
+            // which one it is.
+            if document.content.network == nil, case .network(let network)? = hint {
+                document.setNetwork(network, undoManager: undoManager)
+            }
+        }
         .navigationTitle(Text("Build", bundle: #bundle))
+    }
+
+    /// What the recipe's addresses say about its network.
+    private var recipeHint: NetworkHint? {
+        let values: [(ValueKind, String)] =
+            recipe.outputs.map { (.address, $0.address) } + recipe.sourceAddresses.map { (.address, $0) }
+            + [(.address, recipe.changeAddress)]
+            + recipe.withdrawals.map { (.stakeAddress, $0.stakeAddress) }
+            + recipe.proposals.map { (.stakeAddress, $0.returnAddress) }
+        let hints = values.compactMap { NetworkGuess.hint(for: $0.0, text: $0.1) }
+        if hints.contains(.network(.mainnet)) {
+            return hints.allSatisfy { $0 == .network(.mainnet) } ? .network(.mainnet) : nil
+        }
+        guard !hints.isEmpty else { return nil }
+        return networkHints.fromFileName.map { .network($0) } ?? .testnet
     }
 
     private func build() {

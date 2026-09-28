@@ -4,6 +4,26 @@
     "" : {
 
     },
+    "%@ are on %@, but the document is on %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ are on %2$@, but the document is on %3$@."
+          }
+        }
+      }
+    },
+    "%@ are on %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ are on %2$@."
+          }
+        }
+      }
+    },
     "%@ calls · %@ steps" : {
       "localizations" : {
         "en" : {
@@ -215,9 +235,6 @@
     "Anchor URL (optional)" : {
 
     },
-    "Anchor hash (Blake2b-256, hex)" : {
-
-    },
     "Anchor hash (hex, or choose the anchor file)" : {
 
     },
@@ -247,9 +264,6 @@
 
     },
     "Asset name (hex or text)" : {
-
-    },
-    "Asset name (hex)" : {
 
     },
     "At the chain tip the data was fetched at, with inputs spent as they were then." : {
@@ -400,9 +414,6 @@
     "DRep" : {
 
     },
-    "DRep (drep1…, key hash, abstain or no-confidence)" : {
-
-    },
     "DRep id, key hash or DRep key file" : {
 
     },
@@ -412,16 +423,10 @@
     "DRep id, key hash, key file, abstain or no-confidence" : {
 
     },
-    "DRep key hash (hex)" : {
-
-    },
     "Datum" : {
 
     },
     "Datum %@…" : {
-
-    },
-    "Datum (CBOR hex; only for a datum hash)" : {
 
     },
     "Datum (only for a datum hash; CBOR hex, JSON or a file)" : {
@@ -628,9 +633,6 @@
     "Governance action (gov_action1… or transaction id#index)" : {
 
     },
-    "Governance action (transaction id#index)" : {
-
-    },
     "Hardware wallets" : {
 
     },
@@ -743,12 +745,6 @@
 
     },
     "Key file contents" : {
-
-    },
-    "Key hash (hex)" : {
-
-    },
-    "Key hashes in hex, one per line." : {
 
     },
     "Key repeats an earlier key" : {
@@ -883,9 +879,6 @@
     "Name (hex or text)" : {
 
     },
-    "Name (hex)" : {
-
-    },
     "Named by the token registry" : {
 
     },
@@ -923,6 +916,9 @@
 
     },
     "No Metadata" : {
+
+    },
+    "No Network" : {
 
     },
     "No Scripts" : {
@@ -1077,9 +1073,6 @@
     "On the Keystone, open Connect Software Wallet and show the account QR code." : {
 
     },
-    "One per line. Fetching saves their UTxOs in the recipe, so it builds offline later." : {
-
-    },
     "One per line: a key hash, an address, or read from a key file." : {
 
     },
@@ -1173,22 +1166,13 @@
     "Plutus V3" : {
 
     },
-    "Plutus data (CBOR hex)" : {
-
-    },
     "Plutus data (CBOR hex, JSON or a file)" : {
 
     },
     "Plutus data as CBOR hex. The scripts run against the document's chain data; nothing is saved." : {
 
     },
-    "Policy id" : {
-
-    },
     "Policy id or policy script" : {
-
-    },
-    "Pool (pool1… or hex)" : {
 
     },
     "Pool id, hex, cold key or pool.json" : {
@@ -1224,9 +1208,6 @@
     "Rationale URL (optional)" : {
 
     },
-    "Rationale hash (Blake2b-256, hex)" : {
-
-    },
     "Rationale hash (hex, or choose the rationale file)" : {
 
     },
@@ -1240,9 +1221,6 @@
 
     },
     "Redeemer (CBOR hex, JSON or a file)" : {
-
-    },
-    "Redeemer (Plutus data CBOR hex)" : {
 
     },
     "Redeemer: %@ %lld" : {
@@ -1301,9 +1279,6 @@
 
     },
     "Required signers" : {
-
-    },
-    "Required signers, one key hash per line" : {
 
     },
     "Required signers, one per line" : {
@@ -1486,9 +1461,6 @@
     "Stake" : {
 
     },
-    "Stake address (stake…)" : {
-
-    },
     "Stake address, key hash or stake key" : {
 
     },
@@ -1556,6 +1528,9 @@
     "The Transaction Did Not Decode" : {
 
     },
+    "The addresses here" : {
+
+    },
     "The bytes end before this item does." : {
 
     },
@@ -1577,6 +1552,9 @@
     "The length or value is written in more bytes than it needs. Re-encoding shortens it, which changes hashes." : {
 
     },
+    "The network this transaction is for" : {
+
+    },
     "The number fits a shorter float encoding." : {
 
     },
@@ -1584,6 +1562,9 @@
 
     },
     "The token registry could not be reached." : {
+
+    },
+    "The transaction's addresses" : {
 
     },
     "The transactions are identical." : {
@@ -1706,6 +1687,9 @@
 
     },
     "Update DRep metadata" : {
+
+    },
+    "Use %@" : {
 
     },
     "Use Built Transaction" : {
@@ -1861,6 +1845,9 @@
 
     },
     "^[%lld trace](inflect: true)" : {
+
+    },
+    "a testnet" : {
 
     },
     "array · ^[%lld item](inflect: true)" : {

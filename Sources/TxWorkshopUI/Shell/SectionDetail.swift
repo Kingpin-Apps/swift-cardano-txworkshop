@@ -15,6 +15,11 @@ struct SectionDetail: View {
             // arrive at: small titles, as in other document apps.
             .navigationBarTitleDisplayMode(.inline)
             #endif
+            .toolbar {
+                ToolbarItem {
+                    NetworkToolbarMenu(document: document)
+                }
+            }
     }
 
     @ViewBuilder private var content: some View {

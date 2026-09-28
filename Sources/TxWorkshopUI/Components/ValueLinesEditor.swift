@@ -9,6 +9,7 @@ struct ValueLinesEditor: View {
     @Binding var lines: [String]
     let label: Text
     @Environment(\.documentNetwork) private var network
+    @Environment(BuildNetworkHints.self) private var networkHints: BuildNetworkHints?
     @State private var text = ""
     @State private var isImporting = false
     @State private var problem: String?
@@ -74,8 +75,13 @@ struct ValueLinesEditor: View {
         for url in urls {
             let accessing = url.startAccessingSecurityScopedResource()
             defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+            let data = (try? Data(contentsOf: url)) ?? Data()
+            if let named = NetworkGuess.network(inFileName: url.lastPathComponent), let text = String(data: data, encoding: .utf8),
+                NetworkGuess.hint(for: kind, text: text) != nil {
+                networkHints?.fromFileName = named
+            }
             do {
-                added.append(try ValueReader.read(kind, file: try Data(contentsOf: url), name: url.lastPathComponent, network: network).value)
+                added.append(try ValueReader.read(kind, file: data, name: url.lastPathComponent, network: network).value)
             } catch {
                 problem = "\(url.lastPathComponent): \(error)"
             }
