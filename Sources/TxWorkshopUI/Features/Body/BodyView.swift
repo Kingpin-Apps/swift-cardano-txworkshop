@@ -1,3 +1,4 @@
+import SwiftCardanoExplorers
 import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
@@ -38,7 +39,7 @@ struct BodyView: View {
                                 TWFieldRow(LocalizedStringResource("\(withdrawal.credentialKind) credential", bundle: #bundle)) {
                                     VStack(alignment: .trailing) {
                                         Text(verbatim: TWFormat.ada(withdrawal.lovelace)).font(TWFont.figure)
-                                        TWBytesText(withdrawal.rewardAddress, font: TWFont.bytesSmall)
+                                        IdentifierLine(text: withdrawal.rewardAddress, item: ExplorerItem.account(withdrawal.rewardAddress))
                                     }
                                 }
                             }

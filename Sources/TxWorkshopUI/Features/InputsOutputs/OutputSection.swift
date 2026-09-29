@@ -1,3 +1,4 @@
+import SwiftCardanoExplorers
 import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
@@ -10,14 +11,20 @@ struct OutputSection: View {
     var body: some View {
         Section {
             TWFieldRow(LocalizedStringResource("Address", bundle: #bundle)) {
-                TWBytesText(output.address.text, font: TWFont.bytesSmall)
+                HStack(alignment: .firstTextBaseline) {
+                    TWBytesText(output.address.text, font: TWFont.bytesSmall)
+                    ExplorerLinkButton(item: ExplorerItem.address(output.address.text))
+                }
             }
             TWFieldRow(LocalizedStringResource("Pays to", bundle: #bundle)) {
                 Text(output.address.paysToScript ? "A script (\(output.address.kind.rawValue))" : "A key (\(output.address.kind.rawValue))", bundle: #bundle)
             }
             if let stake = output.address.stake {
                 TWFieldRow(LocalizedStringResource("Stake", bundle: #bundle)) {
-                    TWBytesText(stake, font: TWFont.bytesSmall)
+                    HStack(alignment: .firstTextBaseline) {
+                        TWBytesText(stake, font: TWFont.bytesSmall)
+                        ExplorerLinkButton(item: ExplorerItem.account(output.address.text))
+                    }
                 }
             }
             TWFieldRow(LocalizedStringResource("Ada", bundle: #bundle)) {

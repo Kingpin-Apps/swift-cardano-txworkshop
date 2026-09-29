@@ -1,9 +1,11 @@
+import SwiftCardanoExplorers
 import SwiftCardanoTxValidator
 import SwiftUI
 import TxWorkshopCore
 
 struct CertificateRow: View {
     let certificate: CertificateView
+    @Environment(\.documentNetwork) private var network
 
     var body: some View {
         VStack(alignment: .leading, spacing: TWSpacing.xs) {
@@ -16,9 +18,11 @@ struct CertificateRow: View {
                         .foregroundStyle(deposit < 0 ? TWColor.success : Color.primary)
                 }
             }
-            if let credential = certificate.credential { TWBytesText(credential, font: TWFont.bytesSmall) }
-            if let pool = certificate.pool { TWBytesText("pool:\(pool)", font: TWFont.bytesSmall) }
-            if let drep = certificate.drep { TWBytesText("drep:\(drep)", font: TWFont.bytesSmall) }
+            if let credential = certificate.credential {
+                IdentifierLine(text: credential, item: ExplorerItem.account(credential: credential, network: network))
+            }
+            if let pool = certificate.pool { IdentifierLine(text: "pool:\(pool)", item: ExplorerItem.pool(pool)) }
+            if let drep = certificate.drep { IdentifierLine(text: "drep:\(drep)", item: ExplorerItem.drep(drep)) }
             if let url = certificate.anchorURL { AnchorLine(url: url, hash: certificate.anchorHash) }
         }
         .accessibilityElement(children: .contain)
@@ -38,8 +42,8 @@ struct VoteRow: View {
                 Text(verbatim: vote.vote.capitalized)
                     .fontWeight(.medium)
             }
-            TWBytesText(vote.voter, font: TWFont.bytesSmall)
-            TWBytesText(vote.govActionId, font: TWFont.bytesSmall)
+            IdentifierLine(text: vote.voter, item: ExplorerItem.voter(role: vote.voterRole, credential: vote.voter))
+            IdentifierLine(text: vote.govActionId, item: ExplorerItem.governanceAction(vote.govActionId))
             if let url = vote.anchorURL { AnchorLine(url: url, hash: vote.anchorHash) }
         }
         .accessibilityElement(children: .contain)
@@ -56,9 +60,22 @@ struct ProposalRow: View {
                 Spacer()
                 Text(verbatim: TWFormat.ada(proposal.deposit)).font(TWFont.figure)
             }
-            TWBytesText(proposal.returnAddress, font: TWFont.bytesSmall)
+            IdentifierLine(text: proposal.returnAddress, item: ExplorerItem.account(proposal.returnAddress))
             AnchorLine(url: proposal.anchorURL, hash: proposal.anchorHash)
         }
         .accessibilityElement(children: .contain)
+    }
+}
+
+/// An identifier, with a link to it in the chosen explorer.
+struct IdentifierLine: View {
+    let text: String
+    let item: ExplorerItem?
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline) {
+            TWBytesText(text, font: TWFont.bytesSmall)
+            ExplorerLinkButton(item: item)
+        }
     }
 }

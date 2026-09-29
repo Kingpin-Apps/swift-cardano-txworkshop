@@ -1,3 +1,4 @@
+import SwiftCardanoExplorers
 import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
@@ -10,7 +11,10 @@ struct InputRow: View {
         if let output = input.output {
             DisclosureGroup {
                 TWFieldRow(LocalizedStringResource("Address", bundle: #bundle)) {
-                    TWBytesText(output.address.text, font: TWFont.bytesSmall)
+                    HStack(alignment: .firstTextBaseline) {
+                        TWBytesText(output.address.text, font: TWFont.bytesSmall)
+                        ExplorerLinkButton(item: ExplorerItem.address(output.address.text))
+                    }
                 }
                 ForEach(output.assets) { asset in
                     AssetRow(asset: asset)
@@ -35,6 +39,7 @@ struct InputRow: View {
                 InputStatusLabel(status: input.status)
             }
             Spacer()
+            ExplorerLinkButton(item: ExplorerItem.transaction(input.transactionID))
             if let output {
                 Text(verbatim: TWFormat.ada(output.lovelace))
                     .font(TWFont.figure)

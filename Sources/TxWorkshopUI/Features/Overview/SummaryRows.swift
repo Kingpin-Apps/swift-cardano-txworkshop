@@ -1,3 +1,4 @@
+import SwiftCardanoExplorers
 import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
@@ -7,7 +8,10 @@ struct SummaryRows: View {
 
     var body: some View {
         TWFieldRow(LocalizedStringResource("ID", bundle: #bundle)) {
-            TWBytesText(summary.id)
+            HStack(alignment: .firstTextBaseline) {
+                TWBytesText(summary.id)
+                ExplorerLinkButton(item: ExplorerItem.transaction(summary.id))
+            }
         }
         TWFieldRow(LocalizedStringResource("Fee", bundle: #bundle)) {
             Text(verbatim: TWFormat.ada(summary.view.fee)).font(TWFont.figure)

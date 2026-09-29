@@ -1,3 +1,4 @@
+import SwiftCardanoExplorers
 import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
@@ -25,11 +26,12 @@ struct AssetRow: View {
                     .foregroundStyle(TWColor.secondaryText)
             }
             Spacer()
+            ExplorerLinkButton(item: ExplorerItem.asset(policy: asset.policyID, name: asset.assetNameHex))
             quantity
                 .font(TWFont.figure)
                 .foregroundStyle(asset.quantity < 0 ? TWColor.failure : Color.primary)
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
     }
 
     private var title: String {

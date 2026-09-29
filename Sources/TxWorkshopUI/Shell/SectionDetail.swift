@@ -9,6 +9,7 @@ struct SectionDetail: View {
 
     var body: some View {
         content
+            .environment(\.documentNetwork, document.content.network)
             .twScreenBackground()
             #if os(iOS)
             // A document's sections are pages of one window, not places to

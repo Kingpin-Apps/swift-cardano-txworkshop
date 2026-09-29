@@ -281,6 +281,9 @@
     "Before and after" : {
 
     },
+    "Block Explorer" : {
+
+    },
     "Budget spent over the run" : {
 
     },
@@ -403,6 +406,9 @@
 
     },
     "Could not fetch the content: %@" : {
+
+    },
+    "Covers %@. Where it has no page for something, another explorer that does is used." : {
 
     },
     "Current slot" : {
@@ -543,6 +549,9 @@
 
     },
     "Every signature it needs is here." : {
+
+    },
+    "Explorer" : {
 
     },
     "Export" : {
@@ -1092,6 +1101,9 @@
 
     },
     "Open from File…" : {
+
+    },
+    "Open in %@" : {
 
     },
     "Options" : {

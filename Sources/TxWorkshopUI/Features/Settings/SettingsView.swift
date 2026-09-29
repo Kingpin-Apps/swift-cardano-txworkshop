@@ -1,9 +1,8 @@
 import SwiftUI
 import TxWorkshopCore
 
-/// The app's settings: appearance and chain data providers. A Settings
-/// window with tabs on macOS; a sheet elsewhere, which on visionOS is just
-/// the providers.
+/// The app's settings: appearance, block explorer and chain data providers.
+/// A Settings window with tabs on macOS; a sheet elsewhere.
 public struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -13,7 +12,10 @@ public struct SettingsView: View {
         #if os(macOS)
         TabView {
             Tab {
-                Form { AppearanceSection() }
+                Form {
+                    AppearanceSection()
+                    ExplorerSection()
+                }
                     .formStyle(.grouped)
                     .twScreenBackground()
             } label: {
@@ -33,22 +35,14 @@ public struct SettingsView: View {
                 }
             }
         }
-        #elseif os(visionOS)
-        // visionOS has no light or dark appearance to choose, so the only
-        // settings are the providers.
-        NavigationStack {
-            ProviderSettingsView(showsDone: false)
-                .twSheetRoot()
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button(role: .close) { dismiss() }
-                    }
-                }
-        }
         #else
         NavigationStack {
             Form {
+                // visionOS has no light or dark appearance to choose.
+                #if !os(visionOS)
                 AppearanceSection()
+                #endif
+                ExplorerSection()
                 Section {
                     NavigationLink {
                         ProviderSettingsView(showsDone: false)
