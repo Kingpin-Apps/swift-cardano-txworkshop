@@ -109,6 +109,17 @@ targets:
         UISupportsDocumentBrowser: true
         LSSupportsOpeningDocumentsInPlace: true
         UILaunchScreen: {}
+        # iPad multitasking needs every orientation; iPhone leaves out
+        # upside down, as Apple's templates do.
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         NSCameraUsageDescription: Tx Workshop scans the animated QR codes a Keystone hardware wallet shows.
         NSBluetoothAlwaysUsageDescription: Tx Workshop connects to your Ledger over Bluetooth to sign transactions.
         NSFaceIDUsageDescription: Tx Workshop asks for Face ID or Optic ID before signing with a key it keeps.
