@@ -18,6 +18,12 @@ public enum NetworkHint: Sendable, Equatable {
         }
     }
 
+    /// Whether a document on `network`, or on no network yet, already fits
+    /// the hint.
+    public func fits(_ network: CardanoNetwork?) -> Bool {
+        network.map(allows) ?? false
+    }
+
     /// Whether `network` fits the hint.
     public func allows(_ network: CardanoNetwork) -> Bool {
         switch self {

@@ -30,6 +30,9 @@ struct NetworkGuessTests {
         #expect(NetworkHint.network(.preprod).candidates == [.preprod])
         #expect(NetworkGuess.network(inFileName: "Payment-PREPROD.addr") == .preprod)
         #expect(NetworkGuess.network(inFileName: "payment.addr") == nil)
+        #expect(NetworkHint.testnet.fits(.preview))
+        #expect(!NetworkHint.testnet.fits(.mainnet))
+        #expect(!NetworkHint.network(.mainnet).fits(nil))
     }
 
     @Test("A transaction's network comes from its outputs")

@@ -26,9 +26,10 @@ struct BuildView: View {
 
     var body: some View {
         Form {
-            Section {
-                NetworkPicker(document: document)
-                if let hint = recipeHint {
+            // The network is chosen in the toolbar; here it only speaks up
+            // when the addresses point elsewhere.
+            if let hint = recipeHint, !hint.fits(document.content.network) {
+                Section {
                     NetworkSuggestion(document: document, hint: hint, source: Text("The addresses here", bundle: #bundle))
                 }
             }
