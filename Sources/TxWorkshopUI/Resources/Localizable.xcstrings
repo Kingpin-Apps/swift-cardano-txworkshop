@@ -793,6 +793,9 @@
     "Ledger rules" : {
 
     },
+    "Left empty, cardano-cli is looked for in Homebrew, /usr/local/bin, ~/.local/bin, ~/cardano/bin and the node releases in ~/cardano." : {
+
+    },
     "Line %lld, column %lld: %@" : {
       "localizations" : {
         "en" : {
@@ -1555,6 +1558,9 @@
     "The network this transaction is for" : {
 
     },
+    "The node's socket, as in its --socket-path, for example ~/cardano/node.socket." : {
+
+    },
     "The number fits a shorter float encoding." : {
 
     },
@@ -1860,6 +1866,9 @@
 
     },
     "bytes · ^[%lld byte](inflect: true)" : {
+
+    },
+    "cardano-cli path" : {
 
     },
     "carries ^[%lld certificate](inflect: true)" : {

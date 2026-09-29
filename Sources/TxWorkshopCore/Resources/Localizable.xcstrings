@@ -51,6 +51,9 @@
     },
     "Yaci DevKit" : {
 
+    },
+    "cardano-cli" : {
+
     }
   },
   "version" : "1.0"

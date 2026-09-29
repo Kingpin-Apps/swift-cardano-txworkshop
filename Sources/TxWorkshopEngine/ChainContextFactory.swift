@@ -2,6 +2,9 @@ import Foundation
 import SwiftCardanoChain
 import SwiftCardanoCore
 import TxWorkshopCore
+#if os(macOS)
+import SystemPackage
+#endif
 
 public enum ChainContextFactoryError: Error, Sendable, Equatable, CustomStringConvertible {
     case offline
@@ -48,10 +51,34 @@ public struct ChainContextFactory: Sendable {
             guard let url = provider.url else { throw ChainContextFactoryError.misconfigured("Yaci DevKit needs a store URL.") }
             return try YaciDevkitChainContext(apiURL: url.absoluteString, network: network)
         case .localNode:
+            #if os(macOS)
+            return NodeSocketChainContext(socketPath: FilePath(try socket(of: provider)), network: network)
+            #else
             throw ChainContextFactoryError.needsDirectDistribution
+            #endif
+        case .cardanoCLI:
+            #if os(macOS)
+            guard let cli = provider.resolvedCLIPath else {
+                throw ChainContextFactoryError.misconfigured("cardano-cli was not found. Give its path in the provider's settings.")
+            }
+            return CardanoCLIChainContext(cli: cli, socketPath: try socket(of: provider), network: provider.network)
+            #else
+            throw ChainContextFactoryError.needsDirectDistribution
+            #endif
         case .offline:
             throw ChainContextFactoryError.offline
         }
+    }
+
+    /// The node socket a provider names, which must exist.
+    private func socket(of provider: ProviderConfiguration) throws -> String {
+        guard let path = provider.socketPath.map(ProviderConfiguration.expandingTilde), !path.isEmpty else {
+            throw ChainContextFactoryError.misconfigured("Give the node's socket path.")
+        }
+        guard FileManager.default.fileExists(atPath: path) else {
+            throw ChainContextFactoryError.misconfigured("There is no node socket at \(path). Is the node running?")
+        }
+        return path
     }
 }
 

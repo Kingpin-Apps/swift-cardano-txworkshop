@@ -27,7 +27,11 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.8.3"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-chain.git", from: "0.11.0"),
+        // NodeSocket adds the local-node chain context, on macOS only. Not CLIBackends: that brings
+        // swift-cardano-utils, whose swift-configuration needs a swift-collections the Keystone pin
+        // below rules out. The cardano-cli provider runs cardano-cli itself instead.
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-chain.git", from: "0.12.0", traits: [.defaults, "NodeSocket"]),
+        .package(url: "https://github.com/apple/swift-system.git", from: "1.8.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txvalidator.git", from: "0.4.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cddl.git", from: "0.2.2"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-uplc.git", from: "0.7.1"),
@@ -53,6 +57,7 @@ let package = Package(
                 "TxWorkshopCore",
                 .product(name: "SwiftCardanoCore", package: "swift-cardano-core"),
                 .product(name: "SwiftCardanoChain", package: "swift-cardano-chain"),
+                .product(name: "SystemPackage", package: "swift-system", condition: .when(platforms: [.macOS])),
                 .product(name: "SwiftCardanoTxValidator", package: "swift-cardano-txvalidator"),
                 .product(name: "SwiftCDDL", package: "swift-cddl"),
                 .product(name: "SwiftCDDLCardano", package: "swift-cddl"),

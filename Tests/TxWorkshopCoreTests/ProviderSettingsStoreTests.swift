@@ -62,6 +62,8 @@ struct ProviderSettingsStoreTests {
     func directOnlyKinds() {
         #expect(!store().0.availableKinds.contains(.localNode))
         #expect(store(directDistribution: true).0.availableKinds.contains(.localNode))
+        #expect(!store().0.availableKinds.contains(.cardanoCLI))
+        #expect(store(directDistribution: true).0.availableKinds.contains(.cardanoCLI))
     }
 
     @Test("A configuration says what it still needs")
@@ -71,5 +73,20 @@ struct ProviderSettingsStoreTests {
         #expect(ProviderConfiguration(name: "B", kind: .blockfrost, network: .mainnet).problem(hasAPIKey: true) == nil)
         #expect(ProviderConfiguration(name: "O", kind: .ogmios, network: .mainnet).problem(hasAPIKey: false) != nil)
         #expect(ProviderConfiguration(name: "O", kind: .ogmios, network: .mainnet, url: URL(string: "ws://localhost:1337")).problem(hasAPIKey: false) == nil)
+    }
+}
+
+@Suite("Local node providers")
+struct LocalNodeProviderTests {
+    @Test("Node providers need a socket, and cardano-cli is found or given")
+    func nodeProviders() {
+        let cli = ProviderConfiguration(name: "CLI", kind: .cardanoCLI, network: .preview)
+        #expect(cli.problem(hasAPIKey: false) != nil)
+        var withSocket = cli
+        withSocket.socketPath = "~/cardano/node.socket"
+        #expect(withSocket.problem(hasAPIKey: false) == nil)
+        withSocket.cliPath = "~/bin/cardano-cli"
+        #expect(withSocket.resolvedCLIPath == NSHomeDirectory() + "/bin/cardano-cli")
+        #expect(ProviderConfiguration.expandingTilde("/ipc/node.socket") == "/ipc/node.socket")
     }
 }

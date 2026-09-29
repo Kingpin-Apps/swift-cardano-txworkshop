@@ -58,9 +58,14 @@ struct TransactionInspectorTests {
             _ = try await ChainContextFactory().makeContext(
                 for: ProviderConfiguration(name: "Off", kind: .offline, network: .mainnet), apiKey: nil)
         }
-        await #expect(throws: ChainContextFactoryError.needsDirectDistribution) {
+        // On the Mac a node provider needs its socket; elsewhere it is not offered.
+        await #expect(throws: ChainContextFactoryError.misconfigured("Give the node's socket path.")) {
             _ = try await ChainContextFactory().makeContext(
                 for: ProviderConfiguration(name: "Node", kind: .localNode, network: .mainnet), apiKey: nil)
+        }
+        await #expect(throws: ChainContextFactoryError.self) {
+            _ = try await ChainContextFactory().makeContext(
+                for: ProviderConfiguration(name: "CLI", kind: .cardanoCLI, network: .preview, socketPath: "/nonexistent/node.socket"), apiKey: nil)
         }
     }
 }

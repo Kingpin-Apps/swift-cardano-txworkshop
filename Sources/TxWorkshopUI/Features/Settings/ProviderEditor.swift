@@ -10,6 +10,7 @@ struct ProviderEditor: View {
     @State private var kupoText: String
     @State private var apiKey: String
     @State private var socketPath: String
+    @State private var cliPath: String
     private let isNew: Bool
 
     init(provider: ProviderConfiguration) {
@@ -18,6 +19,7 @@ struct ProviderEditor: View {
         kupoText = provider.kupoURL?.absoluteString ?? ""
         apiKey = ""
         socketPath = provider.socketPath ?? ""
+        cliPath = provider.cliPath ?? ""
         isNew = provider.name.isEmpty
     }
 
@@ -54,10 +56,23 @@ struct ProviderEditor: View {
                     }
                 }
             }
-            if draft.kind == .localNode {
+            if draft.kind.needsSocket {
                 Section {
                     TextField(text: $socketPath) {
                         Text("Node socket path", bundle: #bundle)
+                    }
+                    .autocorrectionDisabled()
+                    if draft.kind == .cardanoCLI {
+                        TextField(text: $cliPath, prompt: Text(verbatim: configured.resolvedCLIPath ?? "cardano-cli")) {
+                            Text("cardano-cli path", bundle: #bundle)
+                        }
+                        .autocorrectionDisabled()
+                    }
+                } footer: {
+                    if draft.kind == .cardanoCLI {
+                        Text("Left empty, cardano-cli is looked for in Homebrew, /usr/local/bin, ~/.local/bin, ~/cardano/bin and the node releases in ~/cardano.", bundle: #bundle)
+                    } else {
+                        Text("The node's socket, as in its --socket-path, for example ~/cardano/node.socket.", bundle: #bundle)
                     }
                 }
             }
@@ -105,6 +120,7 @@ struct ProviderEditor: View {
         provider.url = URL(string: urlText.trimmingCharacters(in: .whitespaces)).flatMap { $0.scheme == nil ? nil : $0 }
         provider.kupoURL = URL(string: kupoText.trimmingCharacters(in: .whitespaces)).flatMap { $0.scheme == nil ? nil : $0 }
         provider.socketPath = socketPath.isEmpty ? nil : socketPath
+        provider.cliPath = cliPath.isEmpty ? nil : cliPath
         return provider
     }
 
