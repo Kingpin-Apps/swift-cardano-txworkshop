@@ -16,6 +16,7 @@ struct ShareTransactionLink: View {
                     Image(systemName: "square.and.arrow.up")
                 }
             }
+            .help(Text("Share as a cardano-cli text envelope", bundle: #bundle))
         }
     }
 

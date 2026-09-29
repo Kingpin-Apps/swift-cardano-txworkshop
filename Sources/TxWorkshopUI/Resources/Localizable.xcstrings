@@ -390,6 +390,9 @@
     "Compare" : {
 
     },
+    "Compare this transaction with another" : {
+
+    },
     "Compare With…" : {
 
     },
@@ -555,6 +558,9 @@
 
     },
     "Export" : {
+
+    },
+    "Export a report as JSON, Markdown or PDF" : {
 
     },
     "Export Report" : {
@@ -1290,6 +1296,9 @@
     "Replace API key" : {
 
     },
+    "Replace this transaction with one fetched by its ID" : {
+
+    },
     "Replaces the document's transaction, to inspect, validate and sign. Undo brings the old one back." : {
 
     },
@@ -1408,6 +1417,9 @@
 
     },
     "Settings" : {
+
+    },
+    "Share as a cardano-cli text envelope" : {
 
     },
     "Share Transaction" : {

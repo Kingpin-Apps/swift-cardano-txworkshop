@@ -52,18 +52,22 @@ struct TransactionOverview: View {
                             Image(systemName: "arrow.left.arrow.right.square")
                         }
                     }
+                    .help(Text("Compare this transaction with another", bundle: #bundle))
                 }
             }
-            ToolbarItem {
+            // Fetching replaces the loaded transaction, so it sits apart from
+            // the actions that work on it.
+            ToolbarItem(placement: .navigation) {
                 Button {
                     isFetching = true
                 } label: {
                     Label {
                         Text("Fetch by ID…", bundle: #bundle)
                     } icon: {
-                        Image(systemName: "arrow.down.circle")
+                        Image(systemName: "magnifyingglass")
                     }
                 }
+                .help(Text("Replace this transaction with one fetched by its ID", bundle: #bundle))
             }
             if let transaction = document.content.transaction {
                 ToolbarItem {

@@ -32,9 +32,10 @@ struct ExportMenu: View {
             Label {
                 Text("Export", bundle: #bundle)
             } icon: {
-                Image(systemName: "doc.badge.arrow.up")
+                Image(systemName: "doc.text")
             }
         }
+        .help(Text("Export a report as JSON, Markdown or PDF", bundle: #bundle))
         .fileExporter(
             isPresented: $isExporting, document: file, contentType: file.contentType,
             defaultFilename: String(localized: "Transaction \(String(inspection.summary.id.prefix(8)))", bundle: #bundle)
