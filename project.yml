@@ -14,6 +14,8 @@ options:
     macOS: "27.0"
     visionOS: "27.0"
   createIntermediateGroups: true
+  # Sets LastUpgradeCheck, so Xcode does not offer the upgrade again.
+  xcodeVersion: "27.0"
   localPackagesGroup: Packages
 
 packages:
@@ -35,8 +37,11 @@ settings:
     # restrictions, stack zero-init. See xcode-security-settings.md.
     ENABLE_ENHANCED_SECURITY: YES
     DEAD_CODE_STRIPPING: YES
-    # No team yet: the simulators sign ad hoc, and macOS signs "to run locally".
-    # Set DEVELOPMENT_TEAM for devices, TestFlight and notarisation.
+    ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+    STRING_CATALOG_GENERATE_SYMBOLS: YES
+    # No team by default: the simulators sign ad hoc, and macOS signs "to run
+    # locally". TxWorkshop sets its team below; TxWorkshopDirect still signs
+    # ad hoc until notarisation is set up.
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: ""
     "CODE_SIGN_STYLE[sdk=macosx*]": Manual
@@ -86,6 +91,7 @@ targets:
   TxWorkshop:
     type: application
     supportedDestinations: [iOS, macOS, visionOS]
+    productName: Tx Workshop
     sources:
       - App
       # Icon Composer icon for iPhone, iPad and Mac. visionOS cannot read a
@@ -130,13 +136,17 @@ targets:
         ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE: NO
         CODE_SIGN_ENTITLEMENTS: App/TxWorkshop.entitlements
         "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": App/TxWorkshop-macOS.entitlements
-        "CODE_SIGN_STYLE[sdk=macosx*]": Manual
-        "CODE_SIGN_IDENTITY[sdk=macosx*]": "-"
-        "PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]": ""
+        # Signs with the team on every platform, overriding the ad hoc macOS
+        # signing in the base settings.
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: Apple Development
+        DEVELOPMENT_TEAM: G88W6X4TCA
+        PROVISIONING_PROFILE_SPECIFIER: ""
 
   TxWorkshopDirect:
     type: application
     platform: macOS
+    productName: Tx Workshop Direct
     sources:
       - AppDirect
       # The accent colour and icon are shared with the App Store build.

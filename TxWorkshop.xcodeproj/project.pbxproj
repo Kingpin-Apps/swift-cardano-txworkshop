@@ -30,10 +30,10 @@
 		4414433F2496F95D78F89A1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopApp.swift; sourceTree = "<group>"; };
 		5901409EE1D9EE868F5A0386 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		91643936B8393B8CD4046109 /* TxWorkshop.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TxWorkshop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5CB31F5DE8F7BCEF2A46031F /* Tx Workshop Direct.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Tx Workshop Direct.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D8461D821502119C65F0FB6 /* Tx Workshop.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Tx Workshop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C7717046104B6311FC201C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		97CB982DCFE36F65D6ABEAE7 /* TxWorkshop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshop.entitlements; sourceTree = "<group>"; };
-		9C504DAD812097C8A52346DF /* TxWorkshopDirect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TxWorkshopDirect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A680CCB6C7AF1211ED7B0255 /* TxWorkshopDirect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshopDirect.entitlements; sourceTree = "<group>"; };
 		BF740F9F6123AA1264F57700 /* AppIconVision.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIconVision.xcassets; sourceTree = "<group>"; };
 		C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-cardano-txworkshop"; path = .; sourceTree = SOURCE_ROOT; };
@@ -69,8 +69,8 @@
 		0D94BC1919F0BB67ED364B09 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				91643936B8393B8CD4046109 /* TxWorkshop.app */,
-				9C504DAD812097C8A52346DF /* TxWorkshopDirect.app */,
+				5CB31F5DE8F7BCEF2A46031F /* Tx Workshop Direct.app */,
+				5D8461D821502119C65F0FB6 /* Tx Workshop.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -149,7 +149,7 @@
 				3B46B1A5C2CF8A9770FB3D81 /* Sparkle */,
 			);
 			productName = TxWorkshopDirect;
-			productReference = 9C504DAD812097C8A52346DF /* TxWorkshopDirect.app */;
+			productReference = 5CB31F5DE8F7BCEF2A46031F /* Tx Workshop Direct.app */;
 			productType = "com.apple.product-type.application";
 		};
 		E7FD08AAD82FAA6D2C8EB31C /* TxWorkshop */ = {
@@ -171,7 +171,7 @@
 				7F4C2104AF1CDC0C07DB644A /* TxWorkshopUI */,
 			);
 			productName = TxWorkshop;
-			productReference = 91643936B8393B8CD4046109 /* TxWorkshop.app */;
+			productReference = 5D8461D821502119C65F0FB6 /* Tx Workshop.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -181,14 +181,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					E62EC02209F76F0098F87E0E = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					E7FD08AAD82FAA6D2C8EB31C = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = G88W6X4TCA;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -268,9 +268,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/TxWorkshop.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "App/TxWorkshop-macOS.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				"CODE_SIGN_STYLE[sdk=macosx*]" = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G88W6X4TCA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = NO;
 				ENABLE_POINTER_AUTHENTICATION = NO;
@@ -281,7 +281,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
 				PRODUCT_NAME = "Tx Workshop";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
@@ -317,6 +317,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -373,6 +374,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -412,9 +414,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/TxWorkshop.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "App/TxWorkshop-macOS.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				"CODE_SIGN_STYLE[sdk=macosx*]" = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G88W6X4TCA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = NO;
 				ENABLE_POINTER_AUTHENTICATION = NO;
@@ -425,7 +427,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
 				PRODUCT_NAME = "Tx Workshop";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
@@ -439,6 +441,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -502,6 +505,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = complete;

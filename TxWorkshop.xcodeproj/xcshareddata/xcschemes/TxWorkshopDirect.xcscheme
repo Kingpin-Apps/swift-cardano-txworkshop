@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1430"
+   LastUpgradeVersion = "2700"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E62EC02209F76F0098F87E0E"
-               BuildableName = "TxWorkshopDirect.app"
+               BuildableName = "Tx Workshop Direct.app"
                BlueprintName = "TxWorkshopDirect"
                ReferencedContainer = "container:TxWorkshop.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E62EC02209F76F0098F87E0E"
-            BuildableName = "TxWorkshopDirect.app"
+            BuildableName = "Tx Workshop Direct.app"
             BlueprintName = "TxWorkshopDirect"
             ReferencedContainer = "container:TxWorkshop.xcodeproj">
          </BuildableReference>
@@ -56,7 +56,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E62EC02209F76F0098F87E0E"
-            BuildableName = "TxWorkshopDirect.app"
+            BuildableName = "Tx Workshop Direct.app"
             BlueprintName = "TxWorkshopDirect"
             ReferencedContainer = "container:TxWorkshop.xcodeproj">
          </BuildableReference>
@@ -73,7 +73,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E62EC02209F76F0098F87E0E"
-            BuildableName = "TxWorkshopDirect.app"
+            BuildableName = "Tx Workshop Direct.app"
             BlueprintName = "TxWorkshopDirect"
             ReferencedContainer = "container:TxWorkshop.xcodeproj">
          </BuildableReference>
