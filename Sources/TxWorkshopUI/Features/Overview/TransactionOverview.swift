@@ -64,7 +64,7 @@ struct TransactionOverview: View {
                     Label {
                         Text("Fetch by ID…", bundle: #bundle)
                     } icon: {
-                        Image(systemName: "magnifyingglass")
+                        Image(systemName: "square.and.arrow.down")
                     }
                 }
                 .help(Text("Replace this transaction with one fetched by its ID", bundle: #bundle))
