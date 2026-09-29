@@ -390,10 +390,10 @@
     "Compare" : {
 
     },
-    "Compare this transaction with another" : {
+    "Compare With…" : {
 
     },
-    "Compare With…" : {
+    "Compare this transaction with another" : {
 
     },
     "Connect and unlock the device, open its Cardano app, then approve exporting the public key." : {
@@ -560,13 +560,13 @@
     "Export" : {
 
     },
-    "Export a report as JSON, Markdown or PDF" : {
-
-    },
     "Export Report" : {
 
     },
     "Export Summary…" : {
+
+    },
+    "Export a report as JSON, Markdown or PDF" : {
 
     },
     "Export failed" : {
@@ -1419,10 +1419,10 @@
     "Settings" : {
 
     },
-    "Share as a cardano-cli text envelope" : {
+    "Share Transaction" : {
 
     },
-    "Share Transaction" : {
+    "Share as a cardano-cli text envelope" : {
 
     },
     "Share the transaction with co-signers, then add the witnesses they send back." : {
@@ -1580,6 +1580,9 @@
 
     },
     "The network this transaction is for" : {
+
+    },
+    "The network this transaction is for. It places the validity window in time and picks the provider used." : {
 
     },
     "The node's socket, as in its --socket-path, for example ~/cardano/node.socket." : {

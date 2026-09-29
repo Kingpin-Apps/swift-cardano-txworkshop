@@ -14,26 +14,6 @@ extension TxWorkshopDocument {
     }
 }
 
-/// The document's network as a picker.
-struct NetworkPicker: View {
-    let document: TxWorkshopDocument
-    @Environment(\.undoManager) private var undoManager
-
-    var body: some View {
-        Picker(selection: Binding(
-            get: { document.content.network },
-            set: { document.setNetwork($0, undoManager: undoManager) }
-        )) {
-            Text("Unknown", bundle: #bundle).tag(CardanoNetwork?.none)
-            ForEach(CardanoNetwork.allCases) { network in
-                Text(network.name).tag(Optional(network))
-            }
-        } label: {
-            Text("Network", bundle: #bundle)
-        }
-    }
-}
-
 /// The document's network in the toolbar, on every section.
 struct NetworkToolbarMenu: View {
     let document: TxWorkshopDocument
@@ -66,7 +46,7 @@ struct NetworkToolbarMenu: View {
             }
             .fixedSize()
         }
-        .help(Text("The network this transaction is for", bundle: #bundle))
+        .help(Text("The network this transaction is for. It places the validity window in time and picks the provider used.", bundle: #bundle))
     }
 }
 

@@ -2,18 +2,20 @@ import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
 
-/// The network the document's transaction is for.
+/// Speaks up when the transaction's addresses point to another network than
+/// the document's, or it has none yet. The network itself is chosen in the
+/// toolbar.
 struct NetworkSection: View {
     let document: TxWorkshopDocument
 
     var body: some View {
-        Section {
-            NetworkPicker(document: document)
-            if let transaction = document.content.transaction, let hint = NetworkGuess.hint(forTransaction: transaction) {
+        if let transaction = document.content.transaction,
+            let hint = NetworkGuess.hint(forTransaction: transaction),
+            !hint.fits(document.content.network)
+        {
+            Section {
                 NetworkSuggestion(document: document, hint: hint, source: Text("The transaction's addresses", bundle: #bundle))
             }
-        } footer: {
-            Text("Places the validity window in time, and picks the provider used for this transaction.", bundle: #bundle)
         }
     }
 }
