@@ -1,7 +1,7 @@
 // swift-tools-version: 6.4
 import PackageDescription
 
-// Cardano Tx Workshop — inspect, validate, build, sign and submit Cardano transactions.
+// Cardano TxWorkshop — inspect, validate, build, sign and submit Cardano transactions.
 //
 //   • TxWorkshopCore    — platform-neutral: the document format, models, provider
 //                         settings, design system. Depends on swift-cardano-core only.

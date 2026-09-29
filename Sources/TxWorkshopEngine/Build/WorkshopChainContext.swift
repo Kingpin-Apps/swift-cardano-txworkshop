@@ -19,7 +19,7 @@ struct WorkshopChainContext: ChainContext {
     let tipSlot: UInt64?
     let live: (any ChainContext)?
 
-    var name: String { "Tx Workshop" }
+    var name: String { "Cardano TxWorkshop" }
     var type: ContextType { live == nil ? .offline : .online }
     var networkId: NetworkId { network == .mainnet ? .mainnet : .testnet }
 

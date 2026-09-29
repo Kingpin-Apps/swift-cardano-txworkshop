@@ -30,7 +30,7 @@ struct DocumentShell: View {
                     Text("Work", bundle: #bundle)
                 }
             }
-            .navigationTitle(Text("Tx Workshop", bundle: #bundle))
+            .navigationTitle(Text("Cardano TxWorkshop", bundle: #bundle))
             .navigationSplitViewColumnWidth(min: 200, ideal: 230)
             // On iPhone the sidebar is a full page; elsewhere it keeps the
             // system's sidebar material.

@@ -1,4 +1,4 @@
-# Cardano Tx Workshop
+# Cardano TxWorkshop
 
 A native app for Cardano transactions: inspect, validate, build, sign, submit and track them.
 Runs on macOS, iPadOS, iOS and visionOS. Open source under

@@ -330,6 +330,9 @@
     "Canonical CBOR sorts map keys by their encoded bytes." : {
 
     },
+    "Cardano TxWorkshop" : {
+
+    },
     "Certificate" : {
 
     },
@@ -1693,9 +1696,6 @@
 
     },
     "Two keys in this map are written the same. Decoders disagree on which one wins." : {
-
-    },
-    "Tx Workshop" : {
 
     },
     "UTxO (transaction id#index)" : {

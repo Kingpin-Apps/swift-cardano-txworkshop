@@ -6,9 +6,9 @@
 #
 # Needs, once (see docs/release-checklist.md):
 #   - DEVELOPMENT_TEAM set in project.yml, and a Developer ID Application certificate
-#   - a notarytool keychain profile named "txworkshop-notary" (or NOTARY_PROFILE)
+#   - a notarytool keychain profile named "cardano-txworkshop-notary" (or NOTARY_PROFILE)
 #   - the Sparkle EdDSA private key in the login Keychain (Sparkle's generate_keys)
-#   - the public repo Kingpin-Apps/tx-workshop-releases and the tap kingpin-apps/homebrew-tap
+#   - the public repo Kingpin-Apps/cardano-txworkshop-releases and the tap kingpin-apps/homebrew-tap
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -16,8 +16,8 @@ cd "$(dirname "$0")/.."
 PUBLISH=0
 [[ "${1:-}" == "--publish" ]] && PUBLISH=1
 
-NOTARY_PROFILE="${NOTARY_PROFILE:-txworkshop-notary}"
-RELEASES_REPO="${RELEASES_REPO:-Kingpin-Apps/tx-workshop-releases}"
+NOTARY_PROFILE="${NOTARY_PROFILE:-cardano-txworkshop-notary}"
+RELEASES_REPO="${RELEASES_REPO:-Kingpin-Apps/cardano-txworkshop-releases}"
 TAP_DIR="${TAP_DIR:-$(brew --repository 2>/dev/null)/Library/Taps/kingpin-apps/homebrew-tap}"
 OUT="build/direct"
 DERIVED="build/direct/DerivedData"
@@ -30,7 +30,7 @@ TEAM=$(sed -n 's/^ *DEVELOPMENT_TEAM: "\(.*\)"/\1/p' project.yml | head -1)
 PUBLIC_KEY=$(sed -n 's/^ *SUPublicEDKey: "\(.*\)"/\1/p' project.yml | head -1)
 [[ -n "$PUBLIC_KEY" ]] || { echo "Set SUPublicEDKey in project.yml first (Sparkle generate_keys)" >&2; exit 1; }
 
-echo "▶ Tx Workshop $VERSION (Developer ID)"
+echo "▶ Cardano TxWorkshop $VERSION (Developer ID)"
 rm -rf "$OUT/export" "$ARCHIVE"
 mkdir -p "$OUT"
 
@@ -57,13 +57,13 @@ cat > "$OUT/ExportOptions.plist" <<EOF
 EOF
 xcodebuild -exportArchive -archivePath "$ARCHIVE" \
     -exportOptionsPlist "$OUT/ExportOptions.plist" -exportPath "$OUT/export"
-APP="$OUT/export/Tx Workshop Direct.app"
+APP="$OUT/export/Cardano TxWorkshop Direct.app"
 [[ -d "$APP" ]] || { echo "No app in $OUT/export" >&2; exit 1; }
 
 echo "▶ Packaging"
-DMG="$OUT/TxWorkshop-$VERSION.dmg"
+DMG="$OUT/CardanoTxWorkshop-$VERSION.dmg"
 rm -f "$DMG"
-create-dmg --volname "Tx Workshop $VERSION" --app-drop-link 480 170 \
+create-dmg --volname "Cardano TxWorkshop $VERSION" --app-drop-link 480 170 \
     --window-size 640 360 --icon "$(basename "$APP")" 160 170 "$DMG" "$APP"
 
 echo "▶ Notarising"
@@ -91,18 +91,18 @@ fi
 
 echo "▶ Publishing the GitHub release"
 gh release create "v$VERSION" "$DMG" "$OUT/updates/appcast.xml" \
-    --repo "$RELEASES_REPO" --title "Tx Workshop $VERSION" \
-    --notes "Tx Workshop $VERSION for Mac. The App Store version is on the App Store."
+    --repo "$RELEASES_REPO" --title "Cardano TxWorkshop $VERSION" \
+    --notes "Cardano TxWorkshop $VERSION for Mac. The App Store version is on the App Store."
 
 echo "▶ Updating the Homebrew cask"
 mkdir -p "$TAP_DIR/Casks"
-cat > "$TAP_DIR/Casks/tx-workshop.rb" <<EOF
-cask "tx-workshop" do
+cat > "$TAP_DIR/Casks/cardano-txworkshop.rb" <<EOF
+cask "cardano-txworkshop" do
   version "$VERSION"
   sha256 "$SHA"
 
-  url "https://github.com/$RELEASES_REPO/releases/download/v#{version}/TxWorkshop-#{version}.dmg"
-  name "Cardano Tx Workshop"
+  url "https://github.com/$RELEASES_REPO/releases/download/v#{version}/CardanoTxWorkshop-#{version}.dmg"
+  name "Cardano TxWorkshop"
   desc "Inspect, validate, build and sign Cardano transactions"
   homepage "https://github.com/$RELEASES_REPO"
 
@@ -112,12 +112,12 @@ cask "tx-workshop" do
   app "$(basename "$APP")"
 
   zap trash: [
-    "~/Library/Application Support/com.kingpinapps.txworkshop",
-    "~/Library/Caches/com.kingpinapps.txworkshop",
-    "~/Library/Preferences/com.kingpinapps.txworkshop.plist",
+    "~/Library/Application Support/com.kingpinapps.cardano-txworkshop",
+    "~/Library/Caches/com.kingpinapps.cardano-txworkshop",
+    "~/Library/Preferences/com.kingpinapps.cardano-txworkshop.plist",
   ]
 end
 EOF
-git -C "$TAP_DIR" add Casks/tx-workshop.rb
-git -C "$TAP_DIR" commit -m "chore(tx-workshop): $VERSION"
+git -C "$TAP_DIR" add Casks/cardano-txworkshop.rb
+git -C "$TAP_DIR" commit -m "chore(cardano-txworkshop): $VERSION"
 echo "✓ Cask committed in $TAP_DIR. Push it when ready."

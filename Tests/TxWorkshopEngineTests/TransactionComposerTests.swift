@@ -26,7 +26,7 @@ struct TransactionComposerTests {
             utxos: [try utxo.toCBORData().hex],
             outputs: [OutputDraft(address: address, lovelace: 10_000_000)],
             changeAddress: address,
-            message: "Built by Tx Workshop"
+            message: "Built by Cardano TxWorkshop"
         )
         let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
         #expect(built.inputs == [InputResolver.id(utxo.input)])
@@ -37,7 +37,7 @@ struct TransactionComposerTests {
         let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
         #expect(inspection.summary.id == built.id)
         #expect(inspection.outputs.first?.lovelace == 10_000_000)
-        #expect(inspection.metadata.first?.message == "Built by Tx Workshop")
+        #expect(inspection.metadata.first?.message == "Built by Cardano TxWorkshop")
         #expect(inspection.view.fee == built.fee.total)
 
         // Phase 1 finds nothing but the missing signature.

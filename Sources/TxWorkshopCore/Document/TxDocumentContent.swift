@@ -1,6 +1,6 @@
 import Foundation
 
-/// Everything a Tx Workshop document holds.
+/// Everything a Cardano TxWorkshop document holds.
 ///
 /// A document is one transaction and the work around it: the bytes as they
 /// were written, the chain data needed to validate it again offline, notes, the

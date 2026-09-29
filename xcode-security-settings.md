@@ -1,6 +1,6 @@
 # Xcode Security Settings
 
-Security build settings decisions for Cardano Tx Workshop. Settings live in `project.yml`
+Security build settings decisions for Cardano TxWorkshop. Settings live in `project.yml`
 (XcodeGen) and the targets' `.entitlements` files.
 
 ## Enabled settings

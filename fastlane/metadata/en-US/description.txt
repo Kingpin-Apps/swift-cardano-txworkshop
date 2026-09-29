@@ -1,4 +1,4 @@
-Cardano Tx Workshop is a workbench for Cardano transactions. Open one, see exactly what it does, check it against the ledger's rules, change it, sign it and send it.
+Cardano TxWorkshop is a workbench for Cardano transactions. Open one, see exactly what it does, check it against the ledger's rules, change it, sign it and send it.
 
 INSPECT
 • Inputs, outputs, assets, mints, certificates, votes and proposals, laid out plainly

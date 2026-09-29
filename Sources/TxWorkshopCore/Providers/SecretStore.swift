@@ -18,7 +18,7 @@ public struct SecretStoreError: Error, Sendable, Equatable {
 public struct KeychainSecretStore: SecretStore {
     public let service: String
 
-    public init(service: String = "com.kingpinapps.txworkshop.providers") {
+    public init(service: String = "com.kingpinapps.cardano-txworkshop.providers") {
         self.service = service
     }
 

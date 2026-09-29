@@ -5,7 +5,7 @@ import AppKit
 import UIKit
 #endif
 
-/// The Tx Workshop design system, "Workbench": dense and developer-tool-like,
+/// The Cardano TxWorkshop design system, "Workbench": dense and developer-tool-like,
 /// monospaced where the data is bytes or hashes, on warm paper and charcoal
 /// neutrals with one amber accent. Serif is kept for document titles. Liquid
 /// Glass belongs to window chrome only, never to rows of data.

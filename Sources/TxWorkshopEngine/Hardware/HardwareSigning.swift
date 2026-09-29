@@ -226,7 +226,7 @@ public struct HardwareSigning: Sendable {
         }
         return HardwareSignRequest(
             requestId: UUID().uuidString, unsigned: transaction, spentUTxOs: spent, addressPaths: paths,
-            masterFingerprint: account.masterFingerprint, origin: "Tx Workshop", certificates: certificates, withdrawals: withdrawals
+            masterFingerprint: account.masterFingerprint, origin: "Cardano TxWorkshop", certificates: certificates, withdrawals: withdrawals
         )
     }
 }

@@ -3,7 +3,7 @@ import SwiftUI
 import TxWorkshopCore
 import UniformTypeIdentifiers
 
-/// An open Tx Workshop document.
+/// An open Cardano TxWorkshop document.
 ///
 /// Opens its own `.txworkshop` package and bare transactions — text envelopes,
 /// raw CBOR and hex — and saves back to whichever it was opened from. Every

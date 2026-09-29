@@ -2,15 +2,15 @@ import Foundation
 import UniformTypeIdentifiers
 
 extension UTType {
-    /// A Tx Workshop document: a package holding a transaction and the work
+    /// A Cardano TxWorkshop document: a package holding a transaction and the work
     /// around it.
-    public static let txWorkshopDocument = UTType(exportedAs: "com.kingpinapps.txworkshop.document")
+    public static let txWorkshopDocument = UTType(exportedAs: "com.kingpinapps.cardano-txworkshop.document")
     /// A cardano-cli text envelope holding a transaction (`.tx`, `.signed`).
-    public static let cardanoTextEnvelope = UTType(exportedAs: "com.kingpinapps.txworkshop.text-envelope")
+    public static let cardanoTextEnvelope = UTType(exportedAs: "com.kingpinapps.cardano-txworkshop.text-envelope")
     /// A transaction's raw CBOR bytes (`.cbor`).
-    public static let cardanoTransactionCBOR = UTType(exportedAs: "com.kingpinapps.txworkshop.transaction-cbor")
+    public static let cardanoTransactionCBOR = UTType(exportedAs: "com.kingpinapps.cardano-txworkshop.transaction-cbor")
     /// A transaction's CBOR written as hex text (`.hex`).
-    public static let cardanoTransactionHex = UTType(exportedAs: "com.kingpinapps.txworkshop.transaction-hex")
+    public static let cardanoTransactionHex = UTType(exportedAs: "com.kingpinapps.cardano-txworkshop.transaction-hex")
 }
 
 /// The file formats a document is read from and written to.

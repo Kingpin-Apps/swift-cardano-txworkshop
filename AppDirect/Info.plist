@@ -5,19 +5,19 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Tx Workshop</string>
+	<string>Cardano TxWorkshop</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>Tx Workshop Document</string>
+			<string>Cardano TxWorkshop Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.kingpinapps.txworkshop.document</string>
+				<string>com.kingpinapps.cardano-txworkshop.document</string>
 			</array>
 			<key>LSTypeIsPackage</key>
 			<true/>
@@ -31,9 +31,9 @@
 			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.kingpinapps.txworkshop.text-envelope</string>
-				<string>com.kingpinapps.txworkshop.transaction-cbor</string>
-				<string>com.kingpinapps.txworkshop.transaction-hex</string>
+				<string>com.kingpinapps.cardano-txworkshop.text-envelope</string>
+				<string>com.kingpinapps.cardano-txworkshop.transaction-cbor</string>
+				<string>com.kingpinapps.cardano-txworkshop.transaction-hex</string>
 			</array>
 		</dict>
 	</array>
@@ -56,11 +56,11 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Tx Workshop connects to your Ledger over Bluetooth to sign transactions.</string>
+	<string>Cardano TxWorkshop connects to your Ledger over Bluetooth to sign transactions.</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://github.com/Kingpin-Apps/tx-workshop-releases/releases/latest/download/appcast.xml</string>
+	<string>https://github.com/Kingpin-Apps/cardano-txworkshop-releases/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string></string>
 	<key>UTExportedTypeDeclarations</key>
@@ -72,9 +72,9 @@
 				<string>public.content</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Tx Workshop Document</string>
+			<string>Cardano TxWorkshop Document</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.kingpinapps.txworkshop.document</string>
+			<string>com.kingpinapps.cardano-txworkshop.document</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
@@ -92,7 +92,7 @@
 			<key>UTTypeDescription</key>
 			<string>Cardano Transaction Envelope</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.kingpinapps.txworkshop.text-envelope</string>
+			<string>com.kingpinapps.cardano-txworkshop.text-envelope</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
@@ -112,7 +112,7 @@
 			<key>UTTypeDescription</key>
 			<string>Cardano Transaction CBOR</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.kingpinapps.txworkshop.transaction-cbor</string>
+			<string>com.kingpinapps.cardano-txworkshop.transaction-cbor</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
@@ -129,7 +129,7 @@
 			<key>UTTypeDescription</key>
 			<string>Cardano Transaction Hex</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.kingpinapps.txworkshop.transaction-hex</string>
+			<string>com.kingpinapps.cardano-txworkshop.transaction-hex</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

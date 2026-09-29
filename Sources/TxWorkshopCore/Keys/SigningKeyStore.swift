@@ -44,7 +44,7 @@ public final class SigningKeyStore {
 
     public init(
         defaults: UserDefaults = .standard,
-        secrets: any SecretStore = KeychainSecretStore(service: "com.kingpinapps.txworkshop.signing-keys")
+        secrets: any SecretStore = KeychainSecretStore(service: "com.kingpinapps.cardano-txworkshop.signing-keys")
     ) {
         self.defaults = defaults
         self.secrets = secrets

@@ -30,14 +30,14 @@
 		4414433F2496F95D78F89A1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopApp.swift; sourceTree = "<group>"; };
 		5901409EE1D9EE868F5A0386 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		5CB31F5DE8F7BCEF2A46031F /* Tx Workshop Direct.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Tx Workshop Direct.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5D8461D821502119C65F0FB6 /* Tx Workshop.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Tx Workshop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5983D696834F60B64C547C74 /* Cardano TxWorkshop.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Cardano TxWorkshop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C7717046104B6311FC201C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		97CB982DCFE36F65D6ABEAE7 /* TxWorkshop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshop.entitlements; sourceTree = "<group>"; };
 		A680CCB6C7AF1211ED7B0255 /* TxWorkshopDirect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshopDirect.entitlements; sourceTree = "<group>"; };
 		BF740F9F6123AA1264F57700 /* AppIconVision.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIconVision.xcassets; sourceTree = "<group>"; };
 		C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-cardano-txworkshop"; path = .; sourceTree = SOURCE_ROOT; };
 		C5D7F86C6DDD78E4458DD86B /* TxWorkshop-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "TxWorkshop-macOS.entitlements"; sourceTree = "<group>"; };
+		EDE8754AEDE9C228097C3AFE /* Cardano TxWorkshop Direct.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Cardano TxWorkshop Direct.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,8 +69,8 @@
 		0D94BC1919F0BB67ED364B09 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5CB31F5DE8F7BCEF2A46031F /* Tx Workshop Direct.app */,
-				5D8461D821502119C65F0FB6 /* Tx Workshop.app */,
+				EDE8754AEDE9C228097C3AFE /* Cardano TxWorkshop Direct.app */,
+				5983D696834F60B64C547C74 /* Cardano TxWorkshop.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -149,7 +149,7 @@
 				3B46B1A5C2CF8A9770FB3D81 /* Sparkle */,
 			);
 			productName = TxWorkshopDirect;
-			productReference = 5CB31F5DE8F7BCEF2A46031F /* Tx Workshop Direct.app */;
+			productReference = EDE8754AEDE9C228097C3AFE /* Cardano TxWorkshop Direct.app */;
 			productType = "com.apple.product-type.application";
 		};
 		E7FD08AAD82FAA6D2C8EB31C /* TxWorkshop */ = {
@@ -171,7 +171,7 @@
 				7F4C2104AF1CDC0C07DB644A /* TxWorkshopUI */,
 			);
 			productName = TxWorkshop;
-			productReference = 5D8461D821502119C65F0FB6 /* Tx Workshop.app */;
+			productReference = 5983D696834F60B64C547C74 /* Cardano TxWorkshop.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -279,8 +279,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
-				PRODUCT_NAME = "Tx Workshop";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kingpinapps.cardano-txworkshop";
+				PRODUCT_NAME = "Cardano TxWorkshop";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator macosx";
@@ -306,8 +306,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
-				PRODUCT_NAME = "Tx Workshop Direct";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kingpinapps.cardano-txworkshop";
+				PRODUCT_NAME = "Cardano TxWorkshop Direct";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DIRECT_DISTRIBUTION";
 			};
@@ -398,8 +398,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
-				PRODUCT_NAME = "Tx Workshop Direct";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kingpinapps.cardano-txworkshop";
+				PRODUCT_NAME = "Cardano TxWorkshop Direct";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DIRECT_DISTRIBUTION";
 			};
@@ -425,8 +425,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kingpinapps.txworkshop;
-				PRODUCT_NAME = "Tx Workshop";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kingpinapps.cardano-txworkshop";
+				PRODUCT_NAME = "Cardano TxWorkshop";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator macosx";

@@ -51,7 +51,7 @@ platform :ios do
         last_name: "Adderley",
         phone_number: "REDACTED",
         email_address: "hadderley@kingpinapps.com",
-        notes: "Tx Workshop is a developer tool for Cardano transactions. It holds no funds and " \
+        notes: "Cardano TxWorkshop is a developer tool for Cardano transactions. It holds no funds and " \
                "moves none on its own: it reads, validates and builds transactions, and signs one " \
                "only when the person adds a key or connects a hardware wallet and confirms. Paste any " \
                "transaction hex into a new document to try it offline; no account is needed. " \
