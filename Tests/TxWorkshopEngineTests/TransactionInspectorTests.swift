@@ -68,4 +68,35 @@ struct TransactionInspectorTests {
                 for: ProviderConfiguration(name: "CLI", kind: .cardanoCLI, network: .preview, socketPath: "/nonexistent/node.socket"), apiKey: nil)
         }
     }
+
+    #if os(macOS)
+    @Test("A socket left behind by a stopped node is reported as the node not answering")
+    func staleSocket() async throws {
+        let folder = FileManager.default.temporaryDirectory.appending(path: "tw-\(UUID().uuidString.prefix(8))")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let path = folder.appending(path: "node.socket").path()
+
+        // Bind a socket, then close it without listening: the file stays, as after a node stops.
+        let fd = socket(AF_UNIX, SOCK_STREAM, 0)
+        var address = sockaddr_un()
+        address.sun_family = sa_family_t(AF_UNIX)
+        withUnsafeMutableBytes(of: &address.sun_path) { $0.copyBytes(from: path.utf8) }
+        let bound = withUnsafePointer(to: &address) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { bind(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size)) }
+        }
+        #expect(bound == 0)
+        close(fd)
+        #expect(FileManager.default.fileExists(atPath: path))
+        #expect(ChainContextFactory.probe(socket: path) == .refused)
+
+        do {
+            _ = try await ChainContextFactory().makeContext(
+                for: ProviderConfiguration(name: "Node", kind: .localNode, network: .mainnet, socketPath: path), apiKey: nil)
+            Issue.record("expected an error")
+        } catch let error as ChainContextFactoryError {
+            #expect(error.description.hasPrefix("cardano-node is not answering at"))
+        }
+    }
+    #endif
 }

@@ -70,16 +70,56 @@ public struct ChainContextFactory: Sendable {
         }
     }
 
-    /// The node socket a provider names, which must exist.
+    /// The node socket a provider names, which a running node must be answering.
     private func socket(of provider: ProviderConfiguration) throws -> String {
         guard let path = provider.socketPath.map(ProviderConfiguration.expandingTilde), !path.isEmpty else {
             throw ChainContextFactoryError.misconfigured("Give the node's socket path.")
         }
         guard FileManager.default.fileExists(atPath: path) else {
-            throw ChainContextFactoryError.misconfigured("There is no node socket at \(path). Is the node running?")
+            throw ChainContextFactoryError.misconfigured(
+                "There is no node socket at \(path). Start cardano-node, or check the socket path in the provider's settings.")
         }
+        #if os(macOS)
+        // A node that has stopped leaves its socket file behind, and connecting
+        // to it then fails with a bare "connection refused".
+        switch Self.probe(socket: path) {
+        case .answering:
+            break
+        case .refused:
+            throw ChainContextFactoryError.misconfigured(
+                "cardano-node is not answering at \(path). Is it running? Start it, or check the socket path in the provider's settings.")
+        case .notPermitted:
+            throw ChainContextFactoryError.misconfigured("The app may not open the node socket at \(path). Check its permissions.")
+        }
+        #endif
         return path
     }
+
+    #if os(macOS)
+    enum SocketProbe: Equatable { case answering, refused, notPermitted }
+
+    /// Whether something is listening on the Unix socket at `path`.
+    static func probe(socket path: String) -> SocketProbe {
+        let fd = Darwin.socket(AF_UNIX, SOCK_STREAM, 0)
+        guard fd >= 0 else { return .refused }
+        defer { close(fd) }
+        var address = sockaddr_un()
+        address.sun_family = sa_family_t(AF_UNIX)
+        let capacity = MemoryLayout.size(ofValue: address.sun_path)
+        guard path.utf8.count < capacity else { return .refused }
+        withUnsafeMutableBytes(of: &address.sun_path) { buffer in
+            buffer.copyBytes(from: path.utf8)
+            buffer[path.utf8.count] = 0
+        }
+        let connected = withUnsafePointer(to: &address) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                connect(fd, $0, socklen_t(MemoryLayout<sockaddr_un>.size))
+            }
+        }
+        if connected == 0 { return .answering }
+        return errno == EACCES || errno == EPERM ? .notPermitted : .refused
+    }
+    #endif
 }
 
 extension CardanoNetwork {
