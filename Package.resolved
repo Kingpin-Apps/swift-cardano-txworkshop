@@ -267,8 +267,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Kingpin-Apps/swift-cddl.git",
       "state" : {
-        "revision" : "7123e0e5aa173910833c5810cde5a6613b335df3",
-        "version" : "0.2.2"
+        "revision" : "2d56afec6aa928c8b9e5c81c5926e1420fa73ec2",
+        "version" : "0.2.3"
       }
     },
     {
