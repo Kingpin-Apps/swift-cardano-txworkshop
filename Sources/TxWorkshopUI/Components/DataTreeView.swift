@@ -22,11 +22,20 @@ private struct DataNodeRow: View {
         self.isExpanded = isRoot
     }
 
+    /// How far each level sits in from its parent. The Mac's disclosure
+    /// groups indent their content already; iOS and visionOS do not.
+    #if os(macOS)
+    private static let childIndent: CGFloat = 0
+    #else
+    private static let childIndent: CGFloat = TWSpacing.l
+    #endif
+
     var body: some View {
         if let children = node.children, !children.isEmpty {
             DisclosureGroup(isExpanded: $isExpanded) {
                 ForEach(children) { child in
                     DataNodeRow(node: child)
+                        .padding(.leading, Self.childIndent)
                 }
             } label: {
                 NodeLabel(node: node)
