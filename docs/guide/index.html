@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guide — Cardano TxWorkshop</title>
+  <meta name="description" content="How to use Cardano TxWorkshop: open, inspect, validate, build, sign and submit Cardano transactions.">
+  <link rel="icon" href="../icon.png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="../"><img src="../icon.png" alt=""> Cardano TxWorkshop</a>
+      <nav aria-label="Site">
+        <a href="../">Home</a>
+        <a href="../guide/" aria-current="page">Guide</a>
+        <a href="../support/">Support</a>
+        <a href="../privacy/">Privacy</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <h1>Guide</h1>
+      <p class="lead">How to get from a transaction to a confirmed one.</p>
+      <ul class="toc">
+        <li><a href="#documents">Documents</a></li>
+        <li><a href="#opening">Opening a transaction</a></li>
+        <li><a href="#network">The network</a></li>
+        <li><a href="#providers">Chain providers</a></li>
+        <li><a href="#inspecting">Inspecting</a></li>
+        <li><a href="#explorers">Block explorers</a></li>
+        <li><a href="#validating">Validating</a></li>
+        <li><a href="#building">Building</a></li>
+        <li><a href="#signing">Signing</a></li>
+        <li><a href="#submitting">Submitting</a></li>
+      </ul>
+
+      <h2 id="documents">Documents</h2>
+      <p>Each piece of work is a <code>.txworkshop</code> document. It holds the transaction exactly as written, the chain data looked up for it, your notes, and the recipe it was built from. Save it anywhere, including iCloud Drive, and reopen it offline later.</p>
+
+      <h2 id="opening">Opening a transaction</h2>
+      <p>On a new document's Overview:</p>
+      <ul>
+        <li><strong>Paste</strong> hex, base64 or a cardano-cli text envelope.</li>
+        <li><strong>Open from File…</strong> or drop a file: <code>.tx</code>, <code>.signed</code>, <code>.json</code>, <code>.cbor</code> or <code>.hex</code>.</li>
+        <li><strong>Fetch by ID…</strong> with a transaction id or an explorer link. It searches mainnet, preprod and preview, through your providers and Koios's public API.</li>
+      </ul>
+
+      <h2 id="network">The network</h2>
+      <p>The network menu in the toolbar says which network the document is on: mainnet, preprod or preview. It picks the provider and places the validity window in time. When you open a transaction, or type addresses to build one, the app sets it from the addresses when they make it clear, and says so when they disagree.</p>
+
+      <h2 id="providers">Chain providers</h2>
+      <p>Looking up inputs, validating with chain data, building and submitting need a provider. Add one in <strong>Settings › Providers</strong>, one per network.</p>
+      <table>
+        <thead><tr><th>Provider</th><th>What you need</th></tr></thead>
+        <tbody>
+          <tr><td>Koios</td><td>Nothing; an API key is optional</td></tr>
+          <tr><td>Blockfrost</td><td>A project id for that network</td></tr>
+          <tr><td>Ogmios, with Kupo</td><td>Your server's URL, and Kupo's for faster address lookups</td></tr>
+          <tr><td>Yaci DevKit</td><td>Its store URL, for a local devnet</td></tr>
+          <tr><td>Local node (Mac download)</td><td>The node's socket path, for example <code>~/cardano/mainnet/node.socket</code></td></tr>
+          <tr><td>cardano-cli (Mac download)</td><td>The socket path; the app finds cardano-cli in Homebrew, <code>/usr/local/bin</code>, <code>~/.local/bin</code> or <code>~/cardano</code>, or you give its path</td></tr>
+        </tbody>
+      </table>
+      <p>API keys go in the Keychain. The node needs to be running and in sync.</p>
+
+      <h2 id="inspecting">Inspecting</h2>
+      <p>The sidebar splits the transaction into Overview, Inputs &amp; Outputs, Certificates &amp; Governance, Scripts &amp; Datums, Metadata, CBOR and CDDL. <strong>Look Up Inputs &amp; Names</strong> on Inputs &amp; Outputs fetches what each input spends, and saves it in the document so it works offline later.</p>
+
+      <h2 id="explorers">Block explorers</h2>
+      <p>The small arrow next to a transaction id, address, stake account, pool, DRep, governance action or asset opens it in your block explorer. Choose it in <strong>Settings</strong>: Cardanoscan, Cexplorer, AdaStat, DRepTalk, eUTxO, Pool PM or PoolTool. Where yours has no page for something, or no site for the network, another explorer that has one is used, and the link says which.</p>
+
+      <h2 id="validating">Validating</h2>
+      <p><strong>Validate</strong> runs the ledger's Phase 1 rules and evaluates Plutus scripts, offline, from the document's chain data. You get each problem with its cause, the budget each redeemer used, a step-by-step script trace, and what-if runs with changed data.</p>
+
+      <h2 id="building">Building</h2>
+      <p><strong>Build</strong> starts from source addresses or UTxOs, then outputs, mints, script inputs, certificates, withdrawals, votes and proposals. Every field takes a value in any form: an address as bech32 or hex, or from an <code>.addr</code> or key file; a pool as <code>pool1…</code>, hex, a cold key or <code>pool.json</code>. The line under each field says what it read. Fees, collateral and script budgets are worked out for you.</p>
+
+      <h2 id="signing">Signing</h2>
+      <ul>
+        <li><strong>Keys:</strong> add a recovery phrase or a key file (<code>.skey</code>) under <strong>Add a Signing Key…</strong>. They are kept in the Keychain on that device, and used only after Face ID, Touch ID, Optic ID or your passcode. Use test keys: this is a developer tool.</li>
+        <li><strong>Ledger:</strong> over Bluetooth, or USB on the Mac.</li>
+        <li><strong>Trezor:</strong> over USB on the Mac.</li>
+        <li><strong>Keystone:</strong> by QR code, on iPhone and iPad.</li>
+      </ul>
+      <p>Import a hardware account under <strong>Import a Hardware Account…</strong>. Hardware wallets sign payments, stake registration and delegation, vote delegation and withdrawals.</p>
+      <p class="note">The app never moves funds on its own. It signs only what you confirm, and never asks for a recovery phrase except when you choose to add one.</p>
+
+      <h2 id="submitting">Submitting</h2>
+      <p><strong>Sign &amp; Submit</strong> sends the signed transaction through the document's provider and tracks it until it is confirmed on chain.</p>
+    </div>
+  </main>
+  <footer class="site">
+    <div class="wrap">
+      <span>© 2026 Adderley Group Ltd. Made by <a href="https://kingpinapps.com">Kingpin Apps</a>.</span>
+      <a href="../privacy/">Privacy</a>
+      <a href="../support/">Support</a>
+      <a href="https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases">Releases</a>
+    </div>
+  </footer>
+</body>
+</html>

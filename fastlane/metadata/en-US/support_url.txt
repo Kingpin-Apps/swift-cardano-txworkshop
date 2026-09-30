@@ -1,1 +1,1 @@
-https://kingpin-apps.github.io/cardano-txworkshop-releases/support/
+https://kingpin-apps.github.io/swift-cardano-txworkshop/support/

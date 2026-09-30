@@ -13,6 +13,20 @@ validation history. The app also opens bare transactions: cardano-cli text envel
 > validation with script traces, the builder, and signing with keys or a Ledger, Trezor or
 > Keystone. Not yet released; see [the release checklist](docs/release-checklist.md).
 
+**Website and guide:** <https://kingpin-apps.github.io/swift-cardano-txworkshop/> ·
+[Privacy policy](https://kingpin-apps.github.io/swift-cardano-txworkshop/privacy/) ·
+[Support](https://kingpin-apps.github.io/swift-cardano-txworkshop/support/)
+
+## Install
+
+- **App Store** (Mac, iPhone, iPad, Apple Vision Pro): coming soon.
+- **Mac download** (Developer ID, adds a local cardano-node and cardano-cli), once released:
+  `brew install --cask kingpin-apps/tap/cardano-txworkshop`, or the DMG from the
+  [latest release](https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases/latest).
+  It updates itself.
+
+The website is the static site in `docs/`, served by GitHub Pages; edit the HTML there.
+
 ## Requirements
 
 - Xcode 27 (Swift 6.4)

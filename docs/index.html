@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cardano TxWorkshop</title>
+  <meta name="description" content="A workbench for Cardano transactions: inspect, validate, build, sign and submit, on Mac, iPhone, iPad and Apple Vision Pro.">
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href=""><img src="icon.png" alt=""> Cardano TxWorkshop</a>
+      <nav aria-label="Site">
+        <a href="" aria-current="page">Home</a>
+        <a href="guide/">Guide</a>
+        <a href="support/">Support</a>
+        <a href="privacy/">Privacy</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <div class="hero">
+        <img src="icon.png" alt="The Cardano TxWorkshop icon">
+        <div>
+          <h1>Cardano TxWorkshop</h1>
+          <p class="lead">A workbench for Cardano transactions. Open one, see exactly what it does, check it against the ledger's rules, change it, sign it and send it.</p>
+        </div>
+      </div>
+      <div class="buttons">
+        <a class="button primary" aria-disabled="true">App Store — coming soon</a>
+        <a class="button secondary" aria-disabled="true">Mac download — coming soon</a>
+        <a class="button secondary" href="guide/">Read the guide</a>
+      </div>
+      <p>On Mac, iPhone, iPad and Apple Vision Pro. The Mac download adds a local cardano-node and cardano-cli, which the App Store doesn't allow.</p>
+
+      <h2>What it does</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Inspect</h3>
+          <p>Inputs, outputs, assets, mints, certificates, votes, proposals, scripts and metadata, laid out plainly, with token names and links to your block explorer.</p>
+        </div>
+        <div class="card">
+          <h3>CBOR and CDDL</h3>
+          <p>Every item tied to its bytes, each field named, non-canonical encoding flagged, and any item checked against the ledger's schema for its era.</p>
+        </div>
+        <div class="card">
+          <h3>Validate</h3>
+          <p>The ledger's Phase 1 rules and Plutus script evaluation, offline, with budgets per redeemer, a script trace, and what-if runs.</p>
+        </div>
+        <div class="card">
+          <h3>Build</h3>
+          <p>Outputs, mints, script inputs, certificates, withdrawals, votes and proposals. Addresses, pools and keys in any form, typed or from files.</p>
+        </div>
+        <div class="card">
+          <h3>Sign</h3>
+          <p>Keys from a recovery phrase, kept in the Keychain behind Face ID or Touch ID, or a Ledger, Trezor or Keystone hardware wallet.</p>
+        </div>
+        <div class="card">
+          <h3>Submit</h3>
+          <p>Through Blockfrost, Koios, Ogmios, Yaci DevKit, or, on the Mac download, your own cardano-node or cardano-cli. Then track confirmation.</p>
+        </div>
+      </div>
+
+      <h2>Yours, on your device</h2>
+      <p>No account and no analytics. Documents stay where you save them; API keys and signing keys stay in the Keychain and are never written to a document. See the <a href="privacy/">privacy policy</a>.</p>
+    </div>
+  </main>
+  <footer class="site">
+    <div class="wrap">
+      <span>© 2026 Adderley Group Ltd. Made by <a href="https://kingpinapps.com">Kingpin Apps</a>.</span>
+      <a href="privacy/">Privacy</a>
+      <a href="support/">Support</a>
+      <a href="https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases">Releases</a>
+    </div>
+  </footer>
+</body>
+</html>

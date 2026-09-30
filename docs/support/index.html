@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Support — Cardano TxWorkshop</title>
+  <meta name="description" content="Help with Cardano TxWorkshop: questions, bugs and feature requests.">
+  <link rel="icon" href="../icon.png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="../"><img src="../icon.png" alt=""> Cardano TxWorkshop</a>
+      <nav aria-label="Site">
+        <a href="../">Home</a>
+        <a href="../guide/">Guide</a>
+        <a href="../support/" aria-current="page">Support</a>
+        <a href="../privacy/">Privacy</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <h1>Support</h1>
+      <p class="lead">Found a bug, have a question, or want something added? We'd like to hear it.</p>
+
+      <h2>Get help</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Read the guide</h3>
+          <p>How to open, validate, build, sign and submit, and how to set up providers. <a href="../guide/">Open the guide</a>.</p>
+        </div>
+        <div class="card">
+          <h3>Report a bug or ask a question</h3>
+          <p><a href="https://github.com/Kingpin-Apps/swift-cardano-txworkshop/issues/new">Open an issue on GitHub</a>. Say which device and version, and what you expected.</p>
+        </div>
+      </div>
+
+      <h2>Before you report</h2>
+      <ul>
+        <li><strong>Never share a recovery phrase or signing key</strong>, in an issue or anywhere else. We will never ask for one.</li>
+        <li>A transaction's hex, or its id on a public network, is safe to share and usually the quickest way to show a problem.</li>
+        <li>Say which version you have: it's in <strong>About Cardano TxWorkshop</strong> on the Mac, and on the app's App Store page elsewhere.</li>
+      </ul>
+
+      <h2>Common questions</h2>
+      <h3>"cardano-node is not answering"</h3>
+      <p>The node isn't running, or the socket path in the provider's settings points somewhere else. Start the node, and check the path matches its <code>--socket-path</code>.</p>
+      <h3>Why can't I pick a local node on the App Store version?</h3>
+      <p>The App Store keeps apps in a sandbox that can't reach a node's socket or run cardano-cli. The <a href="https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases/latest">Mac download</a> can.</p>
+      <h3>An input shows "Not found, or already spent"</h3>
+      <p>The chain no longer has that output: it was spent, or never existed on this network. Check the document's network in the toolbar.</p>
+    </div>
+  </main>
+  <footer class="site">
+    <div class="wrap">
+      <span>© 2026 Adderley Group Ltd. Made by <a href="https://kingpinapps.com">Kingpin Apps</a>.</span>
+      <a href="../privacy/">Privacy</a>
+      <a href="../support/">Support</a>
+      <a href="https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases">Releases</a>
+    </div>
+  </footer>
+</body>
+</html>

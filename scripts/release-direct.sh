@@ -8,7 +8,7 @@
 #   - DEVELOPMENT_TEAM set in project.yml, and a Developer ID Application certificate
 #   - a notarytool keychain profile: the team's "scm-notarytool" (or NOTARY_PROFILE)
 #   - the Sparkle EdDSA private key in the login Keychain (Sparkle's generate_keys)
-#   - the public repo Kingpin-Apps/cardano-txworkshop-releases and the tap kingpin-apps/homebrew-tap
+#   - the public repo Kingpin-Apps/swift-cardano-txworkshop and the tap kingpin-apps/homebrew-tap
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -17,7 +17,7 @@ PUBLISH=0
 [[ "${1:-}" == "--publish" ]] && PUBLISH=1
 
 NOTARY_PROFILE="${NOTARY_PROFILE:-scm-notarytool}"
-RELEASES_REPO="${RELEASES_REPO:-Kingpin-Apps/cardano-txworkshop-releases}"
+RELEASES_REPO="${RELEASES_REPO:-Kingpin-Apps/swift-cardano-txworkshop}"
 TAP_DIR="${TAP_DIR:-$(brew --repository 2>/dev/null)/Library/Taps/kingpin-apps/homebrew-tap}"
 OUT="build/direct"
 DERIVED="build/direct/DerivedData"

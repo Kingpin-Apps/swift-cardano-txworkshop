@@ -20,9 +20,8 @@ and `just metadata` for the App Store text.
       each platform and ships to TestFlight. `ci_scripts/ci_post_clone.sh` is already in place.
 - [ ] Create an editable version on each platform before `just metadata`, or deliver fails.
 - [ ] Review the drafted text in `fastlane/metadata/en-US`.
-- [x] Support, privacy and marketing URLs: the GitHub Pages site in the public releases repo,
-      <https://kingpin-apps.github.io/cardano-txworkshop-releases/> (`docs/` there), with an
-      app-specific privacy policy.
+- [x] Support, privacy and marketing URLs: the GitHub Pages site served from this repo's `docs/` folder,
+      <https://kingpin-apps.github.io/swift-cardano-txworkshop/> with an app-specific privacy policy.
 - [ ] Add screenshots in App Store Connect (fastlane skips them for now).
 - [ ] Review the app icon in Icon Composer (`Icon/AppIcon.icon`), including its dark, tinted
       and clear looks. visionOS uses the layered `Icon/AppIconVision.xcassets`.
@@ -41,8 +40,8 @@ and `just metadata` for the App Store text.
       updater stays off.
 - [ ] Back up the Sparkle private key (`generate_keys -x`) somewhere safe outside the repo.
       Losing it means no more updates for installed copies.
-- [x] Create the public repo `Kingpin-Apps/cardano-txworkshop-releases`. The appcast is served from its
-      latest release, and the docs site from its `docs/` folder.
+- [x] Make this repo public (2026-09-30). The appcast and DMGs are served from its latest
+      GitHub release, and the docs site from `docs/` by GitHub Pages.
 - [x] The tap `Kingpin-Apps/homebrew-tap` exists (it carries `scm` and `spcc`).
 
 - [x] The Developer ID pipeline works end to end (2026-09-30): archive, export, signed DMG,

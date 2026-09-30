@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy — Cardano TxWorkshop</title>
+  <meta name="description" content="Cardano TxWorkshop collects no data. What the app sends, and to whom, when you use it.">
+  <link rel="icon" href="../icon.png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="../"><img src="../icon.png" alt=""> Cardano TxWorkshop</a>
+      <nav aria-label="Site">
+        <a href="../">Home</a>
+        <a href="../guide/">Guide</a>
+        <a href="../support/">Support</a>
+        <a href="../privacy/" aria-current="page">Privacy</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <h1>Privacy policy</h1>
+      <p class="lead">Cardano TxWorkshop collects no data about you. There is no account, no analytics, no advertising and no tracking.</p>
+      <p><em>Effective 30 September 2026. This policy covers the Cardano TxWorkshop app for Mac, iPhone, iPad and Apple Vision Pro, from the App Store and from this site.</em></p>
+
+      <h2>What stays on your device</h2>
+      <ul>
+        <li><strong>Documents</strong> are files you save, where you choose: on the device or in your iCloud Drive. Kingpin Apps never sees them.</li>
+        <li><strong>API keys</strong> for chain providers are kept in your Keychain, on that device only.</li>
+        <li><strong>Signing keys</strong> you add, from a recovery phrase or a key file, are kept in your Keychain, and used only after Face ID, Touch ID, Optic ID or your passcode. They are never written to a document or sent anywhere.</li>
+        <li><strong>Settings</strong>, such as your providers, network and explorer, stay on the device.</li>
+      </ul>
+
+      <h2>What the app sends, and only when you use it</h2>
+      <p>The app talks to other services only to do what you ask. Kingpin Apps runs none of them and receives nothing from them.</p>
+      <table>
+        <thead><tr><th>Service</th><th>When</th><th>What is sent</th></tr></thead>
+        <tbody>
+          <tr><td>Your chain provider: Blockfrost, Koios, Ogmios, Kupo, Yaci DevKit, or your own cardano-node</td><td>When you look up inputs, fetch chain data, build, or submit</td><td>Addresses, transaction ids and transactions, with your API key where the provider needs one</td></tr>
+          <tr><td>Koios's public API</td><td>When you fetch a transaction by id on a network where you have no provider</td><td>The transaction id</td></tr>
+          <tr><td>The Cardano token registry (tokens.cardano.org)</td><td>When a transaction has native assets</td><td>The assets' policy ids and names, to look up their registered names</td></tr>
+          <tr><td>The address in a governance anchor, or the ipfs.io gateway for <code>ipfs://</code> anchors</td><td>When you check an anchor or compute its hash</td><td>A download request for that document</td></tr>
+          <tr><td>A block explorer you choose</td><td>Only when you open a link to it</td><td>The page you asked for, opened in your browser</td></tr>
+          <tr><td>GitHub (Mac download only)</td><td>When the app checks for updates</td><td>A request for the update feed, with the app's version</td></tr>
+        </tbody>
+      </table>
+      <p>Each of these services has its own privacy policy. Everything on the Cardano blockchain is public by design: a transaction you submit, and the addresses in it, can be seen by anyone.</p>
+
+      <h2>Hardware and permissions</h2>
+      <ul>
+        <li><strong>Bluetooth and USB</strong> are used only to talk to a Ledger or Trezor you connect.</li>
+        <li><strong>The camera</strong> is used only to read a Keystone wallet's QR codes; images are read on the device and not kept.</li>
+        <li><strong>Face ID, Touch ID and Optic ID</strong> are handled by Apple; the app only learns whether you passed.</li>
+      </ul>
+
+      <h2>Children</h2>
+      <p>The app is a developer tool and is not directed at children.</p>
+
+      <h2>Changes</h2>
+      <p>If this policy changes, the new version will be posted here with a new effective date.</p>
+
+      <h2>Contact</h2>
+      <p>Cardano TxWorkshop is made by Kingpin Apps, part of Adderley Group Ltd., Cayman Islands. Questions about privacy: <a href="https://github.com/Kingpin-Apps/swift-cardano-txworkshop/issues">open an issue</a>, or see <a href="../support/">Support</a>.</p>
+    </div>
+  </main>
+  <footer class="site">
+    <div class="wrap">
+      <span>© 2026 Adderley Group Ltd. Made by <a href="https://kingpinapps.com">Kingpin Apps</a>.</span>
+      <a href="../privacy/">Privacy</a>
+      <a href="../support/">Support</a>
+      <a href="https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases">Releases</a>
+    </div>
+  </footer>
+</body>
+</html>

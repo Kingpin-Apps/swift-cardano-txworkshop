@@ -5,7 +5,7 @@ import TxWorkshopUI
 
 /// The Developer ID build: outside the App Sandbox, so it may reach a local
 /// node and run cardano-cli. Built with `DIRECT_DISTRIBUTION`. Updates come
-/// through Sparkle from the public releases repository.
+/// through Sparkle from this repository's GitHub releases.
 @main
 struct TxWorkshopDirectApp: App {
     /// Starts checking for updates only once the release key is set, so a
