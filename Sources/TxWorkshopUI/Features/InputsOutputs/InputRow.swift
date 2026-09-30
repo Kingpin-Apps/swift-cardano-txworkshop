@@ -41,8 +41,12 @@ struct InputRow: View {
             Spacer()
             ExplorerLinkButton(item: ExplorerItem.transaction(input.transactionID))
             if let output {
+                // The amount stays on one line; the id gives way first.
                 Text(verbatim: TWFormat.ada(output.lovelace))
                     .font(TWFont.figure)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                    .layoutPriority(1)
             }
         }
     }

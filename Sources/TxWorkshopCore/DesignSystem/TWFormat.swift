@@ -7,7 +7,8 @@ public enum TWFormat {
         let sign = lovelace < 0 ? "−" : ""
         let magnitude = lovelace.magnitude
         let fraction = String(format: "%06d", Int(magnitude % 1_000_000))
-        return "\(sign)₳ \((magnitude / 1_000_000).formatted()).\(fraction)"
+        // A no-break space, so the symbol never ends a line alone.
+        return "\(sign)₳\u{00A0}\((magnitude / 1_000_000).formatted()).\(fraction)"
     }
 
     public static func ada(_ lovelace: UInt64) -> String {
