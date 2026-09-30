@@ -48,7 +48,7 @@ struct SignView: View {
         }
         .formStyle(.grouped)
         .navigationTitle(Text("Sign & Submit", bundle: #bundle))
-        .task(id: AnalysisKey(transaction: document.content.transaction, utxos: knownUTxOs)) {
+        .onChange(of: AnalysisKey(transaction: document.content.transaction, utxos: knownUTxOs), initial: true) {
             guard let bytes = document.content.transaction else { return }
             do {
                 analysis = .loaded(try RequiredSignatures.analyze(bytes, utxos: knownUTxOs))

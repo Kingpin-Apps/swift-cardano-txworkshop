@@ -144,7 +144,9 @@ struct ValidateView: View {
             }
         }
         #endif
-        .task(id: RequirementsKey(transaction: document.content.transaction, snapshot: document.content.chainContext)) {
+        // onChange rather than task(id:): on iOS 27 the task did not restart
+        // when fetched chain data arrived, leaving Validate disabled.
+        .onChange(of: RequirementsKey(transaction: document.content.transaction, snapshot: document.content.chainContext), initial: true) {
             guard let bytes = document.content.transaction else { return }
             let found = try? TransactionValidation().requirements(for: bytes, snapshot: document.content.chainContext)
             requirements = found
