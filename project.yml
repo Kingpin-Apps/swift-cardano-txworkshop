@@ -182,10 +182,10 @@ targets:
         ITSAppUsesNonExemptEncryption: false
         NSBluetoothAlwaysUsageDescription: Cardano TxWorkshop connects to your Ledger over Bluetooth to sign transactions.
         # Sparkle: the appcast lives on this repo's latest
-        # release. SUPublicEDKey is filled in by scripts/release-direct.sh
-        # setup (the private key stays in the login Keychain).
+        # release. SUPublicEDKey is the public half of the Sparkle signing
+        # key; the private half stays in the login Keychain (generate_keys).
         SUFeedURL: https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases/latest/download/appcast.xml
-        SUPublicEDKey: ""
+        SUPublicEDKey: "EFTq8JxXFHyy+q58t5G3PYodqsJKO7URCFuZ3ZYvxRg="
         SUEnableAutomaticChecks: true
     dependencies:
       - package: TxWorkshop

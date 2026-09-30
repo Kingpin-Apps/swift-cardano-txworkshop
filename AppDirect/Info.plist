@@ -62,7 +62,7 @@
 	<key>SUFeedURL</key>
 	<string>https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
-	<string></string>
+	<string>EFTq8JxXFHyy+q58t5G3PYodqsJKO7URCFuZ3ZYvxRg=</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
