@@ -42,8 +42,12 @@ mkdir -p "$OUT"
 
 xcodegen generate
 
-echo "▶ Archiving"
-xcodebuild -project TxWorkshop.xcodeproj -scheme TxWorkshopDirect \
+# Sparkle compares build numbers, so each release needs a higher one: the
+# commit count only grows. Xcode Cloud numbers the App Store builds itself.
+BUILD=$(git rev-list --count HEAD)
+
+echo "▶ Archiving build $BUILD"
+xcodebuild -project TxWorkshop.xcodeproj -scheme TxWorkshopDirect CURRENT_PROJECT_VERSION="$BUILD" \
     -skipPackagePluginValidation -skipMacroValidation -packageAuthorizationProvider netrc \
     -destination "generic/platform=macOS" -derivedDataPath "$DERIVED" \
     -archivePath "$ARCHIVE" archive > "$OUT/archive.log" 2>&1 \
