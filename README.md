@@ -16,7 +16,7 @@ validation history. The app also opens bare transactions: cardano-cli text envel
 ## Install
 
 - **App Store** (Mac, iPhone, iPad, Apple Vision Pro): coming soon.
-- **Mac download** (Developer ID, adds a local cardano-node and cardano-cli), once released:
+- **Mac download** (Developer ID, adds a local cardano-node and cardano-cli; macOS 27):
   `brew install --cask kingpin-apps/tap/cardano-txworkshop`, or the DMG from the
   [latest release](https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases/latest).
   It updates itself.
