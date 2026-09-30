@@ -49,7 +49,8 @@ platform :ios do
       app_review_information: {
         first_name: "Hareem",
         last_name: "Adderley",
-        phone_number: "REDACTED",
+        # Kept out of the repo: set APP_REVIEW_PHONE in ~/.secrets.zsh.
+        phone_number: ENV.fetch("APP_REVIEW_PHONE"),
         email_address: "hadderley@kingpinapps.com",
         notes: "Cardano TxWorkshop is a developer tool for Cardano transactions. It holds no funds and " \
                "moves none on its own: it reads, validates and builds transactions, and signs one " \

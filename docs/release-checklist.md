@@ -55,4 +55,5 @@ and `just metadata` for the App Store text.
 2. Xcode Cloud builds the App Store version; submit it from App Store Connect.
 3. `just release-direct` to build and notarise; check the DMG; then
    `just release-direct --publish` and push the tap.
-4. `source ~/.secrets.zsh && just metadata` if the store text changed.
+4. `source ~/.secrets.zsh && just metadata` if the store text changed. `~/.secrets.zsh`
+   must export `APP_REVIEW_PHONE`, the App Review contact number, which is kept out of the repo.
