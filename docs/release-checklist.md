@@ -19,9 +19,10 @@ and `just metadata` for the App Store text.
 - [ ] Connect the repository to Xcode Cloud and add a workflow that archives `TxWorkshop` for
       each platform and ships to TestFlight. `ci_scripts/ci_post_clone.sh` is already in place.
 - [ ] Create an editable version on each platform before `just metadata`, or deliver fails.
-- [ ] Review the drafted text in `fastlane/metadata/en-US`, and check the support and privacy
-      URLs exist. As of 2026-09-30 `kingpinapps.com/support` is a 404, and
-      `kingpinapps.com/privacy` is the website's general policy, not one for the app.
+- [ ] Review the drafted text in `fastlane/metadata/en-US`.
+- [x] Support, privacy and marketing URLs: the GitHub Pages site in the public releases repo,
+      <https://kingpin-apps.github.io/cardano-txworkshop-releases/> (`docs/` there), with an
+      app-specific privacy policy.
 - [ ] Add screenshots in App Store Connect (fastlane skips them for now).
 - [ ] Review the app icon in Icon Composer (`Icon/AppIcon.icon`), including its dark, tinted
       and clear looks. visionOS uses the layered `Icon/AppIconVision.xcassets`.
@@ -40,9 +41,13 @@ and `just metadata` for the App Store text.
       updater stays off.
 - [ ] Back up the Sparkle private key (`generate_keys -x`) somewhere safe outside the repo.
       Losing it means no more updates for installed copies.
-- [ ] Create the public repo `Kingpin-Apps/cardano-txworkshop-releases`. The appcast is served from its
-      latest release.
+- [x] Create the public repo `Kingpin-Apps/cardano-txworkshop-releases`. The appcast is served from its
+      latest release, and the docs site from its `docs/` folder.
 - [x] The tap `Kingpin-Apps/homebrew-tap` exists (it carries `scm` and `spcc`).
+
+- [x] The Developer ID pipeline works end to end (2026-09-30): archive, export, signed DMG,
+      notarised and stapled, accepted by Gatekeeper, and the app launches. `just release-direct`
+      builds and notarises without the Sparkle key; publishing needs it.
 
 ## Each release
 

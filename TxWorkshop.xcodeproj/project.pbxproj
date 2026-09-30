@@ -183,10 +183,6 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
-					E62EC02209F76F0098F87E0E = {
-						DevelopmentTeam = "";
-						ProvisioningStyle = Automatic;
-					};
 					E7FD08AAD82FAA6D2C8EB31C = {
 						DevelopmentTeam = G88W6X4TCA;
 						ProvisioningStyle = Automatic;
@@ -302,7 +298,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AppDirect/TxWorkshopDirect.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = G88W6X4TCA;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE = NO;
 				ENABLE_POINTER_AUTHENTICATION = NO;
@@ -311,8 +310,10 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				OTHER_CODE_SIGN_FLAGS = "--timestamp";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kingpinapps.cardano-txworkshop";
 				PRODUCT_NAME = "Cardano TxWorkshop Direct";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DIRECT_DISTRIBUTION";
 			};

@@ -25,10 +25,16 @@ ARCHIVE="$OUT/TxWorkshopDirect.xcarchive"
 
 VERSION=$(sed -n 's/^ *MARKETING_VERSION: "\(.*\)"/\1/p' project.yml | head -1)
 [[ -n "$VERSION" ]] || { echo "No MARKETING_VERSION in project.yml" >&2; exit 1; }
-TEAM=$(sed -n 's/^ *DEVELOPMENT_TEAM: "\(.*\)"/\1/p' project.yml | head -1)
+# The team set on the App Store target; the base setting is empty.
+TEAM="${TEAM:-$(sed -n 's/^ *DEVELOPMENT_TEAM: "*\([A-Z0-9]\{10\}\)"*$/\1/p' project.yml | head -1)}"
 [[ -n "$TEAM" ]] || { echo "Set DEVELOPMENT_TEAM in project.yml first" >&2; exit 1; }
 PUBLIC_KEY=$(sed -n 's/^ *SUPublicEDKey: "\(.*\)"/\1/p' project.yml | head -1)
-[[ -n "$PUBLIC_KEY" ]] || { echo "Set SUPublicEDKey in project.yml first (Sparkle generate_keys)" >&2; exit 1; }
+# Without the Sparkle key the build can still be made and notarised, to test the
+# pipeline; it just can't be published, since installed copies could not update.
+if [[ -z "$PUBLIC_KEY" ]]; then
+    (( PUBLISH )) && { echo "Set SUPublicEDKey in project.yml first (Sparkle generate_keys)" >&2; exit 1; }
+    echo "⚠ No SUPublicEDKey yet: building without an appcast, and not publishing."
+fi
 
 echo "▶ Cardano TxWorkshop $VERSION (Developer ID)"
 rm -rf "$OUT/export" "$ARCHIVE"
@@ -51,7 +57,8 @@ cat > "$OUT/ExportOptions.plist" <<EOF
 <dict>
     <key>method</key><string>developer-id</string>
     <key>teamID</key><string>$TEAM</string>
-    <key>signingStyle</key><string>automatic</string>
+    <key>signingStyle</key><string>manual</string>
+    <key>signingCertificate</key><string>Developer ID Application</string>
 </dict>
 </plist>
 EOF
@@ -66,10 +73,19 @@ rm -f "$DMG"
 create-dmg --volname "Cardano TxWorkshop $VERSION" --app-drop-link 480 170 \
     --window-size 640 360 --icon "$(basename "$APP")" 160 170 "$DMG" "$APP"
 
+# Gatekeeper checks the disk image's own signature as well as the app's.
+codesign --force --sign "Developer ID Application" --timestamp "$DMG"
+
 echo "▶ Notarising"
 xcrun notarytool submit "$DMG" --keychain-profile "$NOTARY_PROFILE" --wait
 xcrun stapler staple "$DMG"
 spctl --assess --type open --context context:primary-signature -v "$DMG"
+
+if [[ -z "$PUBLIC_KEY" ]]; then
+    echo "✓ Built and notarised $DMG ($(shasum -a 256 "$DMG" | cut -d' ' -f1))"
+    echo "Make the Sparkle key (docs/release-checklist.md) before publishing."
+    exit 0
+fi
 
 echo "▶ Appcast"
 # Sparkle's tools come with its Swift package.

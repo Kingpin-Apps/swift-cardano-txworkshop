@@ -213,6 +213,16 @@ targets:
         ENABLE_POINTER_AUTHENTICATION: NO
         ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE: NO
         CODE_SIGN_ENTITLEMENTS: AppDirect/TxWorkshopDirect.entitlements
+      configs:
+        # Release is what scripts/release-direct.sh archives: signed with the
+        # Developer ID certificate and a secure timestamp, as notarisation
+        # needs. Debug keeps the local ad hoc signing.
+        Release:
+          DEVELOPMENT_TEAM: G88W6X4TCA
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Developer ID Application
+          PROVISIONING_PROFILE_SPECIFIER: ""
+          OTHER_CODE_SIGN_FLAGS: --timestamp
 
 
 schemes:
