@@ -1,9 +1,13 @@
 {
   "commitizen": {
     "name": "cz_conventional_commits",
-    "tag_format": "$version",
+    "tag_format": "v$version",
     "version_scheme": "semver",
     "version": "0.1.0",
+    "version_files": [
+      "project.yml:MARKETING_VERSION",
+      "TxWorkshop.xcodeproj/project.pbxproj:MARKETING_VERSION"
+    ],
     "major_version_zero": true,
     "update_changelog_on_bump": true
   }
