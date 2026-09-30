@@ -1,3 +1,9 @@
+## v0.1.1 (2026-09-30)
+
+### Fix
+
+- **release**: publish the Mac app as Cardano TxWorkshop.app; the cask depends on macOS
+
 ## v0.1.0 (2026-09-30)
 
 ### Feat
