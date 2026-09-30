@@ -1,3 +1,9 @@
+## v0.1.2 (2026-09-30)
+
+### Fix
+
+- the apps carry their real version and build number, not 1.0 (1)
+
 ## v0.1.1 (2026-09-30)
 
 ### Fix
