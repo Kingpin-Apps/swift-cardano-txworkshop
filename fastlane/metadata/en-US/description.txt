@@ -1,9 +1,11 @@
 Cardano TxWorkshop is a workbench for Cardano transactions. Open one, see exactly what it does, check it against the ledger's rules, change it, sign it and send it.
 
 INSPECT
+• Open a transaction by pasting it, from a file, or by fetching it with its id or an explorer link
 • Inputs, outputs, assets, mints, certificates, votes and proposals, laid out plainly
 • Token names from the transaction's own metadata and the Cardano token registry
 • Scripts as readable UPLC, redeemers and datums as trees, metadata with CIP labels
+• Open any transaction, address, pool, DRep or asset in your choice of Cardanoscan, Cexplorer, AdaStat, Pool PM, PoolTool, DRepTalk or eUTxO
 • Compare two transactions, and export as JSON, Markdown or a PDF report
 
 CBOR AND CDDL

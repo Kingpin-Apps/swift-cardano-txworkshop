@@ -55,7 +55,8 @@ platform :ios do
                "moves none on its own: it reads, validates and builds transactions, and signs one " \
                "only when the person adds a key or connects a hardware wallet and confirms. Paste any " \
                "transaction hex into a new document to try it offline; no account is needed. " \
-               "Sample transactions can be supplied on request."
+               "Or choose Fetch by ID and enter 01e9d18aeff8432b38d0b7b79faf813ec214cffe3ccd601983a9ed5dc119458c, " \
+               "a mainnet transaction, which is fetched from the public Koios API with no sign-in."
       }
     )
   end

@@ -6,10 +6,11 @@ and `just metadata` for the App Store text.
 
 ## Signing
 
-- [ ] Set `DEVELOPMENT_TEAM: "G88W6X4TCA"` in `project.yml`, then `just generate`.
+- [x] Set `DEVELOPMENT_TEAM: "G88W6X4TCA"` in `project.yml`, then `just generate`.
 - [ ] Register the App ID `com.kingpinapps.cardano-txworkshop` in the Developer
       portal with Keychain Sharing, Bluetooth and the hardened-process capabilities.
-- [ ] Have a Developer ID Application certificate in the login Keychain.
+- [x] Have a Developer ID Application certificate in the login Keychain ("Developer ID
+      Application: Adderley Group Ltd. (G88W6X4TCA)").
 
 ## App Store
 
@@ -19,7 +20,8 @@ and `just metadata` for the App Store text.
       each platform and ships to TestFlight. `ci_scripts/ci_post_clone.sh` is already in place.
 - [ ] Create an editable version on each platform before `just metadata`, or deliver fails.
 - [ ] Review the drafted text in `fastlane/metadata/en-US`, and check the support and privacy
-      URLs exist.
+      URLs exist. As of 2026-09-30 `kingpinapps.com/support` is a 404, and
+      `kingpinapps.com/privacy` is the website's general policy, not one for the app.
 - [ ] Add screenshots in App Store Connect (fastlane skips them for now).
 - [ ] Review the app icon in Icon Composer (`Icon/AppIcon.icon`), including its dark, tinted
       and clear looks. visionOS uses the layered `Icon/AppIconVision.xcassets`.
@@ -29,8 +31,8 @@ and `just metadata` for the App Store text.
 
 ## Developer ID build
 
-- [ ] Store a notarytool profile:
-      `xcrun notarytool store-credentials cardano-txworkshop-notary --team-id G88W6X4TCA`.
+- [x] A notarytool profile: the team's `scm-notarytool` profile works for any of its apps, so
+      `release-direct.sh` uses it. Set `NOTARY_PROFILE` to use another.
 - [ ] Make the Sparkle key: run `generate_keys` from Sparkle's tools
       (`build/direct/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin`, after one
       `just release-direct` build). It stores the private key in the login Keychain and prints
@@ -40,7 +42,7 @@ and `just metadata` for the App Store text.
       Losing it means no more updates for installed copies.
 - [ ] Create the public repo `Kingpin-Apps/cardano-txworkshop-releases`. The appcast is served from its
       latest release.
-- [ ] Create the tap `Kingpin-Apps/homebrew-tap` and `brew tap kingpin-apps/tap`.
+- [x] The tap `Kingpin-Apps/homebrew-tap` exists (it carries `scm` and `spcc`).
 
 ## Each release
 
