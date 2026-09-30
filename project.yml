@@ -50,8 +50,12 @@ settings:
     # the visionOS simulator, which runs on Apple silicon alone anyway.
     "EXCLUDED_ARCHS[sdk=xrsimulator*]": x86_64
 
-# The document types every app target reads and writes.
+# The version and document types every app target shares. The version keys
+# must be set here, or XcodeGen writes 1.0 (1) into Info.plist and the
+# MARKETING_VERSION and build number never reach the app.
 documentTypes: &documentTypes
+  CFBundleShortVersionString: $(MARKETING_VERSION)
+  CFBundleVersion: $(CURRENT_PROJECT_VERSION)
   CFBundleDocumentTypes:
     - CFBundleTypeName: Cardano TxWorkshop Document
       CFBundleTypeRole: Editor
