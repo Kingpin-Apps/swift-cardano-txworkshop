@@ -8,7 +8,7 @@ struct NoSecretsTests {
     static let root = URL(filePath: #filePath)
         .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
 
-    static let skippedDirectories: Set<String> = [".build", ".git", ".swiftpm", "DerivedData", "Packages", "xcuserdata"]
+    static let skippedDirectories: Set<String> = [".build", "build", ".git", ".swiftpm", "DerivedData", "Packages", "xcuserdata"]
     static let forbiddenExtensions: Set<String> = ["skey", "p8", "p12", "pem", "env", "mnemonic"]
     static let forbiddenPatterns = [
         #"-----BEGIN [A-Z ]*PRIVATE KEY-----"#,
