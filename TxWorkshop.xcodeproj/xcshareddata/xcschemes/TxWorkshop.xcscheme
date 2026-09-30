@@ -39,6 +39,39 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "TxWorkshopCoreTests"
+               BuildableName = "TxWorkshopCoreTests"
+               BlueprintName = "TxWorkshopCoreTests"
+               ReferencedContainer = "container:.">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "TxWorkshopEngineTests"
+               BuildableName = "TxWorkshopEngineTests"
+               BlueprintName = "TxWorkshopEngineTests"
+               ReferencedContainer = "container:.">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "TxWorkshopUITests"
+               BuildableName = "TxWorkshopUITests"
+               BlueprintName = "TxWorkshopUITests"
+               ReferencedContainer = "container:.">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

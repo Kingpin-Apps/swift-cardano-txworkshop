@@ -230,8 +230,13 @@ schemes:
     build:
       targets:
         TxWorkshop: all
+    # The package tests, so an Xcode Cloud Test action has something to run.
+    # The live and emulator suites stay off unless their environment is set.
     test:
-      targets: []
+      targets:
+        - package: TxWorkshop/TxWorkshopCoreTests
+        - package: TxWorkshop/TxWorkshopEngineTests
+        - package: TxWorkshop/TxWorkshopUITests
   TxWorkshopDirect:
     build:
       targets:
