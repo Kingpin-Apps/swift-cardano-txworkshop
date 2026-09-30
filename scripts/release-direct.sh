@@ -68,7 +68,7 @@ cat > "$OUT/ExportOptions.plist" <<EOF
 EOF
 xcodebuild -exportArchive -archivePath "$ARCHIVE" \
     -exportOptionsPlist "$OUT/ExportOptions.plist" -exportPath "$OUT/export"
-APP="$OUT/export/Cardano TxWorkshop Direct.app"
+APP="$OUT/export/Cardano TxWorkshop.app"
 [[ -d "$APP" ]] || { echo "No app in $OUT/export" >&2; exit 1; }
 
 echo "▶ Packaging"
@@ -128,6 +128,7 @@ cask "cardano-txworkshop" do
 
   # Sparkle updates it in place.
   auto_updates true
+  depends_on :macos
 
   app "$(basename "$APP")"
 

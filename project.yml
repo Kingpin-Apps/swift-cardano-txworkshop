@@ -201,8 +201,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.cardano-txworkshop
-        # Its own product name, so it never overwrites the App Store build;
-        # it still shows as "Cardano TxWorkshop".
+        # Its own product name in Debug, so it never overwrites the App Store
+        # build; it still shows as "Cardano TxWorkshop".
         PRODUCT_NAME: Cardano TxWorkshop Direct
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -217,7 +217,10 @@ targets:
         # Release is what scripts/release-direct.sh archives: signed with the
         # Developer ID certificate and a secure timestamp, as notarisation
         # needs. Debug keeps the local ad hoc signing.
+        # The published app is plain "Cardano TxWorkshop.app"; only local
+        # Debug builds keep the Direct name, so the two never collide.
         Release:
+          PRODUCT_NAME: Cardano TxWorkshop
           DEVELOPMENT_TEAM: G88W6X4TCA
           CODE_SIGN_STYLE: Manual
           CODE_SIGN_IDENTITY: Developer ID Application
