@@ -16,7 +16,12 @@ set -euo pipefail
 DEVICE_NAME="${1:?simulator name required, e.g. \"Apple Vision Pro\"}"
 PREFIX="${2:?file prefix required, e.g. Vision}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-OUT="$ROOT/fastlane/screenshots/en-US"
+# fastlane uploads each platform from its own folder.
+case "$DEVICE_NAME" in
+  *Vision*) OUT="$ROOT/fastlane/screenshots_visionos/en-US" ;;
+  *) OUT="$ROOT/fastlane/screenshots/en-US" ;;
+esac
+mkdir -p "$OUT"
 WORK="$ROOT/build/screenshots"
 BUNDLE_ID=com.kingpinapps.cardano-txworkshop
 SAMPLE="$ROOT/scripts/screenshot-sample/Minswap Batch.txworkshop"
