@@ -4,7 +4,7 @@
 #   scripts/release-direct.sh            build, notarise and package into build/direct
 #   scripts/release-direct.sh --publish  also publish the GitHub release and the Homebrew cask
 #
-# Needs, once (see docs/release-checklist.md):
+# Needs, once:
 #   - DEVELOPMENT_TEAM set in project.yml, and a Developer ID Application certificate
 #   - a notarytool keychain profile: the team's "scm-notarytool" (or NOTARY_PROFILE)
 #   - the Sparkle EdDSA private key in the login Keychain (Sparkle's generate_keys)
@@ -83,7 +83,7 @@ spctl --assess --type open --context context:primary-signature -v "$DMG"
 
 if [[ -z "$PUBLIC_KEY" ]]; then
     echo "✓ Built and notarised $DMG ($(shasum -a 256 "$DMG" | cut -d' ' -f1))"
-    echo "Make the Sparkle key (docs/release-checklist.md) before publishing."
+    echo "Make the Sparkle key (Sparkle's generate_keys) and set SUPublicEDKey before publishing."
     exit 0
 fi
 

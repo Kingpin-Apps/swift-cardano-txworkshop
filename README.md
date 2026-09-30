@@ -9,10 +9,6 @@ chain data needed to validate it again offline, notes, the witnesses collected f
 validation history. The app also opens bare transactions: cardano-cli text envelopes (`.tx`,
 `.signed`), raw CBOR (`.cbor`) and hex (`.hex`), and anything pasted as hex, base64 or an envelope.
 
-> Status: feature complete for a first release: inspection, the CBOR and CDDL tools, offline
-> validation with script traces, the builder, and signing with keys or a Ledger, Trezor or
-> Keystone. Not yet released; see [the release checklist](docs/release-checklist.md).
-
 **Website and guide:** <https://kingpin-apps.github.io/swift-cardano-txworkshop/> ·
 [Privacy policy](https://kingpin-apps.github.io/swift-cardano-txworkshop/privacy/) ·
 [Support](https://kingpin-apps.github.io/swift-cardano-txworkshop/support/)
@@ -54,13 +50,6 @@ just build-apps   # every app target, every platform
 
 Command-line builds pass `-skipPackagePluginValidation`, because the Blockfrost and Koios clients
 generate their code with the OpenAPI build plugin. In Xcode, trust the plugin once when asked.
-
-## Releasing
-
-The App Store build ships through Xcode Cloud; fastlane manages only the store text
-(`just metadata`). The Developer ID Mac build updates itself with Sparkle and ships from
-`just release-direct` as a notarised DMG, a GitHub release and a Homebrew cask. The one-time
-setup is in [docs/release-checklist.md](docs/release-checklist.md).
 
 ## Providers and secrets
 
