@@ -225,6 +225,24 @@ targets:
           OTHER_CODE_SIGN_FLAGS: --timestamp
 
 
+  # Drives the app through its sections for the App Store screenshots; see
+  # scripts/capture-screenshots.sh. Not part of any CI test run.
+  TxWorkshopScreenshots:
+    type: bundle.ui-testing
+    supportedDestinations: [iOS, visionOS]
+    sources:
+      - ScreenshotTests
+    dependencies:
+      - target: TxWorkshop
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.cardano-txworkshop.screenshots
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: G88W6X4TCA
+        SWIFT_VERSION: "6.0"
+        TEST_TARGET_NAME: TxWorkshop
+
 schemes:
   TxWorkshop:
     build:
@@ -237,6 +255,14 @@ schemes:
         - package: TxWorkshop/TxWorkshopCoreTests
         - package: TxWorkshop/TxWorkshopEngineTests
         - package: TxWorkshop/TxWorkshopUITests
+  TxWorkshopScreenshots:
+    build:
+      targets:
+        TxWorkshop: all
+        TxWorkshopScreenshots: [test]
+    test:
+      targets:
+        - TxWorkshopScreenshots
   TxWorkshopDirect:
     build:
       targets:

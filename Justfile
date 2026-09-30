@@ -38,3 +38,7 @@ release-direct *args:
 # Upload the App Store text for every platform (source ~/.secrets.zsh first)
 metadata:
     LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 fastlane upload_metadata_all
+
+# App Store screenshots on a simulator, e.g. just screenshots "Apple Vision Pro" Vision
+screenshots device prefix:
+    scripts/capture-screenshots.sh "{{device}}" "{{prefix}}"

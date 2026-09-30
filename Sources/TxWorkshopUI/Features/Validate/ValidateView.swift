@@ -54,6 +54,7 @@ struct ValidateView: View {
                             .overlay { if run.isLoading { ProgressView() } }
                     }
                     .disabled(run.isLoading || requirements?.needsProtocolParameters != false)
+                    .accessibilityIdentifier("runValidation")
                 } footer: {
                     switch mode {
                     case .now:

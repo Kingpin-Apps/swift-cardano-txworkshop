@@ -16,6 +16,8 @@
 		7004F93AFE5B453DC40636C8 /* TxWorkshopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */; };
 		8310BC6B3A5779E69A232465 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4414433F2496F95D78F89A1A /* Assets.xcassets */; };
 		8B3753FD3446176DC87E2557 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 428DB9D73BFD8650FB3D64C6 /* AppIcon.icon */; };
+		8E8401ED65EBA7823BCDCF6C /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C39DAD474EE501C8AAD1293 /* SnapshotHelper.swift */; };
+		A29CDD40B4D183F73F9A2CAD /* ScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BC18706F102075B50A01C3 /* ScreenshotTests.swift */; };
 		A827A9DB54F03E350E8542FD /* TxWorkshopCore in Frameworks */ = {isa = PBXBuildFile; productRef = A9CF102464994FDC19B49526 /* TxWorkshopCore */; };
 		B6B5BA02EE90C93C2FB5D129 /* TxWorkshopDirectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */; };
 		CFCBE31156379A930AFD7359 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 428DB9D73BFD8650FB3D64C6 /* AppIcon.icon */; };
@@ -24,15 +26,28 @@
 		FEA473226CC822BCB42B4849 /* AppIconVision.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF740F9F6123AA1264F57700 /* AppIconVision.xcassets */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		7D8CE77D07F96B9DFEB4FAED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FCDDB31D646F591965DBBE00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E7FD08AAD82FAA6D2C8EB31C;
+			remoteInfo = TxWorkshop;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopDirectApp.swift; sourceTree = "<group>"; };
 		428DB9D73BFD8650FB3D64C6 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		4414433F2496F95D78F89A1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		45BC18706F102075B50A01C3 /* ScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotTests.swift; sourceTree = "<group>"; };
 		58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopApp.swift; sourceTree = "<group>"; };
 		5901409EE1D9EE868F5A0386 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5983D696834F60B64C547C74 /* Cardano TxWorkshop.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Cardano TxWorkshop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		64E2830C8E9FFF755E286D1B /* TxWorkshopScreenshots.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TxWorkshopScreenshots.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C7717046104B6311FC201C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		97CB982DCFE36F65D6ABEAE7 /* TxWorkshop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshop.entitlements; sourceTree = "<group>"; };
+		9C39DAD474EE501C8AAD1293 /* SnapshotHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		A680CCB6C7AF1211ED7B0255 /* TxWorkshopDirect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshopDirect.entitlements; sourceTree = "<group>"; };
 		BF740F9F6123AA1264F57700 /* AppIconVision.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIconVision.xcassets; sourceTree = "<group>"; };
 		C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-cardano-txworkshop"; path = .; sourceTree = SOURCE_ROOT; };
@@ -71,8 +86,18 @@
 			children = (
 				EDE8754AEDE9C228097C3AFE /* Cardano TxWorkshop Direct.app */,
 				5983D696834F60B64C547C74 /* Cardano TxWorkshop.app */,
+				64E2830C8E9FFF755E286D1B /* TxWorkshopScreenshots.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		564BD92AC4AEAEA830CD8513 /* ScreenshotTests */ = {
+			isa = PBXGroup;
+			children = (
+				45BC18706F102075B50A01C3 /* ScreenshotTests.swift */,
+				9C39DAD474EE501C8AAD1293 /* SnapshotHelper.swift */,
+			);
+			path = ScreenshotTests;
 			sourceTree = "<group>";
 		};
 		6A8E6D820A27CE9561B969A6 /* AppDirect */ = {
@@ -101,6 +126,7 @@
 				6A8E6D820A27CE9561B969A6 /* AppDirect */,
 				71C0727BC2AC3896E9A9A17C /* Icon */,
 				A105A53A9084442517D6EEB6 /* Packages */,
+				564BD92AC4AEAEA830CD8513 /* ScreenshotTests */,
 				0D94BC1919F0BB67ED364B09 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -128,6 +154,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		CE8F08568C24A35F4EEFDF4F /* TxWorkshopScreenshots */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9C1676FAAB83FC34BFBD9831 /* Build configuration list for PBXNativeTarget "TxWorkshopScreenshots" */;
+			buildPhases = (
+				84070872635F79C57D5E51B8 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C9D82005DFCE2505D542D5DF /* PBXTargetDependency */,
+			);
+			name = TxWorkshopScreenshots;
+			packageProductDependencies = (
+			);
+			productName = TxWorkshopScreenshots;
+			productReference = 64E2830C8E9FFF755E286D1B /* TxWorkshopScreenshots.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		E62EC02209F76F0098F87E0E /* TxWorkshopDirect */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CF789A50766201A76FF0631C /* Build configuration list for PBXNativeTarget "TxWorkshopDirect" */;
@@ -183,6 +227,11 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
+					CE8F08568C24A35F4EEFDF4F = {
+						DevelopmentTeam = G88W6X4TCA;
+						ProvisioningStyle = Automatic;
+						TestTargetID = E7FD08AAD82FAA6D2C8EB31C;
+					};
 					E7FD08AAD82FAA6D2C8EB31C = {
 						DevelopmentTeam = G88W6X4TCA;
 						ProvisioningStyle = Automatic;
@@ -209,6 +258,7 @@
 			targets = (
 				E7FD08AAD82FAA6D2C8EB31C /* TxWorkshop */,
 				E62EC02209F76F0098F87E0E /* TxWorkshopDirect */,
+				CE8F08568C24A35F4EEFDF4F /* TxWorkshopScreenshots */,
 			);
 		};
 /* End PBXProject section */
@@ -236,6 +286,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		84070872635F79C57D5E51B8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A29CDD40B4D183F73F9A2CAD /* ScreenshotTests.swift in Sources */,
+				8E8401ED65EBA7823BCDCF6C /* SnapshotHelper.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CD6313F8E2885CED0E0F8F8B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -254,7 +313,39 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		C9D82005DFCE2505D542D5DF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E7FD08AAD82FAA6D2C8EB31C /* TxWorkshop */;
+			targetProxy = 7D8CE77D07F96B9DFEB4FAED /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		116A4CA22973AD8EEDE945C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G88W6X4TCA;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kingpinapps.cardano-txworkshop.screenshots";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = TxWorkshop;
+			};
+			name = Debug;
+		};
 		1EBFAD0D1B19D6F6CCE037FB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -411,6 +502,30 @@
 			};
 			name = Debug;
 		};
+		5EBE10D59F3927F74B1C291E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G88W6X4TCA;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kingpinapps.cardano-txworkshop.screenshots";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = TxWorkshop;
+			};
+			name = Release;
+		};
 		76EAFF3909F04D47DBFE97A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -542,6 +657,15 @@
 			buildConfigurations = (
 				76EAFF3909F04D47DBFE97A7 /* Debug */,
 				1EBFAD0D1B19D6F6CCE037FB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9C1676FAAB83FC34BFBD9831 /* Build configuration list for PBXNativeTarget "TxWorkshopScreenshots" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				116A4CA22973AD8EEDE945C2 /* Debug */,
+				5EBE10D59F3927F74B1C291E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
