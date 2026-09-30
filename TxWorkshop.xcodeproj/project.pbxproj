@@ -262,6 +262,11 @@
 		1EBFAD0D1B19D6F6CCE037FB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Cardano TxWorkshop";
+				"APP_DISPLAY_NAME[sdk=iphoneos*]" = TxWorkshop;
+				"APP_DISPLAY_NAME[sdk=iphonesimulator*]" = TxWorkshop;
+				"APP_DISPLAY_NAME[sdk=xros*]" = TxWorkshop;
+				"APP_DISPLAY_NAME[sdk=xrsimulator*]" = TxWorkshop;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=xros*]" = AppIconVision;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=xrsimulator*]" = AppIconVision;
@@ -408,6 +413,11 @@
 		76EAFF3909F04D47DBFE97A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APP_DISPLAY_NAME = "Cardano TxWorkshop";
+				"APP_DISPLAY_NAME[sdk=iphoneos*]" = TxWorkshop;
+				"APP_DISPLAY_NAME[sdk=iphonesimulator*]" = TxWorkshop;
+				"APP_DISPLAY_NAME[sdk=xros*]" = TxWorkshop;
+				"APP_DISPLAY_NAME[sdk=xrsimulator*]" = TxWorkshop;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=xros*]" = AppIconVision;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=xrsimulator*]" = AppIconVision;

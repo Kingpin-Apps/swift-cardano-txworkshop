@@ -104,7 +104,8 @@ targets:
       path: App/Info.plist
       properties:
         <<: *documentTypes
-        CFBundleDisplayName: Cardano TxWorkshop
+        # Short on home screens, full on the Mac: see APP_DISPLAY_NAME below.
+        CFBundleDisplayName: $(APP_DISPLAY_NAME)
         LSApplicationCategoryType: public.app-category.developer-tools
         UISupportsDocumentBrowser: true
         LSSupportsOpeningDocumentsInPlace: true
@@ -135,6 +136,14 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.cardano-txworkshop
         PRODUCT_NAME: Cardano TxWorkshop
+        # The name under the icon. Home screens cut "Cardano TxWorkshop" short,
+        # so iPhone, iPad and Vision Pro show "TxWorkshop"; the App Store name
+        # stays "Cardano TxWorkshop" (fastlane/metadata).
+        APP_DISPLAY_NAME: Cardano TxWorkshop
+        "APP_DISPLAY_NAME[sdk=iphoneos*]": TxWorkshop
+        "APP_DISPLAY_NAME[sdk=iphonesimulator*]": TxWorkshop
+        "APP_DISPLAY_NAME[sdk=xros*]": TxWorkshop
+        "APP_DISPLAY_NAME[sdk=xrsimulator*]": TxWorkshop
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         "ASSETCATALOG_COMPILER_APPICON_NAME[sdk=xros*]": AppIconVision
