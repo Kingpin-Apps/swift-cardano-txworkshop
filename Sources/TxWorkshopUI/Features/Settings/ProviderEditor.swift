@@ -86,7 +86,11 @@ struct ProviderEditor: View {
                         Text(store.hasAPIKey(draft) ? "Replace API key" : "API key", bundle: #bundle)
                     }
                 } footer: {
-                    Text("Kept in your Keychain, on this device only.", bundle: #bundle)
+                    if store.syncsWithICloud {
+                        Text("Kept in iCloud Keychain, end-to-end encrypted, and on your other devices signed in to the same Apple Account.", bundle: #bundle)
+                    } else {
+                        Text("Kept in your Keychain, on this device only.", bundle: #bundle)
+                    }
                 }
             }
             if !isNew {

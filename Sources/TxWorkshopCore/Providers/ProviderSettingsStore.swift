@@ -55,23 +55,73 @@ public final class ProviderSettingsStore {
     /// App Sandbox rules out.
     public let directDistribution: Bool
 
+    /// Whether providers and their API keys sync through iCloud.
+    public let syncsWithICloud: Bool
+
     @ObservationIgnored private let persistence: any ProviderSettingsPersistence
     @ObservationIgnored private let secrets: any SecretStore
+    @ObservationIgnored private var cloudChanges: Task<Void, Never>?
 
     public init(
         persistence: any ProviderSettingsPersistence = UserDefaultsProviderSettingsPersistence(),
         secrets: any SecretStore = KeychainSecretStore(),
-        directDistribution: Bool = false
+        directDistribution: Bool = false,
+        syncsWithICloud: Bool = false
     ) {
         self.persistence = persistence
         self.secrets = secrets
         self.directDistribution = directDistribution
+        self.syncsWithICloud = syncsWithICloud
         do {
             settings = try persistence.load() ?? ProviderSettings()
         } catch {
             settings = ProviderSettings()
             lastError = String(describing: error)
         }
+    }
+
+    /// Settings that sync: in iCloud, with API keys in iCloud Keychain. For the
+    /// App Store build; the Developer ID build keeps its settings on the Mac.
+    public static func syncingWithICloud() -> ProviderSettingsStore {
+        let store = ProviderSettingsStore(
+            persistence: ICloudProviderSettingsPersistence(),
+            secrets: KeychainSecretStore(synchronizable: true),
+            syncsWithICloud: true
+        )
+        store.moveAPIKeysToICloudKeychain()
+        store.followICloudChanges()
+        return store
+    }
+
+    /// Reloads when another device changes the settings in iCloud.
+    private func followICloudChanges() {
+        cloudChanges = Task { [weak self] in
+            for await _ in NotificationCenter.default.notifications(named: NSUbiquitousKeyValueStore.didChangeExternallyNotification) {
+                self?.reload()
+            }
+        }
+    }
+
+    /// Reads the settings again.
+    public func reload() {
+        do {
+            if let loaded = try persistence.load(), loaded != settings { settings = loaded }
+        } catch {
+            lastError = String(describing: error)
+        }
+    }
+
+    /// Saves each API key again, once, so keys added before syncing was on
+    /// move to iCloud Keychain.
+    private func moveAPIKeysToICloudKeychain() {
+        let flag = "providerKeysInICloudKeychain"
+        guard !UserDefaults.standard.bool(forKey: flag) else { return }
+        for provider in settings.providers where !provider.kind.requiresDirectDistribution {
+            if let key = apiKey(for: provider), !key.isEmpty {
+                try? secrets.setSecret(key, for: provider.secretAccount)
+            }
+        }
+        UserDefaults.standard.set(true, forKey: flag)
     }
 
     public var providers: [ProviderConfiguration] { settings.providers }

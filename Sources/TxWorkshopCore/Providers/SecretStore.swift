@@ -14,12 +14,17 @@ public struct SecretStoreError: Error, Sendable, Equatable {
 }
 
 /// Secrets kept as generic passwords in the Keychain, readable only while the
-/// device is unlocked and never synced off it.
+/// device is unlocked. With `synchronizable`, they go in iCloud Keychain, end-to-end
+/// encrypted, and reach the person's other devices; otherwise they never leave
+/// this one.
 public struct KeychainSecretStore: SecretStore {
     public let service: String
+    /// Whether new secrets are kept in iCloud Keychain.
+    public let synchronizable: Bool
 
-    public init(service: String = "com.kingpinapps.cardano-txworkshop.providers") {
+    public init(service: String = "com.kingpinapps.cardano-txworkshop.providers", synchronizable: Bool = false) {
         self.service = service
+        self.synchronizable = synchronizable
     }
 
     private func query(_ account: String, dataProtection: Bool = true) -> [String: Any] {
@@ -28,7 +33,12 @@ public struct KeychainSecretStore: SecretStore {
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
         ]
-        if dataProtection { query[kSecUseDataProtectionKeychain as String] = true }
+        if dataProtection {
+            query[kSecUseDataProtectionKeychain as String] = true
+            // Finds a secret whether or not it syncs, so ones saved before
+            // syncing was turned on are still found.
+            query[kSecAttrSynchronizable as String] = kSecAttrSynchronizableAny
+        }
         return query
     }
 
@@ -58,14 +68,21 @@ public struct KeychainSecretStore: SecretStore {
     public func setSecret(_ secret: String, for account: String) throws {
         let data = Data(secret.utf8)
         let status = withKeychain { dataProtection in
-            let update = SecItemUpdate(
-                query(account, dataProtection: dataProtection) as CFDictionary,
-                [kSecValueData as String: data] as CFDictionary
-            )
-            guard update == errSecItemNotFound else { return update }
+            // Replaced rather than updated, so a secret saved before syncing
+            // was turned on moves to iCloud Keychain when it is next saved.
+            let delete = SecItemDelete(query(account, dataProtection: dataProtection) as CFDictionary)
+            guard delete == errSecSuccess || delete == errSecItemNotFound else { return delete }
             var add = query(account, dataProtection: dataProtection)
             add[kSecValueData as String] = data
-            add[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+            // Only the data-protection keychain can sync; the login keychain
+            // fallback stays on this Mac.
+            if synchronizable && dataProtection {
+                add[kSecAttrSynchronizable as String] = true
+                add[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlocked
+            } else {
+                add.removeValue(forKey: kSecAttrSynchronizable as String)
+                add[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+            }
             return SecItemAdd(add as CFDictionary, nil)
         }
         guard status == errSecSuccess else { throw SecretStoreError(status: status) }

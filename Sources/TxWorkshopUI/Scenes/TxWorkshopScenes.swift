@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftCardanoExplorers
 import TxWorkshopCore
 
 /// The app's scenes: a launch screen on iPhone, iPad and visionOS, a
@@ -9,11 +10,22 @@ public struct TxWorkshopScenes: Scene {
     @State private var signingKeys = SigningKeyStore()
     @State private var tracker = SubmissionTracker()
     @State private var hardwareAccounts = HardwareAccountStore()
+    /// Keeps the chosen explorer the same on every device (App Store build).
+    @State private var settingsMirror: ICloudSettingsMirror?
 
     /// - Parameter directDistribution: Whether this is the Developer ID build,
-    ///   which may offer providers the App Sandbox rules out.
+    ///   which may offer providers the App Sandbox rules out. The App Store
+    ///   build syncs providers, their API keys and the explorer through iCloud;
+    ///   the Developer ID build has no iCloud and keeps them on the Mac.
     public init(directDistribution: Bool = false) {
-        providers = ProviderSettingsStore(directDistribution: directDistribution)
+        if directDistribution {
+            providers = ProviderSettingsStore(directDistribution: true)
+        } else {
+            providers = .syncingWithICloud()
+            let mirror = ICloudSettingsMirror(keys: [BlockchainExplorer.storageKey])
+            mirror.start()
+            settingsMirror = mirror
+        }
     }
 
     public var body: some Scene {

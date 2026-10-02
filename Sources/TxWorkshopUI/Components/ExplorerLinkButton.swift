@@ -6,7 +6,7 @@ import TxWorkshopEngine
 
 extension BlockchainExplorer {
     /// Where the chosen explorer is kept.
-    static let storageKey = "blockchainExplorer"
+    public static let storageKey = "blockchainExplorer"
 
     /// The explorer to open `item` in on `network`: the chosen one when it
     /// has the page, or else the first that does, full explorers first.
