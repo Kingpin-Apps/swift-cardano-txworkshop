@@ -54,6 +54,7 @@ struct DocumentShell: View {
             SectionDetail(section: session.selection ?? .overview, document: document, inspection: inspection)
         }
         .environment(session)
+        .modifier(ProviderOnboardingPresenter())
         .task(id: currentKey) {
             await inspect()
         }

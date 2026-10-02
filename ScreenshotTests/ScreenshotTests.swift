@@ -25,6 +25,9 @@ final class ScreenshotTests: XCTestCase {
         app.launch()
 
         try openDocument(app)
+        // A fresh install offers to set up a provider; the sample needs none.
+        let skip = app.buttons["Skip for Now"]
+        if skip.waitForExistence(timeout: 3) { skip.tap() }
         XCTAssertTrue(app.staticTexts["In short"].waitForExistence(timeout: 20), "The document never opened.")
         settle()
         snapshot("01_Overview")

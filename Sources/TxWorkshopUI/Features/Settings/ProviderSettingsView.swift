@@ -6,6 +6,7 @@ public struct ProviderSettingsView: View {
     @Environment(ProviderSettingsStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var editing: ProviderConfiguration?
+    @State private var showsOnboarding = false
     /// Whether to offer Done, when this is the root of a sheet.
     private let showsDone: Bool
 
@@ -15,6 +16,17 @@ public struct ProviderSettingsView: View {
 
     public var body: some View {
         Form {
+            if store.providers.isEmpty {
+                Section {
+                    Button {
+                        showsOnboarding = true
+                    } label: {
+                        Text("Help Me Choose a Provider…", bundle: #bundle)
+                    }
+                } footer: {
+                    Text("Koios is free with no sign-up; the guide also shows how to set up Blockfrost, Ogmios and the others.", bundle: #bundle)
+                }
+            }
             ForEach(CardanoNetwork.allCases) { network in
                 Section {
                     let providers = store.providers(for: network)
@@ -65,6 +77,9 @@ public struct ProviderSettingsView: View {
             }
         }
         #endif
+        .sheet(isPresented: $showsOnboarding) {
+            ProviderOnboardingView()
+        }
         .sheet(item: $editing) { provider in
             NavigationStack {
                 ProviderEditor(provider: provider)

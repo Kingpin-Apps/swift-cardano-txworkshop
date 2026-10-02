@@ -11,7 +11,6 @@ struct ProviderEditor: View {
     @State private var apiKey: String
     @State private var socketPath: String
     @State private var cliPath: String
-    private let isNew: Bool
 
     init(provider: ProviderConfiguration) {
         draft = provider
@@ -20,7 +19,12 @@ struct ProviderEditor: View {
         apiKey = ""
         socketPath = provider.socketPath ?? ""
         cliPath = provider.cliPath ?? ""
-        isNew = provider.name.isEmpty
+    }
+
+    /// Whether this adds a provider, rather than editing a saved one. A new
+    /// one can arrive with its name filled in, from the provider set-up.
+    private var isNew: Bool {
+        !store.providers.contains { $0.id == draft.id }
     }
 
     var body: some View {
