@@ -55,73 +55,142 @@ public final class ProviderSettingsStore {
     /// App Sandbox rules out.
     public let directDistribution: Bool
 
-    /// Whether providers and their API keys sync through iCloud.
-    public let syncsWithICloud: Bool
+    /// Whether this build can sync through iCloud: the App Store build can;
+    /// the Developer ID build has no iCloud.
+    public let canSyncWithICloud: Bool
+    /// Whether providers, their API keys and the explorer sync through iCloud,
+    /// as the person chose. See ``setSyncsWithICloud(_:)``.
+    public private(set) var syncsWithICloud: Bool
 
-    @ObservationIgnored private let persistence: any ProviderSettingsPersistence
-    @ObservationIgnored private let secrets: any SecretStore
+    @ObservationIgnored private let local: UserDefaultsProviderSettingsPersistence?
+    @ObservationIgnored private let cloud: ICloudProviderSettingsPersistence?
+    @ObservationIgnored private let mirror: ICloudSettingsMirror?
+    @ObservationIgnored private var persistence: any ProviderSettingsPersistence
+    @ObservationIgnored private var secrets: any SecretStore
     @ObservationIgnored private var cloudChanges: Task<Void, Never>?
+
+    /// Where the person's choice to sync is kept, on this device.
+    static let syncPreferenceKey = "syncSettingsWithICloud"
 
     public init(
         persistence: any ProviderSettingsPersistence = UserDefaultsProviderSettingsPersistence(),
         secrets: any SecretStore = KeychainSecretStore(),
-        directDistribution: Bool = false,
-        syncsWithICloud: Bool = false
+        directDistribution: Bool = false
     ) {
         self.persistence = persistence
         self.secrets = secrets
         self.directDistribution = directDistribution
-        self.syncsWithICloud = syncsWithICloud
-        do {
-            settings = try persistence.load() ?? ProviderSettings()
-        } catch {
-            settings = ProviderSettings()
-            lastError = String(describing: error)
-        }
+        canSyncWithICloud = false
+        syncsWithICloud = false
+        local = nil
+        cloud = nil
+        mirror = nil
+        settings = ProviderSettings()
+        load()
     }
 
-    /// Settings that sync: in iCloud, with API keys in iCloud Keychain. For the
-    /// App Store build; the Developer ID build keeps its settings on the Mac.
-    public static func syncingWithICloud() -> ProviderSettingsStore {
+    private init(local: UserDefaultsProviderSettingsPersistence, cloud: ICloudProviderSettingsPersistence, mirror: ICloudSettingsMirror, syncs: Bool) {
+        self.local = local
+        self.cloud = cloud
+        self.mirror = mirror
+        directDistribution = false
+        canSyncWithICloud = true
+        syncsWithICloud = syncs
+        persistence = syncs ? cloud : local
+        secrets = KeychainSecretStore(synchronizable: syncs)
+        settings = ProviderSettings()
+        load()
+    }
+
+    /// The App Store build's settings: synced through iCloud unless the person
+    /// turned that off, with API keys in iCloud Keychain and the chosen
+    /// explorer (`explorerKey`) kept the same everywhere.
+    public static func appStore(explorerKey: String) -> ProviderSettingsStore {
+        let syncs = UserDefaults.standard.object(forKey: syncPreferenceKey) as? Bool ?? true
         let store = ProviderSettingsStore(
-            persistence: ICloudProviderSettingsPersistence(),
-            secrets: KeychainSecretStore(synchronizable: true),
-            syncsWithICloud: true
+            local: UserDefaultsProviderSettingsPersistence(),
+            cloud: ICloudProviderSettingsPersistence(),
+            mirror: ICloudSettingsMirror(keys: [explorerKey]),
+            syncs: syncs
         )
-        store.moveAPIKeysToICloudKeychain()
-        store.followICloudChanges()
+        if syncs {
+            store.moveAPIKeysToICloudKeychainOnce()
+            store.startSyncing()
+        }
         return store
     }
 
-    /// Reloads when another device changes the settings in iCloud.
-    private func followICloudChanges() {
+    /// Saves each API key again, once, so keys added before this version,
+    /// which synced nothing, move to iCloud Keychain.
+    private func moveAPIKeysToICloudKeychainOnce() {
+        let flag = "providerKeysInICloudKeychain"
+        guard !UserDefaults.standard.bool(forKey: flag) else { return }
+        for (account, key) in apiKeys() { try? secrets.setSecret(key, for: account) }
+        UserDefaults.standard.set(true, forKey: flag)
+    }
+
+    /// Whether the person is signed in to iCloud on this device.
+    public var iCloudAvailable: Bool { FileManager.default.ubiquityIdentityToken != nil }
+
+    /// Turns iCloud sync on or off, for this device.
+    ///
+    /// On: this device's providers join those already in iCloud, and its API
+    /// keys move to iCloud Keychain. Off: this device keeps its own copy of
+    /// everything, and the other devices keep theirs; nothing is deleted from
+    /// iCloud.
+    public func setSyncsWithICloud(_ on: Bool) {
+        guard canSyncWithICloud, on != syncsWithICloud, let local, let cloud else { return }
+        let keys = apiKeys()
+        syncsWithICloud = on
+        UserDefaults.standard.set(on, forKey: Self.syncPreferenceKey)
+        secrets = KeychainSecretStore(synchronizable: on)
+        if on {
+            persistence = cloud
+            do {
+                settings = try cloud.join(settings)
+            } catch {
+                lastError = String(describing: error)
+            }
+            startSyncing()
+        } else {
+            persistence = local
+            cloudChanges?.cancel()
+            cloudChanges = nil
+            mirror?.stop()
+            persist()
+        }
+        // Each key is saved again in the new place: iCloud Keychain when on,
+        // this device's own copy when off.
+        for (account, key) in keys {
+            try? secrets.setSecret(key, for: account)
+        }
+    }
+
+    private func startSyncing() {
+        mirror?.start()
         cloudChanges = Task { [weak self] in
             for await _ in NotificationCenter.default.notifications(named: NSUbiquitousKeyValueStore.didChangeExternallyNotification) {
-                self?.reload()
+                self?.load()
             }
         }
     }
 
-    /// Reads the settings again.
-    public func reload() {
+    /// The API key of every provider that has one, by Keychain account.
+    private func apiKeys() -> [String: String] {
+        var keys: [String: String] = [:]
+        for provider in settings.providers where !provider.kind.requiresDirectDistribution {
+            if let key = apiKey(for: provider), !key.isEmpty { keys[provider.secretAccount] = key }
+        }
+        return keys
+    }
+
+    /// Reads the settings again, as when another device changes them.
+    public func load() {
         do {
             if let loaded = try persistence.load(), loaded != settings { settings = loaded }
         } catch {
             lastError = String(describing: error)
         }
-    }
-
-    /// Saves each API key again, once, so keys added before syncing was on
-    /// move to iCloud Keychain.
-    private func moveAPIKeysToICloudKeychain() {
-        let flag = "providerKeysInICloudKeychain"
-        guard !UserDefaults.standard.bool(forKey: flag) else { return }
-        for provider in settings.providers where !provider.kind.requiresDirectDistribution {
-            if let key = apiKey(for: provider), !key.isEmpty {
-                try? secrets.setSecret(key, for: provider.secretAccount)
-            }
-        }
-        UserDefaults.standard.set(true, forKey: flag)
     }
 
     public var providers: [ProviderConfiguration] { settings.providers }

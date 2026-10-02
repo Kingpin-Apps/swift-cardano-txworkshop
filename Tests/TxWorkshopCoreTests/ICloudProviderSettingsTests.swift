@@ -60,4 +60,20 @@ struct ICloudProviderSettingsTests {
         #expect(reloaded.providers.contains(node))
         #expect(reloaded.selection["mainnet"] == node.id)
     }
+
+    @Test("Turning sync on joins this device's providers to iCloud's, without doubles")
+    func joinsWithoutDoubles() throws {
+        let cloud = MemoryCloud()
+        let blockfrost = ProviderConfiguration(name: "Blockfrost", kind: .blockfrost, network: .mainnet)
+        try ICloudProviderSettingsPersistence(local: local(), cloud: cloud)
+            .save(ProviderSettings(providers: [koios], selection: ["mainnet": koios.id]))
+
+        // This device set up its own Koios, and Blockfrost, before syncing.
+        let ownKoios = ProviderConfiguration(name: "Koios", kind: .koios, network: .mainnet)
+        let joined = try ICloudProviderSettingsPersistence(local: local(), cloud: cloud)
+            .join(ProviderSettings(providers: [ownKoios, blockfrost], selection: ["mainnet": blockfrost.id]))
+
+        #expect(joined.providers.map(\.name) == ["Koios", "Blockfrost"])
+        #expect(joined.selection["mainnet"] == koios.id)  // iCloud's choice stays
+    }
 }

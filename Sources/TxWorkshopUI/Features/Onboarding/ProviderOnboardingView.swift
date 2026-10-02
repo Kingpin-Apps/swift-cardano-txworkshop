@@ -19,6 +19,10 @@ public struct ProviderOnboardingView: View {
                     Text("Cardano TxWorkshop reads the chain through a provider: to look up the outputs a transaction spends, fetch the protocol parameters and ledger state for validating, and submit. Without one you can still open, inspect and edit transactions offline.", bundle: #bundle)
                 }
 
+                // Asked first, so providers already set up on another device
+                // arrive before any are added here.
+                ICloudSyncSection()
+
                 if !store.providers.isEmpty {
                     Section {
                         ForEach(store.providers) { provider in

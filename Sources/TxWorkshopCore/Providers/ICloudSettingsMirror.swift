@@ -19,6 +19,7 @@ public final class ICloudSettingsMirror {
     /// Takes iCloud's values where it has them, sends this device's otherwise,
     /// then follows changes on either side.
     public func start() {
+        guard tasks.isEmpty else { return }
         cloud.synchronize()
         for key in keys {
             if let value = cloud.string(forKey: key) {
@@ -37,6 +38,12 @@ public final class ICloudSettingsMirror {
                 self?.pushToCloud()
             }
         })
+    }
+
+    /// Stops copying; each side keeps the values it has.
+    public func stop() {
+        tasks.forEach { $0.cancel() }
+        tasks = []
     }
 
     private func pullFromCloud() {

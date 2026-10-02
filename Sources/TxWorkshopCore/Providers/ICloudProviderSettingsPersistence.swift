@@ -56,6 +56,35 @@ public final class ICloudProviderSettingsPersistence: ProviderSettingsPersistenc
         try saveToCloud(settings)
     }
 
+    /// Adds `settings` to what is already in iCloud, when this device starts
+    /// syncing, and returns the result. A provider already there under
+    /// another id, the same kind, network, address and name, is not added twice.
+    public func join(_ settings: ProviderSettings) throws -> ProviderSettings {
+        cloud.synchronize()
+        var joined = settings
+        if let data = cloud.data(forKey: key) {
+            joined = Self.join(cloud: try JSONDecoder().decode(ProviderSettings.self, from: data), device: settings)
+        }
+        try save(joined)
+        return joined
+    }
+
+    static func join(cloud: ProviderSettings, device: ProviderSettings) -> ProviderSettings {
+        func same(_ a: ProviderConfiguration, _ b: ProviderConfiguration) -> Bool {
+            a.id == b.id || (a.kind == b.kind && a.network == b.network && a.url == b.url && a.name == b.name)
+        }
+        var joined = cloud
+        for provider in device.providers where !cloud.providers.contains(where: { same($0, provider) }) {
+            joined.providers.append(provider)
+        }
+        // Each network keeps iCloud's choice; this device's fills any gaps.
+        let ids = Set(joined.providers.map(\.id))
+        for (network, id) in device.selection where joined.selection[network] == nil && ids.contains(id) {
+            joined.selection[network] = id
+        }
+        return joined
+    }
+
     private func saveToCloud(_ settings: ProviderSettings) throws {
         cloud.set(try JSONEncoder().encode(Self.shareable(settings)), forKey: key)
         cloud.synchronize()

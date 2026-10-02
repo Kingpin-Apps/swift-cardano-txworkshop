@@ -35,9 +35,11 @@ public struct KeychainSecretStore: SecretStore {
         ]
         if dataProtection {
             query[kSecUseDataProtectionKeychain as String] = true
-            // Finds a secret whether or not it syncs, so ones saved before
-            // syncing was turned on are still found.
-            query[kSecAttrSynchronizable as String] = kSecAttrSynchronizableAny
+            // Syncing, a secret is found whether or not it syncs yet, so ones
+            // saved before syncing was turned on still are. Not syncing, only
+            // this device's own copy counts: deleting a synced copy would
+            // delete it on the person's other devices too.
+            query[kSecAttrSynchronizable as String] = synchronizable ? kSecAttrSynchronizableAny : kCFBooleanFalse
         }
         return query
     }
@@ -70,6 +72,7 @@ public struct KeychainSecretStore: SecretStore {
         let status = withKeychain { dataProtection in
             // Replaced rather than updated, so a secret saved before syncing
             // was turned on moves to iCloud Keychain when it is next saved.
+            // Not syncing, only this device's copy is replaced.
             let delete = SecItemDelete(query(account, dataProtection: dataProtection) as CFDictionary)
             guard delete == errSecSuccess || delete == errSecItemNotFound else { return delete }
             var add = query(account, dataProtection: dataProtection)
@@ -80,7 +83,6 @@ public struct KeychainSecretStore: SecretStore {
                 add[kSecAttrSynchronizable as String] = true
                 add[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlocked
             } else {
-                add.removeValue(forKey: kSecAttrSynchronizable as String)
                 add[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
             }
             return SecItemAdd(add as CFDictionary, nil)

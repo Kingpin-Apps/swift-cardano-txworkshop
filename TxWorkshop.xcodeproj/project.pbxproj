@@ -13,6 +13,7 @@
 		2DAF3DFE25281AB5786AC371 /* TxWorkshopDirect in Frameworks */ = {isa = PBXBuildFile; productRef = 9099A1D0D21229074F7C96FA /* TxWorkshopDirect */; };
 		2FCC91EF70D1846F2BF86782 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4414433F2496F95D78F89A1A /* Assets.xcassets */; };
 		39758F20BF0E32129F97EDFE /* TxWorkshopCore in Frameworks */ = {isa = PBXBuildFile; productRef = CD904B83B2A02B6FE980AE1C /* TxWorkshopCore */; };
+		6D45A4F845C533A2453E8F20 /* SyncToggleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE96276D00FFDE563F66128 /* SyncToggleTests.swift */; };
 		7004F93AFE5B453DC40636C8 /* TxWorkshopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */; };
 		8310BC6B3A5779E69A232465 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4414433F2496F95D78F89A1A /* Assets.xcassets */; };
 		8B3753FD3446176DC87E2557 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 428DB9D73BFD8650FB3D64C6 /* AppIcon.icon */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1FE96276D00FFDE563F66128 /* SyncToggleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncToggleTests.swift; sourceTree = "<group>"; };
 		36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxWorkshopDirectApp.swift; sourceTree = "<group>"; };
 		428DB9D73BFD8650FB3D64C6 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		4414433F2496F95D78F89A1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 			children = (
 				45BC18706F102075B50A01C3 /* ScreenshotTests.swift */,
 				9C39DAD474EE501C8AAD1293 /* SnapshotHelper.swift */,
+				1FE96276D00FFDE563F66128 /* SyncToggleTests.swift */,
 			);
 			path = ScreenshotTests;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 			files = (
 				A29CDD40B4D183F73F9A2CAD /* ScreenshotTests.swift in Sources */,
 				8E8401ED65EBA7823BCDCF6C /* SnapshotHelper.swift in Sources */,
+				6D45A4F845C533A2453E8F20 /* SyncToggleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,6 +15,7 @@ public struct SettingsView: View {
                 Form {
                     AppearanceSection()
                     ExplorerSection()
+                    ICloudSyncSection()
                 }
                     .formStyle(.grouped)
                     .twScreenBackground()
@@ -43,6 +44,7 @@ public struct SettingsView: View {
                 AppearanceSection()
                 #endif
                 ExplorerSection()
+                ICloudSyncSection()
                 Section {
                     NavigationLink {
                         ProviderSettingsView(showsDone: false)
