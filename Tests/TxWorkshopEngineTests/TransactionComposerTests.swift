@@ -87,8 +87,12 @@ struct TransactionComposerTests {
     func mistakes() async throws {
         let (snapshot, utxo, address) = try Self.setup()
         let hex = try utxo.toCBORData().hex
-        await #expect(throws: ComposeError.badAddress("nope")) {
+        do {
             _ = try await TransactionComposer().compose(BuildRecipe(utxos: [hex], outputs: [OutputDraft(address: "nope")], changeAddress: address), snapshot: snapshot, network: .preprod)
+            Issue.record("a bad address should be named")
+        } catch ComposeError.invalidRecipe(let problems) {
+            #expect(problems.map(\.place) == ["Output 1"])
+            #expect(problems.map(\.field) == ["Address"])
         }
         do {
             _ = try await TransactionComposer().compose(BuildRecipe(utxos: [hex], outputs: [OutputDraft(address: address, lovelace: 1)], changeAddress: address), snapshot: snapshot, network: .preprod)
@@ -98,7 +102,7 @@ struct TransactionComposerTests {
             #expect(minimum > 800_000)
         }
         await #expect(throws: ComposeError.noProtocolParameters) {
-            _ = try await TransactionComposer().compose(BuildRecipe(utxos: [hex], outputs: [], changeAddress: address), snapshot: nil, network: .preprod)
+            _ = try await TransactionComposer().compose(BuildRecipe(utxos: [hex], outputs: [OutputDraft(address: address)], changeAddress: address), snapshot: nil, network: .preprod)
         }
     }
 
@@ -172,8 +176,11 @@ struct ScriptBuildingTests {
         await #expect(throws: ComposeError.self) {
             _ = try await TransactionComposer().compose(try recipe(MintDraft(script: .native(json: "{"), assets: [AssetDraft(assetNameHex: "00")])), snapshot: snapshot, network: .preprod)
         }
-        await #expect(throws: ComposeError.badPlutusData("the minting redeemer")) {
+        do {
             _ = try await TransactionComposer().compose(try recipe(MintDraft(script: .plutus(version: 3, cborHex: try Self.alwaysSucceeds()), assets: [AssetDraft(assetNameHex: "00")], redeemer: "zz")), snapshot: snapshot, network: .preprod)
+            Issue.record("a bad redeemer should be named")
+        } catch ComposeError.invalidRecipe(let problems) {
+            #expect(problems.map { "\($0.place), \($0.field)" } == ["Mint or burn 1, Redeemer"])
         }
     }
 }

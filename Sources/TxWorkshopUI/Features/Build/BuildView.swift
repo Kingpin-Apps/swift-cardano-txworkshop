@@ -14,6 +14,10 @@ struct BuildView: View {
     @State private var composition: LoadState<TransactionComposer.Composition> = .idle
     @State private var usesProvider = true
     @State private var networkHints = BuildNetworkHints()
+    /// What is wrong with the recipe, shown after Build is pressed and kept
+    /// up to date as it is fixed.
+    @State private var problems: [RecipeProblem] = []
+    @State private var checksRecipe = false
 
     init(document: TxWorkshopDocument) {
         self.document = document
@@ -142,6 +146,23 @@ struct BuildView: View {
                     Text("Protocol parameters come from the document's chain data, or the provider. Without a provider, only pasted UTxOs are spent.", bundle: #bundle)
                 }
             }
+            if !problems.isEmpty {
+                Section {
+                    ForEach(problems) { problem in
+                        Label {
+                            VStack(alignment: .leading, spacing: TWSpacing.xxs) {
+                                Text(verbatim: "\(problem.place) · \(problem.field)").font(.subheadline.weight(.semibold))
+                                Text(verbatim: problem.message)
+                            }
+                        } icon: {
+                            Image(systemName: "exclamationmark.triangle")
+                        }
+                        .labelStyle(.status(TWColor.failure))
+                    }
+                } header: {
+                    Text("Fix before building", bundle: #bundle)
+                }
+            }
             switch composition {
             case .idle, .loading:
                 EmptyView()
@@ -168,6 +189,9 @@ struct BuildView: View {
                 document.setNetwork(network, undoManager: undoManager)
             }
         }
+        .onChange(of: recipe) {
+            if checksRecipe { problems = RecipeCheck.problems(recipe, network: document.content.network) }
+        }
         .navigationTitle(Text("Build", bundle: #bundle))
     }
 
@@ -192,6 +216,12 @@ struct BuildView: View {
         let network = document.content.network
         let provider = usesProvider ? provider : nil
         let apiKey = provider.flatMap { providers.apiKey(for: $0) }
+        checksRecipe = true
+        problems = RecipeCheck.problems(recipe, network: network)
+        guard problems.isEmpty else {
+            composition = .idle
+            return
+        }
         composition = .loading
         document.update({ $0.recipe = recipe }, actionName: LocalizedStringResource("Edit Recipe", bundle: #bundle), undoManager: undoManager)
         Task {

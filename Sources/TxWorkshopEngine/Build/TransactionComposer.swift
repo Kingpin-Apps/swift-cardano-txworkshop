@@ -57,7 +57,9 @@ public struct TransactionComposer: Sendable {
     ) async throws -> Composition {
         // The recipe's values are read in any form they were given in; some
         // (a key hash for an address) need the network.
-        try await ValueReader.$buildNetwork.withValue(network) {
+        let problems = RecipeCheck.problems(recipe, network: network)
+        guard problems.isEmpty else { throw ComposeError.invalidRecipe(problems) }
+        return try await ValueReader.$buildNetwork.withValue(network) {
             try await build(recipe, snapshot: snapshot, network: network, provider: provider, apiKey: apiKey)
         }
     }
@@ -278,9 +280,13 @@ public enum ComposeError: Error, Sendable, Equatable, CustomStringConvertible {
     case belowMinimum(address: String, minimum: Int64)
     case scriptFails(String, String)
     case builder(String)
+    /// The recipe has mistakes, each named where it is.
+    case invalidRecipe([RecipeProblem])
 
     public var description: String {
         switch self {
+        case .invalidRecipe(let problems):
+            (["Fix these first:"] + problems.map { "• \($0)" }).joined(separator: "\n")
         case .noProtocolParameters: "Building needs protocol parameters: fetch chain data, enter them by hand, or pick a provider."
         case .noChangeAddress: "Add a source address or a change address."
         case .badAddress(let text): "\"\(text)\" is not an address."
