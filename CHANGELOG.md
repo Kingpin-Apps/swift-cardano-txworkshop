@@ -1,3 +1,17 @@
+## v0.1.3 (2026-10-03)
+
+### Feat
+
+- **build**: check the recipe field by field and name each mistake
+- **settings**: a switch to sync settings with iCloud, in Settings and the provider set-up
+- **settings**: sync providers, their API keys and the explorer through iCloud
+- **providers**: a first-run guide to choosing a chain data provider
+
+### Fix
+
+- **settings**: iCloud sync is off until turned on, and untouched until then
+- **mac**: autosave within 2 seconds, so iCloud Drive documents rarely conflict
+
 ## v0.1.2 (2026-09-30)
 
 ### Fix
