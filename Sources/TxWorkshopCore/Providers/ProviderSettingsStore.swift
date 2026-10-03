@@ -63,8 +63,11 @@ public final class ProviderSettingsStore {
     public private(set) var syncsWithICloud: Bool
 
     @ObservationIgnored private let local: UserDefaultsProviderSettingsPersistence?
-    @ObservationIgnored private let cloud: ICloudProviderSettingsPersistence?
-    @ObservationIgnored private let mirror: ICloudSettingsMirror?
+    /// Made only when sync is first turned on: until then the app never
+    /// touches iCloud, so a device without an iCloud account logs nothing.
+    @ObservationIgnored private var cloud: ICloudProviderSettingsPersistence?
+    @ObservationIgnored private var mirror: ICloudSettingsMirror?
+    @ObservationIgnored private var explorerKey: String?
     @ObservationIgnored private var persistence: any ProviderSettingsPersistence
     @ObservationIgnored private var secrets: any SecretStore
     @ObservationIgnored private var cloudChanges: Task<Void, Never>?
@@ -89,31 +92,31 @@ public final class ProviderSettingsStore {
         load()
     }
 
-    private init(local: UserDefaultsProviderSettingsPersistence, cloud: ICloudProviderSettingsPersistence, mirror: ICloudSettingsMirror, syncs: Bool) {
+    private init(local: UserDefaultsProviderSettingsPersistence, explorerKey: String, syncs: Bool) {
         self.local = local
-        self.cloud = cloud
-        self.mirror = mirror
+        self.explorerKey = explorerKey
+        cloud = nil
+        mirror = nil
         directDistribution = false
         canSyncWithICloud = true
         syncsWithICloud = syncs
-        persistence = syncs ? cloud : local
+        persistence = local
         secrets = KeychainSecretStore(synchronizable: syncs)
         settings = ProviderSettings()
         load()
     }
 
-    /// The App Store build's settings: synced through iCloud unless the person
-    /// turned that off, with API keys in iCloud Keychain and the chosen
-    /// explorer (`explorerKey`) kept the same everywhere.
+    /// The App Store build's settings: on this device, or, once the person
+    /// turns sync on and is signed in to iCloud, synced through iCloud with
+    /// API keys in iCloud Keychain and the chosen explorer (`explorerKey`)
+    /// kept the same everywhere.
     public static func appStore(explorerKey: String) -> ProviderSettingsStore {
-        let syncs = UserDefaults.standard.object(forKey: syncPreferenceKey) as? Bool ?? true
-        let store = ProviderSettingsStore(
-            local: UserDefaultsProviderSettingsPersistence(),
-            cloud: ICloudProviderSettingsPersistence(),
-            mirror: ICloudSettingsMirror(keys: [explorerKey]),
-            syncs: syncs
-        )
-        if syncs {
+        // Off until the person turns it on: not everyone uses iCloud.
+        let syncs = UserDefaults.standard.bool(forKey: syncPreferenceKey)
+        let store = ProviderSettingsStore(local: UserDefaultsProviderSettingsPersistence(), explorerKey: explorerKey, syncs: syncs)
+        if syncs, store.iCloudAvailable, let cloud = store.cloudStore() {
+            store.persistence = cloud
+            store.load()
             store.moveAPIKeysToICloudKeychainOnce()
             store.startSyncing()
         }
@@ -139,12 +142,12 @@ public final class ProviderSettingsStore {
     /// everything, and the other devices keep theirs; nothing is deleted from
     /// iCloud.
     public func setSyncsWithICloud(_ on: Bool) {
-        guard canSyncWithICloud, on != syncsWithICloud, let local, let cloud else { return }
+        guard canSyncWithICloud, on != syncsWithICloud, let local else { return }
         let keys = apiKeys()
         syncsWithICloud = on
         UserDefaults.standard.set(on, forKey: Self.syncPreferenceKey)
         secrets = KeychainSecretStore(synchronizable: on)
-        if on {
+        if on, iCloudAvailable, let cloud = cloudStore() {
             persistence = cloud
             do {
                 settings = try cloud.join(settings)
@@ -152,6 +155,9 @@ public final class ProviderSettingsStore {
                 lastError = String(describing: error)
             }
             startSyncing()
+        } else if on {
+            // No iCloud account yet: keep to this device until there is one.
+            persistence = local
         } else {
             persistence = local
             cloudChanges?.cancel()
@@ -164,6 +170,14 @@ public final class ProviderSettingsStore {
         for (account, key) in keys {
             try? secrets.setSecret(key, for: account)
         }
+    }
+
+    /// The iCloud store and the explorer mirror, made the first time sync
+    /// is used.
+    private func cloudStore() -> ICloudProviderSettingsPersistence? {
+        if cloud == nil { cloud = ICloudProviderSettingsPersistence() }
+        if mirror == nil, let explorerKey { mirror = ICloudSettingsMirror(keys: [explorerKey]) }
+        return cloud
     }
 
     private func startSyncing() {
