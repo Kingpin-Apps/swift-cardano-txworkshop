@@ -1,3 +1,6 @@
+#if os(macOS)
+import AppKit
+#endif
 import SwiftUI
 import SwiftCardanoExplorers
 import TxWorkshopCore
@@ -16,6 +19,18 @@ public struct TxWorkshopScenes: Scene {
     ///   build can sync providers, their API keys and the explorer through
     ///   iCloud; the Developer ID build has no iCloud and keeps them on the Mac.
     public init(directDistribution: Bool = false) {
+        #if os(macOS)
+        // Save a change within seconds, not when macOS next gets round to it,
+        // so a document open on two devices through iCloud Drive is rarely
+        // left with unsaved edits when the other saves. Only once launched:
+        // touching the shared controller earlier creates it before SwiftUI
+        // installs its own, which crashes.
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didFinishLaunchingNotification, object: nil, queue: .main
+        ) { _ in
+            MainActor.assumeIsolated { NSDocumentController.shared.autosavingDelay = 2 }
+        }
+        #endif
         providers = directDistribution
             ? ProviderSettingsStore(directDistribution: true)
             : .appStore(explorerKey: BlockchainExplorer.storageKey)
