@@ -5,6 +5,9 @@ final class SyncToggleTests: XCTestCase {
     @MainActor
     func testSyncSwitch() throws {
         let app = XCUIApplication()
+        // As on a fresh install, whatever earlier runs left: the set-up is
+        // offered once, and sync starts off.
+        app.launchArguments += ["-providerOnboardingShown", "NO", "-syncSettingsWithICloud", "NO"]
         app.launch()
         // The launch screen can miss the first tap while it settles.
         let new = app.buttons["New Transaction"].firstMatch

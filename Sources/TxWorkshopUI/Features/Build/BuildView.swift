@@ -139,6 +139,7 @@ struct BuildView: View {
                         .overlay { if composition.isLoading { ProgressView() } }
                 }
                 .disabled(composition.isLoading || document.content.network == nil)
+                .accessibilityIdentifier("buildRecipe")
             } footer: {
                 if document.content.network == nil {
                     Text("Set the network in Overview first.", bundle: #bundle)

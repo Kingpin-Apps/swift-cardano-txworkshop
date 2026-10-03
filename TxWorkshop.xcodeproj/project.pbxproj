@@ -13,6 +13,7 @@
 		2DAF3DFE25281AB5786AC371 /* TxWorkshopDirect in Frameworks */ = {isa = PBXBuildFile; productRef = 9099A1D0D21229074F7C96FA /* TxWorkshopDirect */; };
 		2FCC91EF70D1846F2BF86782 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4414433F2496F95D78F89A1A /* Assets.xcassets */; };
 		39758F20BF0E32129F97EDFE /* TxWorkshopCore in Frameworks */ = {isa = PBXBuildFile; productRef = CD904B83B2A02B6FE980AE1C /* TxWorkshopCore */; };
+		591FE6D868FAB3AB1675D689 /* RecipeCheckUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97397E3A3C20473892753AA /* RecipeCheckUITests.swift */; };
 		6D45A4F845C533A2453E8F20 /* SyncToggleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE96276D00FFDE563F66128 /* SyncToggleTests.swift */; };
 		7004F93AFE5B453DC40636C8 /* TxWorkshopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58CBD644C3874DF4D543AB48 /* TxWorkshopApp.swift */; };
 		8310BC6B3A5779E69A232465 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4414433F2496F95D78F89A1A /* Assets.xcassets */; };
@@ -51,6 +52,7 @@
 		97CB982DCFE36F65D6ABEAE7 /* TxWorkshop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshop.entitlements; sourceTree = "<group>"; };
 		9C39DAD474EE501C8AAD1293 /* SnapshotHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		A680CCB6C7AF1211ED7B0255 /* TxWorkshopDirect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshopDirect.entitlements; sourceTree = "<group>"; };
+		B97397E3A3C20473892753AA /* RecipeCheckUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCheckUITests.swift; sourceTree = "<group>"; };
 		BF740F9F6123AA1264F57700 /* AppIconVision.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIconVision.xcassets; sourceTree = "<group>"; };
 		C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-cardano-txworkshop"; path = .; sourceTree = SOURCE_ROOT; };
 		C5D7F86C6DDD78E4458DD86B /* TxWorkshop-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "TxWorkshop-macOS.entitlements"; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 		564BD92AC4AEAEA830CD8513 /* ScreenshotTests */ = {
 			isa = PBXGroup;
 			children = (
+				B97397E3A3C20473892753AA /* RecipeCheckUITests.swift */,
 				45BC18706F102075B50A01C3 /* ScreenshotTests.swift */,
 				9C39DAD474EE501C8AAD1293 /* SnapshotHelper.swift */,
 				1FE96276D00FFDE563F66128 /* SyncToggleTests.swift */,
@@ -293,6 +296,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				591FE6D868FAB3AB1675D689 /* RecipeCheckUITests.swift in Sources */,
 				A29CDD40B4D183F73F9A2CAD /* ScreenshotTests.swift in Sources */,
 				8E8401ED65EBA7823BCDCF6C /* SnapshotHelper.swift in Sources */,
 				6D45A4F845C533A2453E8F20 /* SyncToggleTests.swift in Sources */,
