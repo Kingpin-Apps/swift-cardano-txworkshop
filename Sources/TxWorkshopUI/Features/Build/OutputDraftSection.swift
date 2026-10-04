@@ -5,7 +5,9 @@ import TxWorkshopEngine
 /// One output of the recipe: where, how much, which assets, and a datum.
 struct OutputDraftSection: View {
     @Binding var output: OutputDraft
+    @Binding var blueprints: [StoredBlueprint]
     let onRemove: () -> Void
+    @Environment(\.documentNetwork) private var network
     @State private var datumKind = DatumKind.none
     @State private var datumHex = ""
 
@@ -48,7 +50,11 @@ struct OutputDraftSection: View {
                 .font(TWFont.bytesSmall)
                 .autocorrectionDisabled()
             } else if datumKind == .inline {
-                ValueField(kind: .plutusData, text: $datumHex, prompt: Text("Plutus data (CBOR hex, JSON or a file)", bundle: #bundle))
+                BlueprintDataField(
+                    role: .datum, text: $datumHex, form: $output.datumForm, blueprints: $blueprints,
+                    scriptHash: BlueprintCatalog.scriptHash(address: output.address, network: network), purpose: "spend",
+                    label: Text("Inline datum", bundle: #bundle), prompt: Text("Plutus data (CBOR hex, JSON or a file)", bundle: #bundle)
+                )
             }
         } header: {
             RemovableHeader(title: Text("Output", bundle: #bundle), onRemove: onRemove)
@@ -65,6 +71,7 @@ struct OutputDraftSection: View {
     }
 
     private func syncDatum() {
+        if datumKind != .inline { output.datumForm = nil }
         output.datum = switch datumKind {
         case .none: .none
         case .hash: .hash(datumHex.filter { !$0.isWhitespace })

@@ -13,6 +13,7 @@ public struct TxWorkshopScenes: Scene {
     @State private var signingKeys = SigningKeyStore()
     @State private var tracker = SubmissionTracker()
     @State private var hardwareAccounts = HardwareAccountStore()
+    @State private var blueprints = BlueprintLibrary()
 
     /// - Parameter directDistribution: Whether this is the Developer ID build,
     ///   which may offer providers the App Sandbox rules out. The App Store
@@ -54,6 +55,7 @@ public struct TxWorkshopScenes: Scene {
                 .environment(signingKeys)
                 .environment(tracker)
                 .environment(hardwareAccounts)
+                .environment(blueprints)
                 .twWindowStyle()
                 .task {
                     tracker.start()
@@ -66,6 +68,7 @@ public struct TxWorkshopScenes: Scene {
         Settings {
             SettingsView()
                 .environment(providers)
+                .environment(blueprints)
                 .frame(minWidth: 520, minHeight: 360)
                 .twWindowStyle()
         }

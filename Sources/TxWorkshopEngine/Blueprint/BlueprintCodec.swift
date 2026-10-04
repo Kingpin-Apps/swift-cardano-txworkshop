@@ -137,7 +137,10 @@ extension Blueprint {
 
         case .bytes(let limits):
             guard case .bytes(let text) = value else { return problem("Bytes expected.") }
-            guard let bytes = Self.bytes(text) else { return problem("Bytes are written in hex: two digits 0–9, a–f a byte.") }
+            // A key hash may be given as an address, a bech32 key or a key file.
+            guard let bytes = Self.bytes(text) ?? (try? ValueReader.anyKeyHash(text.trimmingCharacters(in: .whitespacesAndNewlines)))
+                .flatMap({ Self.bytes($0.value) })
+            else { return problem("Bytes are written in hex: two digits 0–9, a–f a byte.") }
             if let minimum = limits.minLength, bytes.count < minimum {
                 return problem(limits.maxLength == minimum ? "\(minimum) bytes expected, not \(bytes.count)." : "At least \(minimum) bytes expected, not \(bytes.count).")
             }
@@ -225,13 +228,13 @@ extension Blueprint {
         }
     }
 
-    static func constructorIndex(_ schema: BlueprintSchema) -> Int? {
+    public static func constructorIndex(_ schema: BlueprintSchema) -> Int? {
         if case .constructor(let index, _) = schema.kind { return index }
         return nil
     }
 
     /// A field's path: its title when it has one, else its position.
-    static func fieldPath(_ path: String, _ field: BlueprintSchema, _ position: Int) -> String {
+    public static func fieldPath(_ path: String, _ field: BlueprintSchema, _ position: Int) -> String {
         if let title = field.title, !title.isEmpty, case .reference = field.kind { return "\(path).\(title)" }
         if let title = field.title, !title.isEmpty, !Self.isTypeTitle(field) { return "\(path).\(title)" }
         return "\(path)[\(position)]"

@@ -1,14 +1,16 @@
 import SwiftUI
 import TxWorkshopCore
+import TxWorkshopEngine
 
 /// Assets minted or burned under one policy.
 struct MintDraftSection: View {
     @Binding var mint: MintDraft
+    @Binding var blueprints: [StoredBlueprint]
     let onRemove: () -> Void
 
     var body: some View {
         Section {
-            ScriptDraftEditor(script: $mint.script)
+            ScriptDraftEditor(script: $mint.script, blueprints: $blueprints, purpose: "mint")
             ForEach($mint.assets) { $asset in
                 AssetDraftRow(asset: $asset, showsPolicy: false) {
                     mint.assets.removeAll { $0.id == asset.id }
@@ -21,7 +23,11 @@ struct MintDraftSection: View {
             }
             .buttonStyle(.borderless)
             if case .native = mint.script {} else {
-                ValueField(kind: .plutusData, text: $mint.redeemer, prompt: Text("Redeemer (CBOR hex, JSON or a file)", bundle: #bundle))
+                BlueprintDataField(
+                    role: .redeemer, text: $mint.redeemer, form: $mint.redeemerForm, blueprints: $blueprints,
+                    scriptHash: BlueprintCatalog.scriptHash(mint.script), purpose: "mint",
+                    label: Text("Redeemer", bundle: #bundle), prompt: Text("Redeemer (CBOR hex, JSON or a file)", bundle: #bundle)
+                )
             }
         } header: {
             RemovableHeader(title: Text("Mint or burn", bundle: #bundle), onRemove: onRemove)
@@ -34,6 +40,7 @@ struct MintDraftSection: View {
 /// A script-locked UTxO to spend.
 struct ScriptInputSection: View {
     @Binding var input: ScriptInputDraft
+    @Binding var blueprints: [StoredBlueprint]
     let onRemove: () -> Void
     @State private var hasScript = false
     @State private var script = ScriptDraft.plutus(version: 3, cborHex: "")
@@ -45,10 +52,18 @@ struct ScriptInputSection: View {
                 Text("Give the script here", bundle: #bundle)
             }
             if hasScript {
-                ScriptDraftEditor(script: $script)
+                ScriptDraftEditor(script: $script, blueprints: $blueprints, purpose: "spend")
             }
-            ValueField(kind: .plutusData, text: $input.datum, prompt: Text("Datum (only for a datum hash; CBOR hex, JSON or a file)", bundle: #bundle))
-            ValueField(kind: .plutusData, text: $input.redeemer, prompt: Text("Redeemer (CBOR hex, JSON or a file)", bundle: #bundle))
+            BlueprintDataField(
+                role: .datum, text: $input.datum, form: $input.datumForm, blueprints: $blueprints,
+                scriptHash: BlueprintCatalog.scriptHash(input.script), purpose: "spend",
+                label: Text("Datum", bundle: #bundle), prompt: Text("Datum (only for a datum hash; CBOR hex, JSON or a file)", bundle: #bundle)
+            )
+            BlueprintDataField(
+                role: .redeemer, text: $input.redeemer, form: $input.redeemerForm, blueprints: $blueprints,
+                scriptHash: BlueprintCatalog.scriptHash(input.script), purpose: "spend",
+                label: Text("Redeemer", bundle: #bundle), prompt: Text("Redeemer (CBOR hex, JSON or a file)", bundle: #bundle)
+            )
         } header: {
             RemovableHeader(title: Text("Script input", bundle: #bundle), onRemove: onRemove)
         } footer: {

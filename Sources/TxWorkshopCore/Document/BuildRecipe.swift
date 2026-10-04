@@ -38,6 +38,8 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
     public var proposals: [ProposalDraft]
     /// Lovelace given to the treasury.
     public var donation: UInt64?
+    /// The CIP-57 blueprints the recipe's forms use, kept with the document.
+    public var blueprints: [StoredBlueprint]
 
     public enum CoinSelection: String, Codable, Sendable, CaseIterable {
         case randomImprove, largestFirst
@@ -49,7 +51,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         validUntil: UInt64? = nil, message: String = "", requiredSigners: [String] = [], feeBuffer: UInt64? = nil,
         mints: [MintDraft] = [], scriptInputs: [ScriptInputDraft] = [], collateral: [String] = [],
         certificates: [CertificateItem] = [], withdrawals: [WithdrawalDraft] = [], votes: [VoteDraft] = [],
-        proposals: [ProposalDraft] = [], donation: UInt64? = nil
+        proposals: [ProposalDraft] = [], donation: UInt64? = nil, blueprints: [StoredBlueprint] = []
     ) {
         self.sourceAddresses = sourceAddresses
         self.utxos = utxos
@@ -70,6 +72,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         self.votes = votes
         self.proposals = proposals
         self.donation = donation
+        self.blueprints = blueprints
     }
 
     /// Reads recipes saved before a field existed.
@@ -94,6 +97,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         votes = try c.decodeIfPresent([VoteDraft].self, forKey: .votes) ?? []
         proposals = try c.decodeIfPresent([ProposalDraft].self, forKey: .proposals) ?? []
         donation = try c.decodeIfPresent(UInt64.self, forKey: .donation)
+        blueprints = try c.decodeIfPresent([StoredBlueprint].self, forKey: .blueprints) ?? []
     }
 }
 
@@ -107,10 +111,12 @@ public struct OutputDraft: Codable, Sendable, Equatable, Identifiable {
     public var datum: DatumDraft
     /// A reference script to carry, as script CBOR hex.
     public var referenceScript: String?
+    /// The inline datum's blueprint form, when it is filled in through one.
+    public var datumForm: BlueprintForm?
 
     public init(
         id: UUID = UUID(), address: String = "", lovelace: UInt64? = nil, assets: [AssetDraft] = [],
-        datum: DatumDraft = .none, referenceScript: String? = nil
+        datum: DatumDraft = .none, referenceScript: String? = nil, datumForm: BlueprintForm? = nil
     ) {
         self.id = id
         self.address = address
@@ -118,6 +124,7 @@ public struct OutputDraft: Codable, Sendable, Equatable, Identifiable {
         self.assets = assets
         self.datum = datum
         self.referenceScript = referenceScript
+        self.datumForm = datumForm
     }
 }
 
@@ -164,12 +171,18 @@ public struct MintDraft: Codable, Sendable, Equatable, Identifiable {
     public var assets: [AssetDraft]
     /// The redeemer, as Plutus data CBOR hex; Plutus policies only.
     public var redeemer: String
+    /// The redeemer's blueprint form, when it is filled in through one.
+    public var redeemerForm: BlueprintForm?
 
-    public init(id: UUID = UUID(), script: ScriptDraft = .native(json: ""), assets: [AssetDraft] = [], redeemer: String = "") {
+    public init(
+        id: UUID = UUID(), script: ScriptDraft = .native(json: ""), assets: [AssetDraft] = [], redeemer: String = "",
+        redeemerForm: BlueprintForm? = nil
+    ) {
         self.id = id
         self.script = script
         self.assets = assets
         self.redeemer = redeemer
+        self.redeemerForm = redeemerForm
     }
 }
 
@@ -184,13 +197,21 @@ public struct ScriptInputDraft: Codable, Sendable, Equatable, Identifiable {
     public var datum: String
     /// The redeemer, as Plutus data CBOR hex.
     public var redeemer: String
+    /// The datum's and redeemer's blueprint forms, when filled in through one.
+    public var datumForm: BlueprintForm?
+    public var redeemerForm: BlueprintForm?
 
-    public init(id: UUID = UUID(), input: String = "", script: ScriptDraft? = nil, datum: String = "", redeemer: String = "") {
+    public init(
+        id: UUID = UUID(), input: String = "", script: ScriptDraft? = nil, datum: String = "", redeemer: String = "",
+        datumForm: BlueprintForm? = nil, redeemerForm: BlueprintForm? = nil
+    ) {
         self.id = id
         self.input = input
         self.script = script
         self.datum = datum
         self.redeemer = redeemer
+        self.datumForm = datumForm
+        self.redeemerForm = redeemerForm
     }
 }
 

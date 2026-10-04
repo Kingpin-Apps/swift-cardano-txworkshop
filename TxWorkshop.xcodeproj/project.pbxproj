@@ -20,6 +20,7 @@
 		87FBD6E79961157F489D63CC /* PoolRegistrationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695A2FD0F0C4CEFCBE133CD1 /* PoolRegistrationUITests.swift */; };
 		8B3753FD3446176DC87E2557 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 428DB9D73BFD8650FB3D64C6 /* AppIcon.icon */; };
 		8E8401ED65EBA7823BCDCF6C /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C39DAD474EE501C8AAD1293 /* SnapshotHelper.swift */; };
+		93A573016D1A8985F91FA5F2 /* BlueprintFormUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB002685FE71910D90F7B7E7 /* BlueprintFormUITests.swift */; };
 		A29CDD40B4D183F73F9A2CAD /* ScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BC18706F102075B50A01C3 /* ScreenshotTests.swift */; };
 		A827A9DB54F03E350E8542FD /* TxWorkshopCore in Frameworks */ = {isa = PBXBuildFile; productRef = A9CF102464994FDC19B49526 /* TxWorkshopCore */; };
 		B6B5BA02EE90C93C2FB5D129 /* TxWorkshopDirectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */; };
@@ -54,6 +55,7 @@
 		97CB982DCFE36F65D6ABEAE7 /* TxWorkshop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshop.entitlements; sourceTree = "<group>"; };
 		9C39DAD474EE501C8AAD1293 /* SnapshotHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		A680CCB6C7AF1211ED7B0255 /* TxWorkshopDirect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TxWorkshopDirect.entitlements; sourceTree = "<group>"; };
+		AB002685FE71910D90F7B7E7 /* BlueprintFormUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlueprintFormUITests.swift; sourceTree = "<group>"; };
 		B97397E3A3C20473892753AA /* RecipeCheckUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCheckUITests.swift; sourceTree = "<group>"; };
 		BF740F9F6123AA1264F57700 /* AppIconVision.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIconVision.xcassets; sourceTree = "<group>"; };
 		C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-cardano-txworkshop"; path = .; sourceTree = SOURCE_ROOT; };
@@ -100,6 +102,7 @@
 		564BD92AC4AEAEA830CD8513 /* ScreenshotTests */ = {
 			isa = PBXGroup;
 			children = (
+				AB002685FE71910D90F7B7E7 /* BlueprintFormUITests.swift */,
 				695A2FD0F0C4CEFCBE133CD1 /* PoolRegistrationUITests.swift */,
 				B97397E3A3C20473892753AA /* RecipeCheckUITests.swift */,
 				45BC18706F102075B50A01C3 /* ScreenshotTests.swift */,
@@ -145,7 +148,7 @@
 			children = (
 				C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */,
 			);
-			path = Packages;
+			name = Packages;
 			sourceTree = "<group>";
 		};
 		B0193ED87AA5506FF06BB890 /* App */ = {
@@ -299,6 +302,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93A573016D1A8985F91FA5F2 /* BlueprintFormUITests.swift in Sources */,
 				87FBD6E79961157F489D63CC /* PoolRegistrationUITests.swift in Sources */,
 				591FE6D868FAB3AB1675D689 /* RecipeCheckUITests.swift in Sources */,
 				A29CDD40B4D183F73F9A2CAD /* ScreenshotTests.swift in Sources */,

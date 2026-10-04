@@ -1,36 +1,5 @@
 import Foundation
-
-/// A value being filled in against a blueprint type: what a form holds. Text
-/// stays as typed, so a half-written number or hash can be shown with what is
-/// wrong with it.
-public indirect enum BlueprintValue: Sendable, Equatable, Hashable {
-    /// A whole number, as typed (`5000000`, `5_000_000`, `-2`).
-    case integer(String)
-    /// Bytes, as hex.
-    case bytes(String)
-    /// A list's items, or a tuple's.
-    case list([BlueprintValue])
-    case map([Entry])
-    /// A constructor, by its alternative index, and its fields.
-    case constructor(index: Int, fields: [BlueprintValue])
-    /// Any Plutus data, in any form the app reads it in (CBOR hex, JSON, a number).
-    case data(String)
-    /// UPLC builtin values, for parameters.
-    case unit
-    case boolean(Bool)
-    case text(String)
-    case pair(BlueprintValue, BlueprintValue)
-
-    public struct Entry: Sendable, Equatable, Hashable {
-        public var key: BlueprintValue
-        public var value: BlueprintValue
-
-        public init(key: BlueprintValue, value: BlueprintValue) {
-            self.key = key
-            self.value = value
-        }
-    }
-}
+import TxWorkshopCore
 
 extension Blueprint {
     /// A starting value for `schema`: empty text, empty lists, and the first

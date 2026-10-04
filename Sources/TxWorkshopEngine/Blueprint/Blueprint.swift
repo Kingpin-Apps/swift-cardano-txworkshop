@@ -130,9 +130,23 @@ public struct Blueprint: Sendable, Equatable {
     /// The type's own name, for a reference: `Order`, `Option<Int>` …
     public func typeName(_ schema: BlueprintSchema) -> String? {
         if case .reference(let name) = schema.kind {
-            return definitions[name]?.title ?? name.split(separator: "/").last.map(String.init)
+            // Aiken names generic instances `List$ByteArray`, `Option$Int`.
+            if name.contains("$") { return Self.genericName(name) }
+            return definitions[name]?.title ?? Self.shortName(name)
         }
         return schema.title
+    }
+
+    /// `Pairs$ByteArray_Int` → `Pairs<ByteArray, Int>`; module paths are dropped.
+    static func genericName(_ name: String) -> String {
+        let parts = name.split(separator: "$", maxSplits: 1).map(String.init)
+        guard parts.count == 2 else { return shortName(name) }
+        let arguments = parts[1].split(separator: "_").map { shortName(String($0)) }
+        return "\(shortName(parts[0]))<\(arguments.joined(separator: ", "))>"
+    }
+
+    static func shortName(_ name: String) -> String {
+        name.split(separator: "/").last.map(String.init) ?? name
     }
 
     /// The validators whose script hash is `hash` (one per purpose).

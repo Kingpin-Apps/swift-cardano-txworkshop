@@ -71,6 +71,7 @@ struct DocumentShell: View {
     DocumentShell(document: .preview)
         .environment(ProviderSettingsStore.preview)
         .environment(SigningKeyStore.inMemory())
+        .environment(BlueprintLibrary.inMemory())
         .environment(SubmissionTracker(defaults: UserDefaults(suiteName: "preview")!))
         .environment(HardwareAccountStore(defaults: UserDefaults(suiteName: "preview")!))
 }

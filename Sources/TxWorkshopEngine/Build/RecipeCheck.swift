@@ -28,6 +28,7 @@ public enum RecipeCheck {
 
 private struct Checker {
     let network: CardanoNetwork?
+    var blueprints: [StoredBlueprint] = []
     var found: [RecipeProblem] = []
 
     mutating func add(_ place: String, _ field: String, _ message: String, _ item: UUID? = nil) {
@@ -53,11 +54,19 @@ private struct Checker {
         }
     }
 
+    /// Checks a blueprint form field by field; each problem names its field path.
+    mutating func blueprint(_ form: BlueprintForm, _ role: BlueprintRole, _ place: String, _ field: String, _ item: UUID?) {
+        for problem in BlueprintCatalog.problems(form, role: role, in: blueprints) {
+            add(place, field, problem.description, item)
+        }
+    }
+
     func lines(_ list: [String]) -> [String] {
         list.flatMap { $0.split(whereSeparator: \.isNewline).map(String.init) }.filter { !blank($0) }
     }
 
     mutating func recipe(_ r: BuildRecipe) {
+        blueprints = r.blueprints
         let sources = lines(r.sourceAddresses)
         for address in sources { value(.address, address, "Sources", "Source address") }
         for input in lines(r.fixedInputs) { value(.transactionInput, input, "Sources", "Inputs to spend") }
@@ -88,7 +97,12 @@ private struct Checker {
                 } else if (try? TxDocumentCodec.bytes(fromHex: hash.trimmingCharacters(in: .whitespaces)))?.count != 32 {
                     add(place, "Datum hash", "A datum hash is 32 bytes in hex.", output.id)
                 }
-            case .inline(let data): value(.plutusData, data, place, "Inline datum", output.id)
+            case .inline(let data):
+                if let form = output.datumForm {
+                    blueprint(form, .datum, place, "Inline datum", output.id)
+                } else {
+                    value(.plutusData, data, place, "Inline datum", output.id)
+                }
             }
             if let reference = output.referenceScript, !blank(reference) {
                 guard (try? TxDocumentCodec.bytes(fromHex: reference.trimmingCharacters(in: .whitespacesAndNewlines))) != nil else {
@@ -106,15 +120,29 @@ private struct Checker {
                 value(.assetName, asset.assetNameHex, required: false, place, "Asset name", mint.id)
                 if asset.quantity == 0 { add(place, "Quantity", "Zero mints nothing; use a positive number to mint or negative to burn.", mint.id) }
             }
-            if case .plutus = mint.script { value(.plutusData, mint.redeemer, place, "Redeemer", mint.id) }
+            if case .plutus = mint.script {
+                if let form = mint.redeemerForm {
+                    blueprint(form, .redeemer, place, "Redeemer", mint.id)
+                } else {
+                    value(.plutusData, mint.redeemer, place, "Redeemer", mint.id)
+                }
+            }
         }
 
         for (i, input) in r.scriptInputs.enumerated() {
             let place = "Script input \(i + 1)"
             value(.transactionInput, input.input, place, "UTxO", input.id)
             if let draft = input.script { script(draft, place, "Script", input.id) }
-            value(.plutusData, input.datum, required: false, place, "Datum", input.id)
-            value(.plutusData, input.redeemer, place, "Redeemer", input.id)
+            if let form = input.datumForm {
+                blueprint(form, .datum, place, "Datum", input.id)
+            } else {
+                value(.plutusData, input.datum, required: false, place, "Datum", input.id)
+            }
+            if let form = input.redeemerForm {
+                blueprint(form, .redeemer, place, "Redeemer", input.id)
+            } else {
+                value(.plutusData, input.redeemer, place, "Redeemer", input.id)
+            }
         }
 
         for (i, item) in r.certificates.enumerated() {

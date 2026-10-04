@@ -1,5 +1,6 @@
 import Foundation
 import SwiftCardanoCore
+import TxWorkshopCore
 import Testing
 
 @testable import TxWorkshopEngine
@@ -57,6 +58,9 @@ struct BlueprintTests {
         let spend = try spend()
         #expect(spend.purpose == "spend")
         #expect(blueprint.typeName(try #require(spend.datum).schema) == "Order")
+        #expect(Blueprint.genericName("List$ByteArray") == "List<ByteArray>")
+        #expect(Blueprint.genericName("Option$cardano/address/StakeCredential") == "Option<StakeCredential>")
+        #expect(Blueprint.genericName("Pairs$ByteArray_Int") == "Pairs<ByteArray, Int>")
         let order = try blueprint.resolve(try #require(spend.datum).schema)
         guard case .anyOf(let variants) = order.kind, case .constructor(0, let fields) = variants.first?.kind else {
             Issue.record("Order is not a one-constructor sum: \(order.kind)")
@@ -168,5 +172,78 @@ struct BlueprintTests {
         #expect(throws: BlueprintError.self) { try Blueprint(json: Data("[]".utf8)) }
         let missing = ##"{"preamble": {"title": "x"}, "validators": [{"title": "a.b.spend", "redeemer": {"schema": {"$ref": "#/definitions/Nope"}}}]}"##
         #expect(throws: BlueprintError.unknownReference("Nope")) { try Blueprint(json: Data(missing.utf8)) }
+    }
+}
+
+/// Blueprints kept in a recipe: found from a script or an address, and their
+/// forms checked before a build.
+@Suite("Blueprint forms in a recipe")
+struct BlueprintRecipeTests {
+    func stored() throws -> StoredBlueprint {
+        let url = try #require(Bundle.module.url(forResource: "market.plutus", withExtension: "json", subdirectory: "Fixtures/blueprint"))
+        return StoredBlueprint(json: try String(contentsOf: url, encoding: .utf8))
+    }
+
+    func spend(_ stored: StoredBlueprint) throws -> Blueprint.Validator {
+        try #require(try BlueprintCatalog.blueprint(stored).validators.first { $0.title == "market.market.spend" })
+    }
+
+    @Test("A script, or an address it locks, finds its validator")
+    func matching() throws {
+        let stored = try stored()
+        let spend = try spend(stored)
+        let script = ScriptDraft.plutus(version: 3, cborHex: try #require(spend.compiledCode))
+        let hash = try #require(BlueprintCatalog.scriptHash(script))
+        #expect(hash == spend.hash)
+        #expect(BlueprintCatalog.choices([stored], scriptHash: hash, role: .datum).map(\.validator.title) == ["market.market.spend"])
+        #expect(BlueprintCatalog.choices([stored], scriptHash: hash, role: .redeemer, purpose: "spend").map(\.validator.title) == ["market.market.spend"])
+        #expect(BlueprintCatalog.choices([stored], role: .redeemer, purpose: "mint").map(\.validator.title).contains("market.token.mint"))
+
+        let address = try Address(
+            paymentPart: .scriptHash(ScriptHash(payload: try TxDocumentCodec.bytes(fromHex: hash))), network: .testnet
+        ).toBech32()
+        #expect(BlueprintCatalog.scriptHash(address: address, network: .preprod) == hash)
+        #expect(BlueprintCatalog.scriptHash(.native(json: "{}")) == nil)
+    }
+
+    @Test("A recipe's forms are checked by field, and a valid one builds from its CBOR")
+    func check() throws {
+        let stored = try stored()
+        let spend = try spend(stored)
+        let blueprint = try BlueprintCatalog.blueprint(stored)
+        let redeemerSchema = try #require(spend.redeemer).schema
+        let good = BlueprintValue.constructor(index: 2, fields: [.integer("7"), .constructor(index: 1, fields: [])])
+        let bad = BlueprintValue.constructor(index: 2, fields: [.integer("seven"), .constructor(index: 1, fields: [])])
+
+        func recipe(_ value: BlueprintValue, blueprints: [StoredBlueprint]) throws -> BuildRecipe {
+            BuildRecipe(
+                changeAddress: "addr_test1vrm9x2zsux7va6w892g38tvchnzahvcd9tykqf3ygnmwtaqyfg52x",
+                scriptInputs: [ScriptInputDraft(
+                    input: String(repeating: "ab", count: 32) + "#0",
+                    redeemer: (try? blueprint.cborHex(value, as: redeemerSchema, path: "redeemer")) ?? "",
+                    redeemerForm: BlueprintForm(blueprint: stored.id, validator: spend.title, value: value)
+                )],
+                blueprints: blueprints
+            )
+        }
+        let fine = RecipeCheck.problems(try recipe(good, blueprints: [stored]), network: .preprod)
+        #expect(!fine.contains { $0.field == "Redeemer" }, "\(fine)")
+
+        let wrong = RecipeCheck.problems(try recipe(bad, blueprints: [stored]), network: .preprod).filter { $0.field == "Redeemer" }
+        #expect(wrong.map(\.message) == ["redeemer.price: \"seven\" is not a whole number."])
+
+        let lost = RecipeCheck.problems(try recipe(good, blueprints: []), network: .preprod).filter { $0.field == "Redeemer" }
+        #expect(lost.first?.message.contains("no longer in the document") == true)
+    }
+
+    @Test("Recipes saved before blueprints still open")
+    func oldRecipe() throws {
+        let old = #"{"outputs": [{"id": "6F9619FF-8B86-D011-B42D-00CF4FC964FF", "address": "x", "assets": [], "datum": {"none": {}}}], "mints": [{"id": "6F9619FF-8B86-D011-B42D-00CF4FC964FE", "script": {"native": {"json": ""}}, "assets": [], "redeemer": ""}]}"#
+        let recipe = try JSONDecoder().decode(BuildRecipe.self, from: Data(old.utf8))
+        #expect(recipe.blueprints.isEmpty)
+        #expect(recipe.outputs.first?.datumForm == nil)
+        #expect(recipe.mints.first?.redeemerForm == nil)
+        let form = BlueprintForm(blueprint: "b", validator: "v", value: .constructor(index: 0, fields: [.list([.integer("1")]), .map([.init(key: .bytes("aa"), value: .data("42"))])]))
+        #expect(try JSONDecoder().decode(BlueprintForm.self, from: JSONEncoder().encode(form)) == form)
     }
 }

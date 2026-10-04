@@ -35,6 +35,19 @@ public struct SettingsView: View {
                     Image(systemName: "network")
                 }
             }
+            Tab {
+                Form {
+                    BlueprintLibrarySection()
+                }
+                .formStyle(.grouped)
+                .twScreenBackground()
+            } label: {
+                Label {
+                    Text("Blueprints", bundle: #bundle)
+                } icon: {
+                    Image(systemName: "list.bullet.rectangle")
+                }
+            }
         }
         #else
         NavigationStack {
@@ -53,6 +66,20 @@ public struct SettingsView: View {
                             Text("Providers", bundle: #bundle)
                         } icon: {
                             Image(systemName: "network")
+                        }
+                    }
+                    NavigationLink {
+                        Form {
+                            BlueprintLibrarySection()
+                        }
+                        .formStyle(.grouped)
+                        .twScreenBackground()
+                        .navigationTitle(Text("Blueprints", bundle: #bundle))
+                    } label: {
+                        Label {
+                            Text("Blueprints", bundle: #bundle)
+                        } icon: {
+                            Image(systemName: "list.bullet.rectangle")
                         }
                     }
                 }
@@ -98,5 +125,6 @@ struct AppearanceSection: View {
 #Preview {
     SettingsView()
         .environment(ProviderSettingsStore.preview)
+        .environment(BlueprintLibrary.inMemory())
         .twWindowStyle()
 }
