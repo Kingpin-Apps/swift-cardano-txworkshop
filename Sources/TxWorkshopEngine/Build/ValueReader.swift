@@ -21,6 +21,10 @@ public enum ValueKind: Sendable, Equatable {
     case drepKeyHash
     /// A constitutional committee hot key, stored as its key hash.
     case committeeHotKeyHash
+    /// A constitutional committee cold key, stored as its key hash.
+    case committeeColdKeyHash
+    /// A stake pool's VRF key, stored as its 32-byte hash.
+    case vrfKeyHash
     /// A governance action, stored as `transaction id#index`.
     case govActionID
     /// A 32-byte Blake2b-256 anchor hash. A file gives the hash of its bytes.
@@ -82,6 +86,8 @@ public enum ValueReader {
         case .drep: return try drep(text)
         case .drepKeyHash: return try drepKeyHash(text)
         case .committeeHotKeyHash: return try committeeHotKeyHash(text)
+        case .committeeColdKeyHash: return try committeeColdKeyHash(text)
+        case .vrfKeyHash: return try vrfKeyHash(text)
         case .govActionID: return try govActionID(text)
         case .anchorHash: return try anchorHash(text)
         case .policyID: return try policyID(text)
@@ -341,6 +347,54 @@ public enum ValueReader {
             return ReadValue(value: bytes.hex, form: "Committee hot key hash (hex)")
         }
         throw ValueReadError("Not a committee hot key. Enter cc_hot1…, a 56-character hex key hash, or choose the hot key file.")
+    }
+
+    static func committeeColdKeyHash(_ text: String) throws -> ReadValue {
+        if let key = try KeyFile(text) {
+            guard key.role == .committeeCold else {
+                throw ValueReadError(key.role == .committeeHot
+                    ? "That is a committee hot key. This needs the cold key."
+                    : "A \(key.role.name) key is not a committee cold key.")
+            }
+            return ReadValue(value: key.hash.payload.hex, form: "Committee cold key hash, from its \(key.kindName)")
+        }
+        if let key = try bech32Key(text, prefixes: ["cc_cold_vk", "cc_cold_xvk"]) {
+            return ReadValue(value: keyHash(key).payload.hex, form: "Committee cold key hash, from its verification key")
+        }
+        if text.lowercased().hasPrefix("cc_cold") {
+            guard let (hrp, data) = bech32(text) else { throw ValueReadError("That is not a valid committee cold id.") }
+            switch (hrp, data.count) {
+            case ("cc_cold", 29) where data[0] == 0x12: return ReadValue(value: data.dropFirst().hex, form: "Committee cold id (CIP-129)")
+            case ("cc_cold", 28): return ReadValue(value: data.hex, form: "Committee cold id")
+            case ("cc_cold_script", _), ("cc_cold", 29): throw ValueReadError("That is a script committee credential; this needs a key.")
+            default: throw ValueReadError("That is not a valid committee cold id.")
+            }
+        }
+        if let bytes = hexBytes(text), bytes.count == 28 {
+            return ReadValue(value: bytes.hex, form: "Committee cold key hash (hex)")
+        }
+        throw ValueReadError("Not a committee cold key. Enter cc_cold1…, a 56-character hex key hash, or choose the cold key file.")
+    }
+
+    /// A VRF key's hash: Blake2b-256 of its 32-byte verification key.
+    static func vrfKeyHash(_ text: String) throws -> ReadValue {
+        if let json = jsonObject(text), let type = json["type"] as? String {
+            guard type.hasPrefix("Vrf") else { throw ValueReadError("That key file is not a VRF key.") }
+            guard let cborHex = json["cborHex"] as? String, let cbor = try? TxDocumentCodec.bytes(fromHex: cborHex),
+                case .bytes(let payload)? = try? Primitive.fromCBOR(data: cbor), payload.count == 32 || payload.count == 64
+            else { throw ValueReadError("That VRF key file has no readable key.") }
+            // A VRF signing key is the seed followed by the verification key.
+            let vkey = payload.count == 32 ? payload : payload.suffix(32)
+            let kind = type.contains("Signing") ? "signing key" : "verification key"
+            return ReadValue(value: blake2b(vkey, size: 32).hex, form: "VRF key hash, from its \(kind)")
+        }
+        if let key = try bech32Key(text, prefixes: ["vrf_vk"]) {
+            return ReadValue(value: blake2b(key.prefix(32), size: 32).hex, form: "VRF key hash, from its verification key")
+        }
+        if let bytes = hexBytes(text), bytes.count == 32 {
+            return ReadValue(value: bytes.hex, form: "VRF key hash (hex)")
+        }
+        throw ValueReadError("Not a VRF key. Enter the 64-character hex VRF key hash, vrf_vk1…, or choose the VRF key file.")
     }
 
     static func govActionID(_ text: String) throws -> ReadValue {

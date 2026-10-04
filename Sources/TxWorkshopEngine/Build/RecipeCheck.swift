@@ -207,6 +207,78 @@ private struct Checker {
             let place = "Certificate \(number) (Update DRep metadata)"
             value(.drepKeyHash, key, place, "DRep", item)
             anchor(url, hash, required: false, place, item)
+        case .registerStakeLegacy(let address):
+            value(.stakeAddress, address, "Certificate \(number) (Register stake address, pre-Conway)", "Stake address", item)
+        case .deregisterStakeLegacy(let address):
+            value(.stakeAddress, address, "Certificate \(number) (Deregister stake address, pre-Conway)", "Stake address", item)
+        case .delegateStakeAndVote(let address, let pool, let drep):
+            let place = "Certificate \(number) (Delegate stake and votes)"
+            value(.stakeAddress, address, place, "Stake address", item)
+            value(.pool, pool, place, "Pool", item)
+            value(.drep, drep, place, "DRep", item)
+        case .registerAndDelegateStake(let address, let pool):
+            let place = "Certificate \(number) (Register and delegate stake)"
+            value(.stakeAddress, address, place, "Stake address", item)
+            value(.pool, pool, place, "Pool", item)
+        case .registerAndDelegateVote(let address, let drep):
+            let place = "Certificate \(number) (Register and delegate votes)"
+            value(.stakeAddress, address, place, "Stake address", item)
+            value(.drep, drep, place, "DRep", item)
+        case .registerAndDelegateStakeAndVote(let address, let pool, let drep):
+            let place = "Certificate \(number) (Register and delegate stake and votes)"
+            value(.stakeAddress, address, place, "Stake address", item)
+            value(.pool, pool, place, "Pool", item)
+            value(.drep, drep, place, "DRep", item)
+        case .registerPool(let pool):
+            poolRegistration(pool, place: "Certificate \(number) (\(pool.isUpdate ? "Update stake pool" : "Register stake pool"))", item)
+        case .retirePool(let pool, let epoch):
+            let place = "Certificate \(number) (Retire stake pool)"
+            value(.pool, pool, place, "Pool", item)
+            if epoch == nil { add(place, "Retirement epoch", "Empty: give the epoch the pool retires at.", item) }
+        case .authorizeCommitteeHot(let cold, let hot):
+            let place = "Certificate \(number) (Authorize committee hot key)"
+            value(.committeeColdKeyHash, cold, place, "Cold key", item)
+            value(.committeeHotKeyHash, hot, place, "Hot key", item)
+        case .resignCommitteeCold(let cold, let url, let hash):
+            let place = "Certificate \(number) (Resign from the committee)"
+            value(.committeeColdKeyHash, cold, place, "Cold key", item)
+            anchor(url, hash, required: false, place, item)
+        }
+    }
+
+    mutating func poolRegistration(_ pool: PoolRegistrationDraft, place: String, _ item: UUID) {
+        value(.pool, pool.pool, place, "Pool", item)
+        value(.vrfKeyHash, pool.vrfKey, place, "VRF key", item)
+        if pool.pledge == nil { add(place, "Pledge", "Empty.", item) }
+        if pool.cost == nil { add(place, "Fixed cost", "Empty.", item) }
+        if blank(pool.margin) {
+            add(place, "Margin", "Empty.", item)
+        } else if PoolMargin.parse(pool.margin) == nil {
+            add(place, "Margin", "Not a number from 0 to 1, a percentage such as 5%, or a fraction such as 1/20.", item)
+        }
+        value(.stakeAddress, pool.rewardAccount, place, "Reward account", item)
+        let owners = pool.owners.filter { !blank($0) }
+        if owners.isEmpty { add(place, "Owners", "Add at least one owner's stake key.", item) }
+        for owner in owners { value(.stakeAddress, owner, place, "Owner", item) }
+        for (i, relay) in pool.relays.enumerated() {
+            let field = "Relay \(i + 1)"
+            let host = relay.host.trimmingCharacters(in: .whitespaces)
+            switch relay.kind {
+            case .ipv4: if IPv4Address(host) == nil { add(place, field, blank(host) ? "Empty." : "Not an IPv4 address.", item) }
+            case .ipv6: if IPv6Address(host) == nil { add(place, field, blank(host) ? "Empty." : "Not an IPv6 address.", item) }
+            case .dnsName, .srvName:
+                if blank(host) { add(place, field, "Empty.", item) }
+                else if host.utf8.count > 64 { add(place, field, "A DNS name is at most 64 bytes.", item) }
+            }
+            if relay.kind != .srvName, relay.port == nil { add(place, field, "Give the port.", item) }
+        }
+        if blank(pool.metadataURL) != blank(pool.metadataHash) {
+            add(place, "Metadata", "Give both the metadata URL and its hash, or neither.", item)
+        } else if !blank(pool.metadataURL) {
+            if pool.metadataURL.trimmingCharacters(in: .whitespaces).utf8.count > 64 {
+                add(place, "Metadata URL", "At most 64 bytes.", item)
+            }
+            value(.anchorHash, pool.metadataHash, place, "Metadata hash", item)
         }
     }
 }

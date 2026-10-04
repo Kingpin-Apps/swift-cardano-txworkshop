@@ -68,6 +68,21 @@ public struct RequiredSignatures: Sendable, Equatable {
                 need(String(credential.dropFirst(4)), "certificate \(certificate.index): \(certificate.kind)")
             }
         }
+        // Pool certificates carry no stake credential: the cold key signs,
+        // and for a registration every owner too.
+        for (index, certificate) in (body.certificates?.asList ?? []).enumerated() {
+            switch certificate {
+            case .poolRegistration(let registration):
+                need(registration.poolParams.poolOperator.payload.hex, "certificate \(index): pool registration (cold key)")
+                for owner in registration.poolParams.poolOwners.asArray {
+                    need(owner.payload.hex, "certificate \(index): pool registration (owner)")
+                }
+            case .poolRetirement(let retirement):
+                need(retirement.poolKeyHash.payload.hex, "certificate \(index): pool retirement (cold key)")
+            default:
+                break
+            }
+        }
         for vote in view.votes where !vote.voter.hasPrefix("script") {
             let hash = vote.voter.split(separator: ":").last.map(String.init) ?? vote.voter
             if hash.count == 56 { need(hash, "vote on \(vote.govActionId)") }

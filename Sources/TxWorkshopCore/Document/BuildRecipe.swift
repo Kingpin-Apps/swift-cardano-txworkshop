@@ -205,21 +205,112 @@ public struct CertificateItem: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
-/// The Conway certificates the builder writes. Stake credentials come from a
-/// stake address; DRep credentials are key hashes (hex).
+/// Every certificate the Conway ledger accepts. Genesis key delegation and
+/// instantaneous rewards were removed in Conway and are not offered. Stake
+/// credentials come from a stake address; DRep and committee credentials are
+/// key hashes (hex); pools are `pool1…` ids.
 public enum CertificateDraft: Codable, Sendable, Equatable {
-    /// Register a stake address, paying the deposit.
+    /// Register a stake address, paying the deposit (Conway, deposit stated).
     case registerStake(stakeAddress: String)
-    /// Deregister a stake address, taking the deposit back.
+    /// Deregister a stake address, taking the deposit back (Conway).
     case deregisterStake(stakeAddress: String)
+    /// Register a stake address, the pre-Conway way: the deposit is implied.
+    case registerStakeLegacy(stakeAddress: String)
+    /// Deregister a stake address, the pre-Conway way.
+    case deregisterStakeLegacy(stakeAddress: String)
     /// Delegate stake to a pool (`pool1…` or hex).
     case delegateStake(stakeAddress: String, pool: String)
     /// Delegate votes to a DRep: `drep1…`, a key hash, `abstain` or
     /// `no-confidence`.
     case delegateVote(stakeAddress: String, drep: String)
+    /// Delegate stake to a pool and votes to a DRep, in one certificate.
+    case delegateStakeAndVote(stakeAddress: String, pool: String, drep: String)
+    /// Register a stake address and delegate its stake, paying the deposit.
+    case registerAndDelegateStake(stakeAddress: String, pool: String)
+    /// Register a stake address and delegate its votes, paying the deposit.
+    case registerAndDelegateVote(stakeAddress: String, drep: String)
+    /// Register a stake address and delegate both, paying the deposit.
+    case registerAndDelegateStakeAndVote(stakeAddress: String, pool: String, drep: String)
+    /// Register a stake pool, or update one already registered.
+    case registerPool(PoolRegistrationDraft)
+    /// Retire a stake pool at the start of `epoch`.
+    case retirePool(pool: String, epoch: UInt64?)
     case registerDRep(keyHash: String, anchorURL: String, anchorHash: String)
     case unregisterDRep(keyHash: String)
     case updateDRep(keyHash: String, anchorURL: String, anchorHash: String)
+    /// Authorize a constitutional committee member's hot key.
+    case authorizeCommitteeHot(coldKey: String, hotKey: String)
+    /// A constitutional committee member resigns.
+    case resignCommitteeCold(coldKey: String, anchorURL: String, anchorHash: String)
+}
+
+/// A stake pool's registration parameters, as the form gives them.
+public struct PoolRegistrationDraft: Codable, Sendable, Equatable {
+    /// The pool: `pool1…`, hex, or its cold key.
+    public var pool: String
+    /// The VRF key hash, or the VRF key it comes from.
+    public var vrfKey: String
+    /// Lovelace the owners pledge.
+    public var pledge: UInt64?
+    /// The fixed cost per epoch, in lovelace.
+    public var cost: UInt64?
+    /// The margin, as a decimal (`0.05`), a percentage (`5%`) or a fraction (`1/20`).
+    public var margin: String
+    /// The stake address rewards are paid to.
+    public var rewardAccount: String
+    /// The owners: stake addresses, stake key hashes or stake keys.
+    public var owners: [String]
+    public var relays: [RelayDraft]
+    public var metadataURL: String
+    /// Blake2b-256 of the metadata file, in hex.
+    public var metadataHash: String
+    /// Whether the pool is registered already, so this updates it and pays
+    /// no deposit.
+    public var isUpdate: Bool
+
+    public init(
+        pool: String = "", vrfKey: String = "", pledge: UInt64? = nil, cost: UInt64? = nil, margin: String = "",
+        rewardAccount: String = "", owners: [String] = [], relays: [RelayDraft] = [], metadataURL: String = "",
+        metadataHash: String = "", isUpdate: Bool = false
+    ) {
+        self.pool = pool
+        self.vrfKey = vrfKey
+        self.pledge = pledge
+        self.cost = cost
+        self.margin = margin
+        self.rewardAccount = rewardAccount
+        self.owners = owners
+        self.relays = relays
+        self.metadataURL = metadataURL
+        self.metadataHash = metadataHash
+        self.isUpdate = isUpdate
+    }
+}
+
+/// One way to reach a pool's relay.
+public struct RelayDraft: Codable, Sendable, Equatable, Identifiable {
+    public enum Kind: String, Codable, Sendable, CaseIterable {
+        /// An IPv4 address and port.
+        case ipv4
+        /// An IPv6 address and port.
+        case ipv6
+        /// A DNS name (an A or AAAA record) and port.
+        case dnsName
+        /// A DNS SRV name; the port comes from the record.
+        case srvName
+    }
+
+    public var id: UUID
+    public var kind: Kind
+    public var host: String
+    public var port: UInt16?
+
+    public init(id: UUID = UUID(), kind: Kind = .dnsName, host: String = "", port: UInt16? = 3001) {
+        self.id = id
+        self.kind = kind
+        self.host = host
+        self.port = port
+    }
 }
 
 /// Rewards to withdraw from a stake address.
