@@ -32,7 +32,7 @@ let package = Package(
         // below rules out. The cardano-cli provider runs cardano-cli itself instead.
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-chain.git", from: "0.12.0", traits: [.defaults, "NodeSocket"]),
         .package(url: "https://github.com/apple/swift-system.git", from: "1.8.1"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txvalidator.git", from: "0.4.2"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txvalidator.git", from: "0.4.3"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-explorers.git", from: "0.1.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cddl.git", from: "0.2.3"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-uplc.git", from: "0.7.1"),
