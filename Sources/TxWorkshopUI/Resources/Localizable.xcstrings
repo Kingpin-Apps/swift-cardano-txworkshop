@@ -47,6 +47,9 @@
     "%@ credential" : {
 
     },
+    "%@ has no registration for this pool. Fill in the form to register it." : {
+
+    },
     "%@ is deleted from the Keychain. Keep a copy if you still need it." : {
 
     },
@@ -250,7 +253,13 @@
     "Add Output" : {
 
     },
+    "Add Owner" : {
+
+    },
     "Add Provider" : {
+
+    },
+    "Add Relay" : {
 
     },
     "Add Script Input" : {
@@ -276,6 +285,9 @@
 
     },
     "After" : {
+
+    },
+    "Already registered: update it, no deposit" : {
 
     },
     "Already spent" : {
@@ -325,6 +337,9 @@
 
     },
     "At the chain tip the data was fetched at, with inputs spent as they were then." : {
+
+    },
+    "Authorize a committee hot key" : {
 
     },
     "Batch Validate a Folder…" : {
@@ -471,6 +486,9 @@
     "Collateral Return" : {
 
     },
+    "Committee cold id, key hash or cold key file" : {
+
+    },
     "Committee hot id, key hash or hot key file" : {
 
     },
@@ -558,10 +576,16 @@
     "Decoding would stop: %@. You can still apply it and fix it in the tree." : {
 
     },
+    "Delegate stake and votes" : {
+
+    },
     "Delegate stake to a pool" : {
 
     },
     "Delegate votes to a DRep" : {
+
+    },
+    "Delegation" : {
 
     },
     "Deposit return stake address" : {
@@ -571,6 +595,9 @@
 
     },
     "Deregister stake address" : {
+
+    },
+    "Deregister stake address (pre-Conway)" : {
 
     },
     "Detail" : {
@@ -583,6 +610,12 @@
 
     },
     "Different transactions, with ^[%lld change](inflect: true)." : {
+
+    },
+    "DNS SRV name" : {
+
+    },
+    "DNS name" : {
 
     },
     "Donation" : {
@@ -700,6 +733,9 @@
     "Fetch or enter chain data first." : {
 
     },
+    "Fetch Registration" : {
+
+    },
     "Fetch Their UTxOs" : {
 
     },
@@ -715,10 +751,16 @@
     "Field" : {
 
     },
+    "Fill the form from the pool's registration on chain, to edit and register again." : {
+
+    },
     "Fix before building" : {
 
     },
     "Fixed" : {
+
+    },
+    "Fixed cost per epoch (lovelace)" : {
 
     },
     "float" : {
@@ -783,6 +825,9 @@
     "Hex, base64, or a cardano-cli text envelope. Or open or drop a transaction file: .tx, .signed, .json, .cbor or .hex." : {
 
     },
+    "Host name" : {
+
+    },
     "ID" : {
 
     },
@@ -796,6 +841,9 @@
 
     },
     "Import Hardware Account" : {
+
+    },
+    "Import pool.json…" : {
 
     },
     "In" : {
@@ -835,6 +883,12 @@
 
     },
     "Inspector" : {
+
+    },
+    "IPv6" : {
+
+    },
+    "IPv4" : {
 
     },
     "It also carries signatures nothing asks for." : {
@@ -984,6 +1038,9 @@
     "Map keys out of order" : {
 
     },
+    "Margin: 0.05, 5% or 1/20" : {
+
+    },
     "Markdown" : {
 
     },
@@ -1010,6 +1067,12 @@
 
     },
     "Metadata" : {
+
+    },
+    "Metadata URL (optional, at most 64 bytes)" : {
+
+    },
+    "Metadata hash (hex, or choose the metadata file)" : {
 
     },
     "Mint or burn" : {
@@ -1282,6 +1345,9 @@
     "Overview" : {
 
     },
+    "Owner: stake address, key hash or stake key" : {
+
+    },
     "Pane" : {
 
     },
@@ -1312,6 +1378,9 @@
     "Pays the governance action deposit, returned to the stake address when the action ends." : {
 
     },
+    "Pays the pool deposit the protocol parameters set. Signed by the pool's cold key and every owner." : {
+
+    },
     "Pays to" : {
 
     },
@@ -1319,6 +1388,9 @@
 
     },
     "Pick an item in the tree, or tap a byte." : {
+
+    },
+    "Pledge (lovelace)" : {
 
     },
     "Plutus data (CBOR hex, JSON or a file)" : {
@@ -1339,7 +1411,13 @@
     "Policy id or policy script" : {
 
     },
+    "Pool id, hex or cold key" : {
+
+    },
     "Pool id, hex, cold key or pool.json" : {
+
+    },
+    "Port" : {
 
     },
     "Proposal" : {
@@ -1418,10 +1496,28 @@
     "Refunds" : {
 
     },
+    "Register and delegate votes" : {
+
+    },
+    "Register and delegate stake and votes" : {
+
+    },
+    "Register and delegate stake" : {
+
+    },
     "Register as a DRep" : {
 
     },
+    "Register or update a stake pool" : {
+
+    },
     "Register stake address" : {
+
+    },
+    "Relay" : {
+
+    },
+    "Register stake address (pre-Conway)" : {
 
     },
     "Remove" : {
@@ -1434,6 +1530,9 @@
 
     },
     "Remove Provider" : {
+
+    },
+    "Remove Relay" : {
 
     },
     "Remove this key?" : {
@@ -1454,10 +1553,25 @@
     "Required signers, one per line" : {
 
     },
+    "Retire a stake pool" : {
+
+    },
+    "Resign from the committee" : {
+
+    },
     "Retire as a DRep" : {
 
     },
+    "Retires the pool at the start of that epoch: after the current one, and within the protocol's limit. The deposit returns to the reward account then. Signed by the cold key." : {
+
+    },
+    "Retirement epoch" : {
+
+    },
     "Revert" : {
+
+    },
+    "Reward account: stake address, key hash or stake key" : {
 
     },
     "Rich fungible token (CIP-68)" : {
@@ -1650,6 +1764,9 @@
 
     },
     "Stake" : {
+
+    },
+    "Stake address" : {
 
     },
     "Stake address, key hash or stake key" : {
@@ -1881,6 +1998,9 @@
     "Update DRep metadata" : {
 
     },
+    "Updates a registered pool: no deposit. Signed by the pool's cold key and every owner." : {
+
+    },
     "Use %@" : {
 
     },
@@ -1986,6 +2106,9 @@
 
     },
     "Votes" : {
+
+    },
+    "VRF key hash or VRF key file" : {
 
     },
     "Warning" : {
