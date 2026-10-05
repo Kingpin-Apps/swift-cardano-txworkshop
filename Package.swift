@@ -26,7 +26,7 @@ let package = Package(
         .library(name: "TxWorkshopDirect", targets: ["TxWorkshopDirect"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.8.4"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.8.5"),
         // NodeSocket adds the local-node chain context, on macOS only. Not CLIBackends: that brings
         // swift-cardano-utils, whose swift-configuration needs a swift-collections the Keystone pin
         // below rules out. The cardano-cli provider runs cardano-cli itself instead.
