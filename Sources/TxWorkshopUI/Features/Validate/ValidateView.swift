@@ -42,6 +42,7 @@ struct ValidateView: View {
                 }
             } else {
                 ChainDataSection(document: document, requirements: requirements)
+                CIP21Section(document: document)
                 Section {
                     Picker(selection: $mode) {
                         Text("If submitted now", bundle: #bundle).tag(TransactionValidation.Mode.now)
@@ -79,8 +80,8 @@ struct ValidateView: View {
                         session.show(fieldPath: fieldPath)
                     } onTrace: { position in
                         tracing = TraceRequest(position: position)
-                    } onDebug: { position in
-                        debugging = DebugRequest(position: position)
+                    } onDebug: { position, atFailure in
+                        debugging = DebugRequest(position: position, atFailure: atFailure)
                     }
                     if !outcome.redeemers.isEmpty {
                         Section {

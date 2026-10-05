@@ -601,6 +601,9 @@
     "Datums" : {
 
     },
+    "Debug Failure" : {
+
+    },
     "Debug Script" : {
 
     },
@@ -714,6 +717,9 @@
     "Edit Recipe" : {
 
     },
+    "Edit Redeemer" : {
+
+    },
     "Edit Schema" : {
 
     },
@@ -721,6 +727,9 @@
 
     },
     "Empty: this is the top of the program." : {
+
+    },
+    "Enter as" : {
 
     },
     "Enter as Raw Data" : {
@@ -882,6 +891,12 @@
 
     },
     "Hardware wallets" : {
+
+    },
+    "Hardware Wallets (CIP-21)" : {
+
+    },
+    "Hardware wallets can sign it as written." : {
 
     },
     "Hash (hex)" : {
@@ -1085,6 +1100,9 @@
     "Ledger rules" : {
 
     },
+    "Ledger, Trezor and Keystone sign only transactions written the way CIP-21 sets out." : {
+
+    },
     "Left empty, cardano-cli is looked for in Homebrew, /usr/local/bin, ~/.local/bin, ~/cardano/bin and the node releases in ~/cardano." : {
 
     },
@@ -1126,6 +1144,9 @@
 
     },
     "Machine step" : {
+
+    },
+    "Make CIP-21 Compatible…" : {
 
     },
     "makes ^[%lld proposal](inflect: true)" : {
@@ -1187,6 +1208,9 @@
 
     },
     "Mismatches" : {
+
+    },
+    "Multisig" : {
 
     },
     "Name" : {
@@ -1446,6 +1470,9 @@
     "Options" : {
 
     },
+    "Ordinary" : {
+
+    },
     "Other blueprints" : {
 
     },
@@ -1525,6 +1552,9 @@
     "Pledge (lovelace)" : {
 
     },
+    "Plutus" : {
+
+    },
     "Plutus data (CBOR hex, JSON or a file)" : {
 
     },
@@ -1550,6 +1580,9 @@
 
     },
     "Pool id, hex, cold key or pool.json" : {
+
+    },
+    "Pool registration" : {
 
     },
     "Port" : {
@@ -1697,6 +1730,9 @@
     "Required signers, one per line" : {
 
     },
+    "Reset" : {
+
+    },
     "Result" : {
 
     },
@@ -1724,6 +1760,15 @@
     "Reward account: stake address, key hash or stake key" : {
 
     },
+    "Rewrite" : {
+
+    },
+    "Rewrite for Hardware Wallets" : {
+
+    },
+    "Rewrite for Hardware Wallets?" : {
+
+    },
     "Rich fungible token (CIP-68)" : {
 
     },
@@ -1736,10 +1781,16 @@
     "Rules" : {
 
     },
+    "Run" : {
+
+    },
     "Run Scripts" : {
 
     },
     "Running the script once…" : {
+
+    },
+    "Running with an edited redeemer. The transaction is unchanged." : {
 
     },
     "runs ^[%lld script](inflect: true)" : {
@@ -1897,6 +1948,9 @@
     "Signing keys" : {
 
     },
+    "Signing mode" : {
+
+    },
     "simple value" : {
 
     },
@@ -1971,6 +2025,9 @@
 
     },
     "Steps spent" : {
+
+    },
+    "Still in the way, which a rewrite cannot fix: %@" : {
 
     },
     "Stopped at %@" : {
@@ -2092,6 +2149,9 @@
     "The script is made once every parameter is filled in." : {
 
     },
+    "The script runs with this redeemer in the debugger only; the transaction is not changed." : {
+
+    },
     "The slot is a whole number." : {
 
     },
@@ -2099,6 +2159,9 @@
 
     },
     "The Transaction Did Not Decode" : {
+
+    },
+    "The transaction id changes, so its %lld signatures are removed: sign it again." : {
 
     },
     "The transaction's addresses" : {
