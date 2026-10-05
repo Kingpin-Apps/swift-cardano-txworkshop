@@ -247,3 +247,62 @@ struct BlueprintRecipeTests {
         #expect(try JSONDecoder().decode(BlueprintForm.self, from: JSONEncoder().encode(form)) == form)
     }
 }
+
+/// Inspected datums and redeemers read as their validators' blueprint types.
+@Suite("Blueprint labels in the inspector")
+struct BlueprintLabellingTests {
+    func stored() throws -> StoredBlueprint {
+        try BlueprintRecipeTests().stored()
+    }
+
+    @Test("An output's inline datum at the script's address shows its fields by name")
+    func outputDatum() async throws {
+        let stored = try stored()
+        let spend = try BlueprintRecipeTests().spend(stored)
+        let scriptAddress = try Address(
+            paymentPart: .scriptHash(ScriptHash(payload: try TxDocumentCodec.bytes(fromHex: try #require(spend.hash)))), network: .testnet
+        ).toBech32()
+        let (snapshot, utxo, address) = try TransactionComposerTests.setup()
+        let recipe = BuildRecipe(
+            utxos: [try utxo.toCBORData().hex],
+            outputs: [OutputDraft(address: scriptAddress, lovelace: 5_000_000, datum: .inline(BlueprintTests.goldenOrder))],
+            changeAddress: address
+        )
+        let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
+
+        let labelled = inspection.labelled(with: [stored])
+        guard case .inline(_, let tree, _)? = labelled.outputs.first(where: { $0.address.text == scriptAddress })?.datum else {
+            Issue.record("No inline datum at the script address")
+            return
+        }
+        #expect(tree.validator == "market.market.spend")
+        #expect(tree.typeName == "Order")
+        #expect(tree.summary == "Order · 10 fields")
+        #expect(tree.children?.map(\.label) == ["owner", "price", "deadline", "partial", "tags", "splits", "pair", "payout", "tree", "extra"])
+        #expect(tree.children?[2].summary == "Some · 1 field")
+        #expect(tree.children?[3].summary == "True")
+        #expect(tree.children?[4].summary == "List<ByteArray> · 2")
+        #expect(tree.children?[5].summary == "Pairs<ByteArray, Int> · 2")
+        #expect(tree.children?[1].value == "5000000")
+
+        // Without the blueprint it is the plain tree, and a key's output is untouched.
+        #expect(inspection.labelled(with: []) == inspection)
+        guard case .inline(_, let plain, _)? = inspection.outputs.first(where: { $0.address.text == scriptAddress })?.datum else { return }
+        #expect(plain.summary == "Constr 0 · 10 fields")
+    }
+
+    @Test("A redeemer reads as its type; data of another shape stays plain")
+    func redeemer() throws {
+        let stored = try stored()
+        let spend = try BlueprintRecipeTests().spend(stored)
+        let labeller = BlueprintLabeller(blueprints: [stored])
+        let tree = try #require(labeller.redeemer(BlueprintTests.goldenAction, scriptHash: spend.hash, purpose: "spend"))
+        #expect(tree.summary == "Update · 2 fields")
+        #expect(tree.children?.map(\.label) == ["price", "deadline"])
+        #expect(tree.children?[1].summary == "None")
+        // An Order is not an Action.
+        #expect(labeller.redeemer(BlueprintTests.goldenOrder, scriptHash: spend.hash, purpose: "spend") == nil)
+        #expect(labeller.redeemer(BlueprintTests.goldenAction, scriptHash: String(repeating: "00", count: 28), purpose: "spend") == nil)
+    }
+}

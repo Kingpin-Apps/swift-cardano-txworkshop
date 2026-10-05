@@ -9,7 +9,11 @@ struct DocumentShell: View {
     @State private var session = WorkshopSession()
     @State private var showsSettings = false
     @State private var inspection: LoadState<TransactionInspection> = .idle
+    /// The inspection read through the blueprints, with the inspection it was
+    /// made from; `nil` until done.
+    @State private var labelled: (source: TransactionInspection, result: TransactionInspection)?
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(BlueprintLibrary.self) private var library
 
     var body: some View {
         @Bindable var session = session
@@ -51,12 +55,18 @@ struct DocumentShell: View {
             }
             #endif
         } detail: {
-            SectionDetail(section: session.selection ?? .overview, document: document, inspection: inspection)
+            SectionDetail(section: session.selection ?? .overview, document: document, inspection: labelledInspection)
         }
         .environment(session)
         .modifier(ProviderOnboardingPresenter())
         .task(id: currentKey) {
             await inspect()
+        }
+        .task(id: LabelKey(inspection: inspection.value, blueprints: blueprintSources.map(\.id))) {
+            guard let value = inspection.value else { labelled = nil; return }
+            let result = await value.labelling(with: blueprintSources)
+            guard !Task.isCancelled else { return }
+            labelled = (value, result)
         }
         #if !os(macOS)
         .sheet(isPresented: $showsSettings) {
@@ -82,6 +92,25 @@ extension DocumentShell {
         let transaction: Data?
         let network: CardanoNetwork?
         let chainContext: ChainContextSnapshot?
+    }
+
+    /// The inspection with datums and redeemers read through the document's
+    /// and the library's blueprints.
+    private var labelledInspection: LoadState<TransactionInspection> {
+        guard case .loaded(let value) = inspection, let labelled, labelled.source == value else { return inspection }
+        return .loaded(labelled.result)
+    }
+
+    /// The document's blueprints, then the library's.
+    private var blueprintSources: [StoredBlueprint] {
+        let kept = document.content.recipe?.blueprints ?? []
+        return kept + library.blueprints.filter { stored in !kept.contains { $0.id == stored.id } }
+    }
+
+    /// What labelling depends on.
+    struct LabelKey: Equatable {
+        let inspection: TransactionInspection?
+        let blueprints: [String]
     }
 
     private var currentKey: InspectionKey {

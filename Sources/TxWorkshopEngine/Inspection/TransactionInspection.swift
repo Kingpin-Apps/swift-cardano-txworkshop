@@ -7,16 +7,16 @@ import TxWorkshopCore
 /// Everything the inspector shows about one transaction.
 public struct TransactionInspection: Sendable, Equatable {
     public let summary: TransactionSummary
-    public let inputs: [InputDetail]
-    public let referenceInputs: [InputDetail]
-    public let collateralInputs: [InputDetail]
-    public let outputs: [OutputDetail]
-    public let collateralReturn: OutputDetail?
+    public internal(set) var inputs: [InputDetail]
+    public internal(set) var referenceInputs: [InputDetail]
+    public internal(set) var collateralInputs: [InputDetail]
+    public internal(set) var outputs: [OutputDetail]
+    public internal(set) var collateralReturn: OutputDetail?
     public let mint: [AssetDetail]
     public let validity: ValidityWindow
     public let scripts: [ScriptDetail]
-    public let redeemers: [RedeemerDetail]
-    public let datums: [DatumDetail]
+    public internal(set) var redeemers: [RedeemerDetail]
+    public internal(set) var datums: [DatumDetail]
     public let metadata: [MetadataEntry]
     public let requiredSigners: [String]
     /// The key hashes of the keys that signed, from the vkey witnesses.
@@ -31,7 +31,7 @@ public struct InputDetail: Sendable, Equatable, Identifiable {
     /// What the chain said about the input, when it was looked up.
     public let status: Status
     /// The output the input spends, when it was looked up and found.
-    public let output: OutputDetail?
+    public internal(set) var output: OutputDetail?
     public var id: String { "\(transactionID)#\(index)" }
 
     public enum Status: Sendable, Equatable {
@@ -51,7 +51,7 @@ public struct OutputDetail: Sendable, Equatable, Identifiable {
     public let address: AddressDetail
     public let lovelace: Int64
     public let assets: [AssetDetail]
-    public let datum: DatumReference?
+    public internal(set) var datum: DatumReference?
     public let referenceScript: ScriptDetail?
     public var id: Int { index }
 }
@@ -124,13 +124,13 @@ public struct ScriptDetail: Sendable, Equatable, Identifiable {
 
 public struct RedeemerDetail: Sendable, Equatable, Identifiable {
     public let view: RedeemerView
-    public let tree: DataNode
+    public internal(set) var tree: DataNode
     public var id: Int { view.position }
 }
 
 public struct DatumDetail: Sendable, Equatable, Identifiable {
     public let hash: String
-    public let tree: DataNode
+    public internal(set) var tree: DataNode
     public let cborHex: String
     public var id: String { hash }
 }
@@ -140,7 +140,7 @@ public struct MetadataEntry: Sendable, Equatable, Identifiable {
     public let label: UInt64
     /// What the label is registered for (CIP-10), when known.
     public let registeredAs: String?
-    public let tree: DataNode
+    public internal(set) var tree: DataNode
     /// The CIP-20 message, for label 674.
     public let message: String?
     public var id: UInt64 { label }

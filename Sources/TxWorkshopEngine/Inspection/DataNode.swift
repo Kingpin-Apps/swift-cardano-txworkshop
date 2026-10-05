@@ -23,16 +23,25 @@ public struct DataNode: Sendable, Equatable, Identifiable {
     /// Bytes that read as printable UTF-8, shown beside the hex.
     public let text: String?
     public let children: [DataNode]?
+    /// The blueprint type or constructor the node was read as: `Order`, `Update`.
+    public internal(set) var typeName: String? = nil
+    /// For a root read through a blueprint, the validator it is for.
+    public internal(set) var validator: String? = nil
 
     /// A one-line summary: the leaf value, or the node's kind and size.
     public var summary: String {
+        let count = children?.count ?? 0
+        let fields = count == 1 ? "1 field" : "\(count) fields"
         switch kind {
-        case .constructor(let tag): "Constr \(tag) · \(children?.count ?? 0) fields"
-        case .map: "map · \(children?.count ?? 0)"
-        case .list: "list · \(children?.count ?? 0)"
-        case .integer, .text: value ?? ""
+        case .constructor(let tag):
+            if let typeName { return count == 0 ? typeName : "\(typeName) · \(fields)" }
+            return "Constr \(tag) · \(fields)"
+        case .map: return "\(typeName ?? "map") · \(count)"
+        case .list: return "\(typeName ?? "list") · \(count)"
+        case .integer, .text: return value ?? ""
         case .bytes:
-            if let text { "\"\(text)\"" } else { value.map { $0.isEmpty ? "#<empty>" : "#\($0)" } ?? "" }
+            if let text { return "\"\(text)\"" }
+            return value.map { $0.isEmpty ? "#<empty>" : "#\($0)" } ?? ""
         }
     }
 }

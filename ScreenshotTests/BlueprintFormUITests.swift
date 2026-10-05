@@ -69,6 +69,37 @@ final class BlueprintFormUITests: XCTestCase {
         save("blueprint-redeemer")
     }
 
+    /// An inspected inline datum reads as its blueprint type. Needs the
+    /// "Blueprint Order" document (an output to the market script holding an
+    /// Order) in the app's Documents, besides the fixture blueprint.
+    @MainActor
+    func testInspectedDatumLabels() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-providerOnboardingShown", "YES"]
+        app.launch()
+        let document = app.staticTexts["Blueprint Order"].firstMatch
+        for place in ["Browse", "On My iPhone", "TxWorkshop"] where !document.exists {
+            let item = app.buttons[place].exists ? app.buttons[place] : app.staticTexts[place]
+            if item.exists { item.tap(); sleep(1) }
+        }
+        XCTAssertTrue(document.waitForExistence(timeout: 10), "Blueprint Order is not in the app's Documents.")
+        // The name renames; the icon above it opens.
+        document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: -60)).tap()
+        let opened = app.staticTexts["In short"].waitForExistence(timeout: 20)
+        if !opened { save("blueprint-open-failed") }
+        XCTAssertTrue(opened, "The document never opened.")
+        go(to: "Inputs & Outputs", in: app)
+
+        let order = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Order · 10 fields'")).firstMatch
+        scroll(app, toReveal: order)
+        XCTAssertTrue(order.exists, "The inline datum was not read as an Order.")
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'market.market.spend'")).firstMatch.exists, "The validator is not named.")
+        let price = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'price' AND label CONTAINS '5000000'")).firstMatch
+        scroll(app, toReveal: price)
+        XCTAssertTrue(price.exists, "The price field is not named.")
+        save("blueprint-inspected")
+    }
+
     @MainActor
     private func save(_ name: String) {
         try? XCUIScreen.main.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: "/private/tmp/claude-501/-Users-hadderley-Documents-AgenticOS/8ed2b6c3-a439-4621-baf7-08e15b8ce0dd/scratchpad/\(name).png"))

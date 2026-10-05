@@ -61,7 +61,23 @@ private struct NodeLabel: View {
                 .lineLimit(2)
                 .truncationMode(.middle)
                 .textSelection(.enabled)
+            // A leaf's blueprint type, beside its value.
+            if let type = node.typeName, node.children == nil {
+                Text(verbatim: type)
+                    .font(.caption)
+                    .foregroundStyle(TWColor.secondaryText)
+            }
             Spacer(minLength: 0)
+            if let validator = node.validator {
+                Label {
+                    Text(verbatim: validator)
+                } icon: {
+                    Image(systemName: "list.bullet.rectangle")
+                }
+                .font(.caption)
+                .foregroundStyle(TWColor.secondaryText)
+                .help(Text("Read through this validator's blueprint", bundle: #bundle))
+            }
         }
         .accessibilityElement(children: .combine)
     }
