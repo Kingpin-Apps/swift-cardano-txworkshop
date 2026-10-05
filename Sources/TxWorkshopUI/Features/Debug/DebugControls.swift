@@ -48,11 +48,13 @@ struct DebugControls: View {
             .buttonStyle(.borderless)
             .labelStyle(.iconOnly)
             .disabled(isBusy)
-            Slider(value: $scrub, in: 0...Double(max(end.steps, 1)), step: 1) {
+            // No `step:`: on macOS it draws a tick mark per step, seconds of
+            // work on every update for a run of thousands of steps.
+            Slider(value: $scrub, in: 0...Double(max(end.steps, 1))) {
                 Text("Timeline", bundle: #bundle)
             } onEditingChanged: { editing in
                 isScrubbing = editing
-                if !editing { perform(.toStep(Int(scrub))) }
+                if !editing { perform(.toStep(Int(scrub.rounded()))) }
             }
             .accessibilityIdentifier("debugTimeline")
             HStack {
