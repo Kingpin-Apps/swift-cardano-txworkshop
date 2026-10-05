@@ -61,31 +61,46 @@ struct DebugTermPane: View {
     }
 }
 
-/// The variables in scope, most recent first; one opens in full.
+/// The variables in scope, most recent first; one opens in full. A lazy
+/// stack rather than a List: every step renumbers every row, and a List
+/// takes about twice as long to redraw them.
 struct DebugVariablesPane: View {
     let snapshot: DebugSnapshot
     let onShow: (DebugTarget) -> Void
 
     var body: some View {
-        List {
-            Section {
-                if snapshot.variables.isEmpty {
-                    Text("None in scope here.", bundle: #bundle)
-                        .foregroundStyle(TWColor.secondaryText)
-                }
-                ForEach(snapshot.variables) { variable in
-                    Button {
-                        onShow(.variable(variable.index))
-                    } label: {
-                        VariableRow(variable: variable)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
+                Section {
+                    if snapshot.variables.isEmpty {
+                        Text("None in scope here.", bundle: #bundle)
+                            .foregroundStyle(TWColor.secondaryText)
+                            .padding(.horizontal, TWSpacing.m)
+                            .padding(.vertical, TWSpacing.s)
                     }
-                    .buttonStyle(.plain)
+                    ForEach(snapshot.variables) { variable in
+                        Button {
+                            onShow(.variable(variable.index))
+                        } label: {
+                            VariableRow(variable: variable)
+                                .padding(.horizontal, TWSpacing.m)
+                                .padding(.vertical, TWSpacing.xs)
+                        }
+                        .buttonStyle(.plain)
+                        Divider()
+                            .padding(.leading, TWSpacing.m)
+                    }
+                } header: {
+                    Text("Variables (\(snapshot.variables.count))", bundle: #bundle)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(TWColor.secondaryText)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, TWSpacing.m)
+                        .padding(.vertical, TWSpacing.s)
+                        .background(.bar)
                 }
-            } header: {
-                Text("Variables (\(snapshot.variables.count))", bundle: #bundle)
             }
         }
-        .listStyle(.plain)
         .accessibilityIdentifier("debugVariables")
     }
 }

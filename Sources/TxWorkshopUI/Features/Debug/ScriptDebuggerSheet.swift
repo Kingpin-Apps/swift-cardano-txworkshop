@@ -22,6 +22,10 @@ struct ScriptDebuggerSheet: View {
     @State private var debugger: ScriptDebugger?
     @State private var snapshot: DebugSnapshot?
     @State private var problem: String?
+    /// A command is running. Not read by the body, so setting it does not
+    /// redraw the debugger.
+    @State private var isRunning = false
+    /// A command has run long enough to show the controls as busy.
     @State private var isBusy = false
     @State private var breakpoints: Set<DebugBreakpoint> = [.failure]
     @State private var scrub: Double = 0
@@ -204,14 +208,23 @@ struct ScriptDebuggerSheet: View {
         }
     }
 
+    /// Runs `command`. Most take a few milliseconds, so the controls show as
+    /// busy only for a slow one: a step then draws the debugger once, not
+    /// three times.
     private func perform(_ command: DebugCommand) {
-        guard let debugger, !isBusy else { return }
-        isBusy = true
+        guard let debugger, !isRunning else { return }
+        isRunning = true
+        let slow = Task {
+            try await Task.sleep(for: .milliseconds(150))
+            isBusy = true
+        }
         Task {
             let result = await debugger.perform(command)
+            slow.cancel()
             snapshot = result
             if !isScrubbing { scrub = Double(result.step) }
-            isBusy = false
+            if isBusy { isBusy = false }
+            isRunning = false
         }
     }
 }
