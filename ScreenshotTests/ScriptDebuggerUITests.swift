@@ -124,6 +124,31 @@ final class ScriptDebuggerUITests: XCTestCase {
         save("cip21-section")
     }
 
+    /// Chain Data shows the saved snapshot: the tip, the protocol version and
+    /// parameters, and the inputs.
+    @MainActor
+    func testChainDataScreen() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-providerOnboardingShown", "YES"]
+        app.launch()
+        let document = app.staticTexts["Minswap Batch"].firstMatch
+        for place in ["Browse", "On My iPhone", "On My iPad", "TxWorkshop"] where !document.exists {
+            let item = app.buttons[place].exists ? app.buttons[place] : app.staticTexts[place]
+            if item.exists { item.tap(); sleep(1) }
+        }
+        XCTAssertTrue(document.waitForExistence(timeout: 10), "Minswap Batch is not in the app's Documents.")
+        document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: -60)).tap()
+        XCTAssertTrue(app.staticTexts["In short"].waitForExistence(timeout: 20), "The document never opened.")
+        go(to: "Chain Data", in: app)
+        XCTAssertTrue(app.staticTexts["Tip slot"].firstMatch.waitForExistence(timeout: 10), "No tip slot.")
+        XCTAssertTrue(app.staticTexts["Protocol version"].firstMatch.exists, "No protocol version.")
+        save("chain-data")
+        let fee = app.staticTexts["Fee per byte"].firstMatch
+        for _ in 0..<6 where !fee.isHittable { app.swipeUp(); sleep(1) }
+        XCTAssertTrue(fee.exists, "No protocol parameters.")
+        save("chain-data-parameters")
+    }
+
     @MainActor
     private func waitFor(_ element: XCUIElement, _ condition: (XCUIElement) -> Bool) -> Bool {
         for _ in 0..<20 {

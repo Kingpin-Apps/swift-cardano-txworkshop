@@ -77,20 +77,12 @@ struct ChainDataSection: View {
     }
 
     private func fetch() {
-        guard let provider, let bytes = document.content.transaction else { return }
-        let apiKey = providers.apiKey(for: provider)
-        let previous = document.content.chainContext
         isFetching = true
         problem = nil
         Task {
             defer { isFetching = false }
             do {
-                let snapshot = try await ChainDataFetcher().fetch(transaction: bytes, provider: provider, apiKey: apiKey, keeping: previous)
-                document.update(
-                    { $0.chainContext = snapshot },
-                    actionName: LocalizedStringResource("Fetch Chain Data", bundle: #bundle),
-                    undoManager: undoManager
-                )
+                try await ChainDataFetch.run(document: document, providers: providers, undoManager: undoManager)
             } catch {
                 problem = String(describing: error)
             }

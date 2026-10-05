@@ -30,6 +30,10 @@ struct ScriptTraceSheet: View {
                         Text("No trace", bundle: #bundle)
                     } description: {
                         Text(verbatim: message)
+                    } actions: {
+                        FetchChainDataButton(document: document) {
+                            Task { await record() }
+                        }
                     }
                 case .loaded(let trace):
                     content(trace)
@@ -42,21 +46,24 @@ struct ScriptTraceSheet: View {
                     Button { dismiss() } label: { Text("Done", bundle: #bundle) }
                 }
             }
-            .task {
-                guard let bytes = document.content.transaction, let snapshot = document.content.chainContext else {
-                    trace = .failed(String(localized: "Fetch or enter chain data first.", bundle: #bundle))
-                    return
-                }
-                do {
-                    trace = .loaded(try await ScriptTrace.record(bytes, position: request.position, snapshot: snapshot, network: document.content.network))
-                } catch {
-                    trace = .failed(String(describing: error))
-                }
-            }
+            .task { await record() }
         }
         #if os(macOS)
         .frame(minWidth: 640, idealWidth: 760, minHeight: 520, idealHeight: 720)
         #endif
+    }
+
+    private func record() async {
+        guard let bytes = document.content.transaction, let snapshot = document.content.chainContext else {
+            trace = .failed(String(localized: "Fetch or enter chain data first.", bundle: #bundle))
+            return
+        }
+        trace = .loading
+        do {
+            trace = .loaded(try await ScriptTrace.record(bytes, position: request.position, snapshot: snapshot, network: document.content.network))
+        } catch {
+            trace = .failed(String(describing: error))
+        }
     }
 
     private func content(_ trace: ScriptTrace) -> some View {

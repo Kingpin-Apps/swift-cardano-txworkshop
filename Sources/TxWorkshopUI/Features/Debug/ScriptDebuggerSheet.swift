@@ -43,6 +43,10 @@ struct ScriptDebuggerSheet: View {
                         Text("Cannot Debug", bundle: #bundle)
                     } description: {
                         Text(verbatim: problem)
+                    } actions: {
+                        FetchChainDataButton(document: document) {
+                            Task { await open() }
+                        }
                     }
                 } else {
                     ProgressView {
@@ -179,6 +183,7 @@ struct ScriptDebuggerSheet: View {
             problem = String(localized: "Fetch or enter chain data first: the script needs the inputs it spends and the protocol parameters.", bundle: #bundle)
             return
         }
+        problem = nil
         let kept = document.content.recipe?.blueprints ?? []
         let every = kept + library.blueprints.filter { stored in !kept.contains { $0.id == stored.id } }
         blueprints = every

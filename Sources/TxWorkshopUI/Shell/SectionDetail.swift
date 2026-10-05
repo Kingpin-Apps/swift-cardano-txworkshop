@@ -39,6 +39,8 @@ struct SectionDetail: View {
             SignView(document: document)
         case .build:
             BuildView(document: document)
+        case .chainData:
+            ChainDataView(document: document)
         case .validate:
             ValidateView(document: document)
         case .cddl:

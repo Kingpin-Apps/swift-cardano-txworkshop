@@ -9,6 +9,7 @@ enum WorkshopSection: String, CaseIterable, Identifiable, Hashable {
     case metadata
     case cbor
     case cddl
+    case chainData
     case validate
     case build
     case sign
@@ -24,6 +25,7 @@ enum WorkshopSection: String, CaseIterable, Identifiable, Hashable {
         case .metadata: LocalizedStringResource("Metadata", bundle: #bundle)
         case .cbor: LocalizedStringResource("CBOR", bundle: #bundle)
         case .cddl: LocalizedStringResource("CDDL", bundle: #bundle)
+        case .chainData: LocalizedStringResource("Chain Data", bundle: #bundle)
         case .validate: LocalizedStringResource("Validate", bundle: #bundle)
         case .build: LocalizedStringResource("Build", bundle: #bundle)
         case .sign: LocalizedStringResource("Sign & Submit", bundle: #bundle)
@@ -39,6 +41,7 @@ enum WorkshopSection: String, CaseIterable, Identifiable, Hashable {
         case .metadata: "tag"
         case .cbor: "chevron.left.forwardslash.chevron.right"
         case .cddl: "text.book.closed"
+        case .chainData: "cube.transparent"
         case .validate: "checklist"
         case .build: "hammer"
         case .sign: "signature"
@@ -46,5 +49,5 @@ enum WorkshopSection: String, CaseIterable, Identifiable, Hashable {
     }
 
     static let inspect: [WorkshopSection] = [.overview, .inputsOutputs, .body, .scripts, .metadata, .cbor, .cddl]
-    static let act: [WorkshopSection] = [.validate, .build, .sign]
+    static let act: [WorkshopSection] = [.chainData, .validate, .build, .sign]
 }

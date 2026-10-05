@@ -40,4 +40,25 @@ public struct ChainDataFetcher: Sendable {
             ledgerState: try LedgerState(context).encoded()
         )
     }
+
+    /// A snapshot of the chain alone, for a document with no transaction yet:
+    /// the protocol parameters, the tip, the epoch and the era. `previous`
+    /// keeps its UTxOs and ledger state.
+    public func fetchChain(provider: ProviderConfiguration, apiKey: String?, keeping previous: ChainContextSnapshot?) async throws -> ChainContextSnapshot {
+        let chain = try await makeContext(provider, apiKey)
+        let parameters = try await chain.protocolParameters()
+        let slot = try? await chain.lastBlockSlot()
+        var ledger = LedgerState.decode(previous?.ledgerState)
+        if let epoch = try? await chain.epoch() { ledger.currentEpoch = UInt64(epoch) }
+        if let era = try? await chain.era() { ledger.era = era.rawValue }
+        return ChainContextSnapshot(
+            fetchedAt: .now,
+            utxos: previous?.utxos ?? [],
+            spentInputs: previous?.spentInputs,
+            tokens: previous?.tokens,
+            protocolParameters: try JSONEncoder().encode(parameters),
+            tipSlot: slot.map(UInt64.init),
+            ledgerState: try ledger.encoded()
+        )
+    }
 }
