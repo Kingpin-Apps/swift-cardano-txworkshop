@@ -8,16 +8,17 @@ extension TransactionInspection {
     /// `blueprints` read as its blueprint type: fields by name, constructors
     /// by their titles. Data that does not fit its type is left as it was.
     /// ``labelled(with:)`` on a thread with room for deeply nested data.
-    public func labelling(with blueprints: [StoredBlueprint]) async -> TransactionInspection {
+    public func labelling(with blueprints: [StoredBlueprint], applied: [String: BlueprintParameters] = [:]) async -> TransactionInspection {
         guard !blueprints.isEmpty else { return self }
         let inspection = self
-        return await DeepStack.run { inspection.labelled(with: blueprints) }
+        return await DeepStack.run { inspection.labelled(with: blueprints, applied: applied) }
     }
 
-    public func labelled(with blueprints: [StoredBlueprint]) -> TransactionInspection {
+    /// `applied` names the validators of scripts made by applying parameters.
+    public func labelled(with blueprints: [StoredBlueprint], applied: [String: BlueprintParameters] = [:]) -> TransactionInspection {
         guard !blueprints.isEmpty else { return self }
         var copy = self
-        let label = BlueprintLabeller(blueprints: blueprints)
+        let label = BlueprintLabeller(blueprints: blueprints, applied: applied)
 
         func output(_ detail: OutputDetail) -> OutputDetail {
             guard case .inline(let hash, _, let cborHex)? = detail.datum,
@@ -106,6 +107,7 @@ extension TransactionInspection {
 /// Reads datums and redeemers as their validators' blueprint types.
 struct BlueprintLabeller {
     let blueprints: [StoredBlueprint]
+    var applied: [String: BlueprintParameters] = [:]
 
     func datum(_ cborHex: String, scriptHash: String?) -> DataNode? {
         tree(cborHex, scriptHash: scriptHash, role: .datum, purpose: "spend")
@@ -119,7 +121,7 @@ struct BlueprintLabeller {
         guard let scriptHash, let bytes = try? TxDocumentCodec.bytes(fromHex: cborHex),
             let data = try? PlutusData.fromCBOR(data: bytes)
         else { return nil }
-        for choice in BlueprintCatalog.choices(blueprints, scriptHash: scriptHash, role: role, purpose: purpose) {
+        for choice in BlueprintCatalog.choices(blueprints, scriptHash: scriptHash, role: role, purpose: purpose, applied: applied) {
             guard let argument = role.argument(of: choice.validator),
                 (try? choice.blueprint.decode(data, as: argument.schema, path: role.path)) != nil
             else { continue }

@@ -306,3 +306,68 @@ struct BlueprintLabellingTests {
         #expect(labeller.redeemer(BlueprintTests.goldenAction, scriptHash: String(repeating: "00", count: 28), purpose: "spend") == nil)
     }
 }
+
+/// Validators that take parameters, made into scripts as Aiken's
+/// `blueprint apply` makes them.
+@Suite("Blueprint parameters")
+struct BlueprintParameterTests {
+    /// `aiken blueprint apply` of owner 00112233…aabb, then nonce 7, to market.token.
+    static let appliedCode = "58d9010100332229800aba2aba1aab9faab9eaab9dab9a9bae0039bad0024888888896600264646644b30013370e900018041baa002899199119801001001912cc0040062b3001980099b8f009488100a50a51402915980099b8948000022330013375e6e9c00d3001018000a50a51402914a08052294100a44c8cc00c00cc040008dd69807000a01a375c601860146ea800cdd61805801c59007180498050009804801180480098029baa0098a4d13656400c4c011e581c00112233445566778899aabbccddeeff00112233445566778899aabb004c0101070001"
+    static let appliedHash = "ae8fd9afa7d726fb95e2415342a67aa4a6194c4736643fbb6cfcdca5"
+
+    func token() throws -> (Blueprint, Blueprint.Validator) {
+        let blueprint = try BlueprintCatalog.blueprint(try BlueprintRecipeTests().stored())
+        return (blueprint, try #require(blueprint.validators.first { $0.title == "market.token.mint" }))
+    }
+
+    @Test("Parameters apply byte for byte as Aiken applies them")
+    func apply() throws {
+        let (blueprint, token) = try token()
+        let applied = try blueprint.apply([.bytes("00112233445566778899aabbccddeeff00112233445566778899aabb"), .integer("7")], to: token)
+        #expect(applied.compiledCode == Self.appliedCode)
+        #expect(applied.hash == Self.appliedHash)
+        #expect(applied.plutusVersion == 3)
+    }
+
+    @Test("Wrong parameters are named, and nothing is applied")
+    func problems() throws {
+        let (blueprint, token) = try token()
+        #expect(blueprint.parameterProblems([.bytes("zz"), .integer("")], for: token).map(\.path) == ["parameters.owner", "parameters.nonce"])
+        #expect(blueprint.parameterProblems([.bytes("00")], for: token).first?.message == "2 parameters expected, not 1.")
+        #expect(throws: BlueprintError.self) { try blueprint.apply([.bytes(""), .integer("x")], to: token) }
+    }
+
+    @Test("Builtin-typed parameters apply as constants of their own type")
+    func builtins() throws {
+        let code = try token().1.compiledCode ?? ""
+        let json = ##"{"preamble": {"title": "b", "plutusVersion": "v3"}, "validators": [{"title": "m.v.mint", "redeemer": {"schema": {}}, "parameters": [{"title": "n", "schema": {"dataType": "#integer"}}, {"title": "flag", "schema": {"dataType": "#boolean"}}], "compiledCode": "\##(code)"}]}"##
+        let blueprint = try Blueprint(json: Data(json.utf8))
+        let validator = try #require(blueprint.validators.first)
+        let applied = try blueprint.apply([.integer("42"), .boolean(true)], to: validator)
+        #expect(applied.hash.count == 56)
+        #expect(blueprint.parameterProblems([.integer("4.2"), .boolean(true)], for: validator).map(\.path) == ["parameters.n"])
+    }
+
+    @Test("A recipe's applied script finds its validator, and its parameters are checked")
+    func recipe() throws {
+        let stored = try BlueprintRecipeTests().stored()
+        let (blueprint, token) = try token()
+        let values: [BlueprintValue] = [.bytes("00112233445566778899aabbccddeeff00112233445566778899aabb"), .integer("7")]
+        let applied = try blueprint.apply(values, to: token)
+        let parameters = BlueprintParameters(blueprint: stored.id, validator: token.title, values: values)
+        let mint = MintDraft(script: .plutus(version: 3, cborHex: applied.compiledCode), redeemer: "", scriptParameters: parameters)
+        let recipe = BuildRecipe(changeAddress: "addr_test1vrm9x2zsux7va6w892g38tvchnzahvcd9tykqf3ygnmwtaqyfg52x", mints: [mint], blueprints: [stored])
+
+        let found = BlueprintCatalog.appliedScripts(in: recipe)
+        #expect(found == [Self.appliedHash: parameters])
+        #expect(BlueprintCatalog.choices([stored], scriptHash: Self.appliedHash, role: .redeemer, purpose: "mint", applied: found)
+            .map(\.validator.title) == ["market.token.mint"])
+        #expect(BlueprintCatalog.choices([stored], scriptHash: Self.appliedHash, role: .redeemer).isEmpty)
+
+        var bad = recipe
+        bad.mints[0].scriptParameters?.values[1] = .integer("seven")
+        let problems = RecipeCheck.problems(bad, network: .preprod).filter { $0.field == "Script parameters" }
+        #expect(problems.map(\.message) == ["parameters.nonce: \"seven\" is not a whole number."])
+        #expect(RecipeCheck.problems(recipe, network: .preprod).filter { $0.field == "Script parameters" }.isEmpty)
+    }
+}

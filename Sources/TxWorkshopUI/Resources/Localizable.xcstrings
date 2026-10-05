@@ -14,6 +14,9 @@
         }
       }
     },
+    "%@ (takes parameters)" : {
+
+    },
     "%@ are on %@, but the document is on %@." : {
       "localizations" : {
         "en" : {
@@ -784,6 +787,9 @@
     "Field" : {
 
     },
+    "Fill In with a Blueprint" : {
+
+    },
     "Fill the form from the pool's registration on chain, to edit and register again." : {
 
     },
@@ -1408,6 +1414,9 @@
     "Pane" : {
 
     },
+    "Parameters of %@" : {
+
+    },
     "Passes" : {
 
     },
@@ -1685,10 +1694,16 @@
     "Script" : {
 
     },
+    "Script address" : {
+
+    },
     "Script budgets" : {
 
     },
     "Script CBOR hex" : {
+
+    },
+    "Script hash" : {
 
     },
     "Script input" : {
@@ -1933,6 +1948,9 @@
     "The document's schema does not parse (line %lld). Fix it in the CDDL section." : {
 
     },
+    "The first choices are for this script." : {
+
+    },
     "The ledger accepts this: long Plutus byte strings are written in 64-byte chunks." : {
 
     },
@@ -1946,6 +1964,9 @@
 
     },
     "The number fits a shorter float encoding." : {
+
+    },
+    "The script is made once every parameter is filled in." : {
 
     },
     "The slot is a whole number." : {
@@ -1967,6 +1988,9 @@
 
     },
     "These bytes are part of the transaction body: changing them changes the transaction id, and existing signatures no longer match." : {
+
+    },
+    "These parameters' blueprint is no longer in the document. Choose the validator again." : {
 
     },
     "This device has no camera the scanner can use." : {
@@ -2077,6 +2101,9 @@
 
     },
     "Use %@" : {
+
+    },
+    "Use a Validator as the Script" : {
 
     },
     "Use as the Document's Transaction" : {

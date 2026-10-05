@@ -16,12 +16,15 @@ struct BlueprintDataField: View {
     let scriptHash: String?
     /// `spend`, `mint` …, to prefer that validator of a script.
     let purpose: String?
+    /// Scripts in the recipe made by applying parameters, by hash.
+    var applied: [String: BlueprintParameters] = [:]
     let label: Text
     let prompt: Text
     var required = true
     @Environment(BlueprintLibrary.self) private var library
     @State private var isImporting = false
     @State private var importProblem: String?
+    @State private var showsChoices = false
 
     private var everyBlueprint: [StoredBlueprint] {
         blueprints + library.blueprints.filter { kept in !blueprints.contains { $0.id == kept.id } }
@@ -61,45 +64,13 @@ struct BlueprintDataField: View {
 
     // MARK: - Choosing a blueprint
 
+    /// Form or Raw, and the blueprints to fill a form from, in a dialog: a menu
+    /// in a form row would not open, or stretched the row.
     private var blueprintMenu: some View {
-        let matching = scriptHash.map { BlueprintCatalog.choices(everyBlueprint, scriptHash: $0, role: role, purpose: purpose) } ?? []
+        let matching = scriptHash.map { BlueprintCatalog.choices(everyBlueprint, scriptHash: $0, role: role, purpose: purpose, applied: applied) } ?? []
         let others = BlueprintCatalog.choices(everyBlueprint, role: role, purpose: purpose).filter { other in !matching.contains { $0.id == other.id } }
-        return Menu {
-            if !matching.isEmpty {
-                Section {
-                    ForEach(matching) { choice in choiceButton(choice) }
-                } header: {
-                    Text("For this script", bundle: #bundle)
-                }
-            }
-            if !others.isEmpty {
-                Section {
-                    ForEach(others) { choice in choiceButton(choice) }
-                } header: {
-                    Text("Other blueprints", bundle: #bundle)
-                }
-            }
-            Button {
-                isImporting = true
-            } label: {
-                Label {
-                    Text("Import plutus.json…", bundle: #bundle)
-                } icon: {
-                    Image(systemName: "square.and.arrow.down")
-                }
-            }
-            if form != nil {
-                Divider()
-                Button {
-                    form = nil
-                } label: {
-                    Label {
-                        Text("Enter as Raw Data", bundle: #bundle)
-                    } icon: {
-                        Image(systemName: "chevron.left.forwardslash.chevron.right")
-                    }
-                }
-            }
+        return Button {
+            showsChoices = true
         } label: {
             Label {
                 Text(form == nil ? String(localized: "Raw", bundle: #bundle) : String(localized: "Form", bundle: #bundle))
@@ -107,11 +78,29 @@ struct BlueprintDataField: View {
                 Image(systemName: "list.bullet.rectangle")
             }
         }
-        .menuStyle(.button)
         .buttonStyle(.borderless)
-        .fixedSize()
         .accessibilityLabel(Text("Blueprint", bundle: #bundle))
         .accessibilityIdentifier("blueprintMenu-\(role.path)")
+        .confirmationDialog(Text("Fill In with a Blueprint", bundle: #bundle), isPresented: $showsChoices, titleVisibility: .visible) {
+            ForEach(matching + others) { choice in choiceButton(choice) }
+            Button {
+                isImporting = true
+            } label: {
+                Text("Import plutus.json…", bundle: #bundle)
+            }
+            if form != nil {
+                Button {
+                    form = nil
+                } label: {
+                    Text("Enter as Raw Data", bundle: #bundle)
+                }
+            }
+            Button(role: .cancel) {} label: { Text("Cancel", bundle: #bundle) }
+        } message: {
+            if !matching.isEmpty {
+                Text("The first choices are for this script.", bundle: #bundle)
+            }
+        }
     }
 
     private func choiceButton(_ choice: BlueprintChoice) -> some View {
@@ -141,7 +130,7 @@ struct BlueprintDataField: View {
     /// A field left empty whose script has a known validator starts as its form.
     private func attachMatching() {
         guard form == nil, text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, let scriptHash,
-            let match = BlueprintCatalog.choices(everyBlueprint, scriptHash: scriptHash, role: role, purpose: purpose).first
+            let match = BlueprintCatalog.choices(everyBlueprint, scriptHash: scriptHash, role: role, purpose: purpose, applied: applied).first
         else { return }
         use(match)
     }

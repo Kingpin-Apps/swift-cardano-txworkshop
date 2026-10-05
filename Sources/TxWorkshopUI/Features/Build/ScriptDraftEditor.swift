@@ -7,6 +7,8 @@ import TxWorkshopEngine
 /// script JSON or raw CBOR) sets both the kind and the script.
 struct ScriptDraftEditor: View {
     @Binding var script: ScriptDraft
+    /// The parameters, when the script is a blueprint validator that takes them.
+    @Binding var parameters: BlueprintParameters?
     /// The document's blueprints, whose validators can be picked as the script.
     @Binding var blueprints: [StoredBlueprint]
     /// `mint` or `spend`: which validators to offer.
@@ -16,12 +18,16 @@ struct ScriptDraftEditor: View {
     @State private var text = ""
     @State private var isImporting = false
     @State private var fileProblem: String?
+    @State private var showsBlueprintChoices = false
 
     enum Kind: Hashable { case native, plutusV1, plutusV2, plutusV3, reference }
 
     var body: some View {
         Group {
             controls
+            if parameters != nil {
+                BlueprintParametersEditor(parameters: $parameters, script: $script, blueprints: blueprints, purpose: purpose)
+            }
         }
         .onAppear(perform: load)
         // A script set from outside, e.g. picked from a blueprint.
@@ -50,22 +56,29 @@ struct ScriptDraftEditor: View {
         }
     }
 
+    /// Uses a validator as the script. One that takes parameters starts its
+    /// parameter form; the script is filled in once they are.
+    private func choose(_ stored: StoredBlueprint, _ validator: Blueprint.Validator) {
+        if !blueprints.contains(where: { $0.id == stored.id }) { blueprints.append(stored) }
+        if validator.parameters.isEmpty {
+            parameters = nil
+            script = .plutus(version: validator.plutusVersion, cborHex: validator.compiledCode ?? "")
+        } else if let blueprint = try? BlueprintCatalog.blueprint(stored) {
+            parameters = BlueprintParameters(
+                blueprint: stored.id, validator: validator.title,
+                values: validator.parameters.map { blueprint.emptyValue(for: $0.schema) }
+            )
+            script = .plutus(version: validator.plutusVersion, cborHex: "")
+        }
+    }
+
+    /// Offers the blueprints' validators as the script, in a dialog: a menu in
+    /// a form row would not open, or stretched the row.
     @ViewBuilder private var blueprintMenu: some View {
         let validators = blueprintValidators
         if !validators.isEmpty {
-            Menu {
-                ForEach(validators, id: \.validator.id) { item in
-                    Button {
-                        if !blueprints.contains(where: { $0.id == item.stored.id }) { blueprints.append(item.stored) }
-                        script = .plutus(version: item.validator.plutusVersion, cborHex: item.validator.compiledCode ?? "")
-                    } label: {
-                        Text(verbatim: item.validator.title)
-                        if !item.validator.parameters.isEmpty {
-                            Text("Takes parameters", bundle: #bundle)
-                        }
-                    }
-                    .disabled(!item.validator.parameters.isEmpty)
-                }
+            Button {
+                showsBlueprintChoices = true
             } label: {
                 Label {
                     Text("From Blueprint", bundle: #bundle)
@@ -73,9 +86,21 @@ struct ScriptDraftEditor: View {
                     Image(systemName: "list.bullet.rectangle")
                 }
             }
-            .menuStyle(.button)
             .buttonStyle(.borderless)
-            .fixedSize()
+            .confirmationDialog(Text("Use a Validator as the Script", bundle: #bundle), isPresented: $showsBlueprintChoices, titleVisibility: .visible) {
+                ForEach(validators, id: \.validator.id) { item in
+                    Button {
+                        choose(item.stored, item.validator)
+                    } label: {
+                        if item.validator.parameters.isEmpty {
+                            Text(verbatim: item.validator.title)
+                        } else {
+                            Text(String(localized: "\(item.validator.title) (takes parameters)", bundle: #bundle))
+                        }
+                    }
+                }
+                Button(role: .cancel) {} label: { Text("Cancel", bundle: #bundle) }
+            }
         }
     }
 
@@ -97,10 +122,10 @@ struct ScriptDraftEditor: View {
                 .frame(minHeight: 44, maxHeight: 120)
                 .autocorrectionDisabled()
                 .accessibilityLabel(kind == .native ? Text("Native script JSON", bundle: #bundle) : Text("Script CBOR hex", bundle: #bundle))
+            blueprintMenu
             HStack {
                 status
                 Spacer()
-                blueprintMenu
                 Button {
                     isImporting = true
                 } label: {
@@ -200,7 +225,11 @@ struct ScriptDraftEditor: View {
     }
 
     private func sync() {
-        if script != current { script = current }
+        // A script typed or chosen here is no longer the blueprint's.
+        if script != current {
+            script = current
+            parameters = nil
+        }
     }
 
     /// The script the editor's kind and text make.

@@ -6,6 +6,7 @@ import TxWorkshopEngine
 struct OutputDraftSection: View {
     @Binding var output: OutputDraft
     @Binding var blueprints: [StoredBlueprint]
+    var applied: [String: BlueprintParameters] = [:]
     let onRemove: () -> Void
     @Environment(\.documentNetwork) private var network
     @State private var datumKind = DatumKind.none
@@ -52,7 +53,7 @@ struct OutputDraftSection: View {
             } else if datumKind == .inline {
                 BlueprintDataField(
                     role: .datum, text: $datumHex, form: $output.datumForm, blueprints: $blueprints,
-                    scriptHash: BlueprintCatalog.scriptHash(address: output.address, network: network), purpose: "spend",
+                    scriptHash: BlueprintCatalog.scriptHash(address: output.address, network: network), purpose: "spend", applied: applied,
                     label: Text("Inline datum", bundle: #bundle), prompt: Text("Plutus data (CBOR hex, JSON or a file)", bundle: #bundle)
                 )
             }

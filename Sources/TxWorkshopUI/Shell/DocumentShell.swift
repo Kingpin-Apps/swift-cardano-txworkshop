@@ -62,9 +62,10 @@ struct DocumentShell: View {
         .task(id: currentKey) {
             await inspect()
         }
-        .task(id: LabelKey(inspection: inspection.value, blueprints: blueprintSources.map(\.id))) {
+        .task(id: LabelKey(inspection: inspection.value, blueprints: blueprintSources.map(\.id) + (document.content.recipe.map { BlueprintCatalog.appliedScripts(in: $0).keys.sorted() } ?? []))) {
             guard let value = inspection.value else { labelled = nil; return }
-            let result = await value.labelling(with: blueprintSources)
+            let applied = document.content.recipe.map(BlueprintCatalog.appliedScripts(in:)) ?? [:]
+            let result = await value.labelling(with: blueprintSources, applied: applied)
             guard !Task.isCancelled else { return }
             labelled = (value, result)
         }

@@ -70,3 +70,20 @@ public struct BlueprintForm: Codable, Sendable, Equatable {
         self.value = value
     }
 }
+
+/// The parameters a validator from a blueprint was made into a script with.
+/// The draft's script holds the applied code; these keep the values to edit.
+public struct BlueprintParameters: Codable, Sendable, Equatable {
+    /// The ``StoredBlueprint`` in the recipe it comes from.
+    public var blueprint: String
+    /// The validator's title, e.g. `market.token.mint`.
+    public var validator: String
+    /// One value per parameter, in order.
+    public var values: [BlueprintValue]
+
+    public init(blueprint: String, validator: String, values: [BlueprintValue]) {
+        self.blueprint = blueprint
+        self.validator = validator
+        self.values = values
+    }
+}

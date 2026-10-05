@@ -120,6 +120,9 @@ private struct Checker {
                 value(.assetName, asset.assetNameHex, required: false, place, "Asset name", mint.id)
                 if asset.quantity == 0 { add(place, "Quantity", "Zero mints nothing; use a positive number to mint or negative to burn.", mint.id) }
             }
+            if let parameters = mint.scriptParameters {
+                for problem in BlueprintCatalog.problems(parameters, in: blueprints) { add(place, "Script parameters", problem.description, mint.id) }
+            }
             if case .plutus = mint.script {
                 if let form = mint.redeemerForm {
                     blueprint(form, .redeemer, place, "Redeemer", mint.id)
@@ -133,6 +136,9 @@ private struct Checker {
             let place = "Script input \(i + 1)"
             value(.transactionInput, input.input, place, "UTxO", input.id)
             if let draft = input.script { script(draft, place, "Script", input.id) }
+            if let parameters = input.scriptParameters {
+                for problem in BlueprintCatalog.problems(parameters, in: blueprints) { add(place, "Script parameters", problem.description, input.id) }
+            }
             if let form = input.datumForm {
                 blueprint(form, .datum, place, "Datum", input.id)
             } else {

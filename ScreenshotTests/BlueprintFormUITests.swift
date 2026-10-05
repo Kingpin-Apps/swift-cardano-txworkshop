@@ -34,9 +34,12 @@ final class BlueprintFormUITests: XCTestCase {
         let fromBlueprint = app.buttons["From Blueprint"].firstMatch
         scroll(app, toReveal: fromBlueprint)
         XCTAssertTrue(fromBlueprint.exists, "No From Blueprint menu: is the fixture in the app's library?")
-        fromBlueprint.tap()
         let spend = app.buttons["market.market.spend"].firstMatch
-        XCTAssertTrue(spend.waitForExistence(timeout: 5), "The spend validator is not offered.")
+        for _ in 0..<3 where !spend.exists {
+            fromBlueprint.tap()
+            _ = spend.waitForExistence(timeout: 3)
+        }
+        XCTAssertTrue(spend.exists, "The spend validator is not offered.")
         spend.tap()
 
         // The script's hash finds its validator: both fields become forms.
@@ -67,6 +70,58 @@ final class BlueprintFormUITests: XCTestCase {
         price.typeText("soon")
         XCTAssertTrue(app.staticTexts["\"soon\" is not a whole number."].firstMatch.waitForExistence(timeout: 5), "The bad price was not flagged.")
         save("blueprint-redeemer")
+    }
+
+    /// A validator that takes parameters becomes a script once they are
+    /// filled in, with the hash Aiken's `blueprint apply` gives, and its
+    /// redeemer still finds its type.
+    @MainActor
+    func testParameterisedMint() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-providerOnboardingShown", "YES"]
+        app.launch()
+
+        let networkMenu = app.buttons["No Network"].firstMatch
+        newDocument(app, opened: networkMenu)
+        XCTAssertTrue(networkMenu.exists, "The new document never opened.")
+        networkMenu.tap()
+        let preprod = app.buttons["Preprod"].firstMatch
+        XCTAssertTrue(preprod.waitForExistence(timeout: 5))
+        preprod.tap()
+        go(to: "Build", in: app)
+
+        let add = app.buttons["Add Mint or Burn"].firstMatch
+        scroll(app, toReveal: add)
+        add.tap()
+        let fromBlueprint = app.buttons["From Blueprint"].firstMatch
+        scroll(app, toReveal: fromBlueprint)
+        XCTAssertTrue(fromBlueprint.exists, "No From Blueprint menu: is the fixture in the app's library?")
+        let token = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'market.token.mint'")).firstMatch
+        // A tap while the form still coasts only stops it.
+        for _ in 0..<3 where !token.exists {
+            fromBlueprint.tap()
+            _ = token.waitForExistence(timeout: 3)
+        }
+        XCTAssertTrue(token.exists, "The minting validator is not offered.")
+        token.tap()
+
+        let owner = app.textFields["parameters.owner"].firstMatch
+        scroll(app, toReveal: owner)
+        XCTAssertTrue(owner.exists, "No owner parameter.")
+        owner.tap()
+        owner.typeText("00112233445566778899aabbccddeeff00112233445566778899aabb\n")
+        let nonce = app.textFields["parameters.nonce"].firstMatch
+        scroll(app, toReveal: nonce)
+        nonce.tap()
+        nonce.typeText("7\n")
+
+        let hash = app.staticTexts["ae8fd9afa7d726fb95e2415342a67aa4a6194c4736643fbb6cfcdca5"].firstMatch
+        scroll(app, toReveal: hash)
+        XCTAssertTrue(hash.exists, "The applied script hash is not Aiken's.")
+        save("blueprint-parameters")
+        let redeemer = app.staticTexts["List<Int> · market.token.mint"].firstMatch
+        scroll(app, toReveal: redeemer)
+        XCTAssertTrue(redeemer.exists, "The applied script's redeemer did not find its type.")
     }
 
     /// An inspected inline datum reads as its blueprint type. Needs the
@@ -139,10 +194,15 @@ final class BlueprintFormUITests: XCTestCase {
             let screen = app.frame.height
             return element.frame.minY > screen * 0.2 && element.frame.maxY < screen * 0.85
         }
-        for _ in 0..<25 where !clear() {
-            // Toward the element when it is laid out but off screen; else on.
+        // Toward the element when it is laid out but off screen; else on, then
+        // back: a list lays out only the rows near the screen.
+        for _ in 0..<15 where !clear() {
             let above = element.exists && element.frame.maxY < app.frame.height * 0.2
             above || upwards ? app.swipeDown() : app.swipeUp()
+            sleep(1)
+        }
+        for _ in 0..<30 where !clear() {
+            upwards ? app.swipeUp() : app.swipeDown()
             sleep(1)
         }
     }

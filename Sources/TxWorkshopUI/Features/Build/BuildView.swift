@@ -39,17 +39,17 @@ struct BuildView: View {
             }
             SourcesSection(recipe: $recipe, provider: provider)
             ForEach($recipe.outputs) { $output in
-                OutputDraftSection(output: $output, blueprints: $recipe.blueprints) {
+                OutputDraftSection(output: $output, blueprints: $recipe.blueprints, applied: BlueprintCatalog.appliedScripts(in: recipe)) {
                     recipe.outputs.removeAll { $0.id == output.id }
                 }
             }
             ForEach($recipe.mints) { $mint in
-                MintDraftSection(mint: $mint, blueprints: $recipe.blueprints) {
+                MintDraftSection(mint: $mint, blueprints: $recipe.blueprints, applied: BlueprintCatalog.appliedScripts(in: recipe)) {
                     recipe.mints.removeAll { $0.id == mint.id }
                 }
             }
             ForEach($recipe.scriptInputs) { $input in
-                ScriptInputSection(input: $input, blueprints: $recipe.blueprints) {
+                ScriptInputSection(input: $input, blueprints: $recipe.blueprints, applied: BlueprintCatalog.appliedScripts(in: recipe)) {
                     recipe.scriptInputs.removeAll { $0.id == input.id }
                 }
             }

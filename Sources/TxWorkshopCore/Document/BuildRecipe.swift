@@ -173,16 +173,19 @@ public struct MintDraft: Codable, Sendable, Equatable, Identifiable {
     public var redeemer: String
     /// The redeemer's blueprint form, when it is filled in through one.
     public var redeemerForm: BlueprintForm?
+    /// The parameters the script was made with, when it is a blueprint validator that takes them.
+    public var scriptParameters: BlueprintParameters?
 
     public init(
         id: UUID = UUID(), script: ScriptDraft = .native(json: ""), assets: [AssetDraft] = [], redeemer: String = "",
-        redeemerForm: BlueprintForm? = nil
+        redeemerForm: BlueprintForm? = nil, scriptParameters: BlueprintParameters? = nil
     ) {
         self.id = id
         self.script = script
         self.assets = assets
         self.redeemer = redeemer
         self.redeemerForm = redeemerForm
+        self.scriptParameters = scriptParameters
     }
 }
 
@@ -200,10 +203,12 @@ public struct ScriptInputDraft: Codable, Sendable, Equatable, Identifiable {
     /// The datum's and redeemer's blueprint forms, when filled in through one.
     public var datumForm: BlueprintForm?
     public var redeemerForm: BlueprintForm?
+    /// The parameters the script was made with, when it is a blueprint validator that takes them.
+    public var scriptParameters: BlueprintParameters?
 
     public init(
         id: UUID = UUID(), input: String = "", script: ScriptDraft? = nil, datum: String = "", redeemer: String = "",
-        datumForm: BlueprintForm? = nil, redeemerForm: BlueprintForm? = nil
+        datumForm: BlueprintForm? = nil, redeemerForm: BlueprintForm? = nil, scriptParameters: BlueprintParameters? = nil
     ) {
         self.id = id
         self.input = input
@@ -212,6 +217,7 @@ public struct ScriptInputDraft: Codable, Sendable, Equatable, Identifiable {
         self.redeemer = redeemer
         self.datumForm = datumForm
         self.redeemerForm = redeemerForm
+        self.scriptParameters = scriptParameters
     }
 }
 
