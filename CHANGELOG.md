@@ -1,3 +1,23 @@
+## v0.1.4 (2026-10-05)
+
+### Feat
+
+- **chain**: Chain Data screen, and fetch from where it is needed
+- **validate**: CIP-21 hardware wallet check and rewrite
+- **debug**: named script context, edit and rerun, debug failure
+- **debug**: script debugger screen on every platform
+- **debug**: step through a redeemer's script run
+- **blueprint**: make scripts from validators that take parameters
+- **blueprint**: show inspected datums and redeemers by their blueprint types
+- **blueprint**: fill datums and redeemers through blueprint forms
+- **blueprint**: read CIP-57 blueprints and encode and decode their types
+- **build**: construct every Conway certificate, with pool registration from pool.json or chain
+
+### Perf
+
+- **debug**: one redraw per step, and a lazy variables list
+- **debug**: drop the timeline slider's per-step tick marks
+
 ## v0.1.3 (2026-10-03)
 
 ### Feat
