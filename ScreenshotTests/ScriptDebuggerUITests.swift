@@ -57,6 +57,73 @@ final class ScriptDebuggerUITests: XCTestCase {
         save("debugger-finished")
     }
 
+    /// Editing the redeemer runs the script with it, as a what-if, and Reset
+    /// goes back to the transaction's.
+    @MainActor
+    func testEditRedeemer() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-providerOnboardingShown", "YES"]
+        app.launch()
+        let document = app.staticTexts["Minswap Batch"].firstMatch
+        for place in ["Browse", "On My iPhone", "On My iPad", "TxWorkshop"] where !document.exists {
+            let item = app.buttons[place].exists ? app.buttons[place] : app.staticTexts[place]
+            if item.exists { item.tap(); sleep(1) }
+        }
+        XCTAssertTrue(document.waitForExistence(timeout: 10), "Minswap Batch is not in the app's Documents.")
+        document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: -60)).tap()
+        XCTAssertTrue(app.staticTexts["In short"].waitForExistence(timeout: 20), "The document never opened.")
+        go(to: "Scripts & Datums", in: app)
+        let debug = app.buttons["Debug Script"].firstMatch
+        XCTAssertTrue(debug.waitForExistence(timeout: 10))
+        debug.tap()
+        XCTAssertTrue(app.staticTexts["debugStep"].firstMatch.waitForExistence(timeout: 30), "The debugger never opened.")
+
+        app.buttons["debugEditRedeemer"].firstMatch.tap()
+        let field = app.textFields.firstMatch.exists ? app.textFields.firstMatch : app.textViews.firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 10), "No redeemer field.")
+        // At the end of the text, so the deletes clear it.
+        field.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+        field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 400) + "d88080")
+        save("debugger-edit-sheet")
+        app.buttons["debugRunEdited"].firstMatch.tap()
+
+        let banner = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'edited redeemer'")).firstMatch
+        if !banner.waitForExistence(timeout: 30) {
+            save("debugger-edit-failed")
+            print("DEBUG PROBLEM:", app.staticTexts["debugProblem"].firstMatch.exists ? app.staticTexts["debugProblem"].firstMatch.label : "none")
+        }
+        XCTAssertTrue(banner.exists, "No what-if banner.")
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'The run fails'")).firstMatch.waitForExistence(timeout: 10), "The edited run did not fail.")
+        save("debugger-edited")
+        app.buttons["debugResetRedeemer"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["The run succeeds."].firstMatch.waitForExistence(timeout: 30), "Reset did not return to the transaction's redeemer.")
+        XCTAssertFalse(banner.exists)
+    }
+
+    /// Validate shows whether hardware wallets can sign the transaction (CIP-21).
+    @MainActor
+    func testCIP21Section() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["-providerOnboardingShown", "YES"]
+        app.launch()
+        let document = app.staticTexts["Minswap Batch"].firstMatch
+        for place in ["Browse", "On My iPhone", "On My iPad", "TxWorkshop"] where !document.exists {
+            let item = app.buttons[place].exists ? app.buttons[place] : app.staticTexts[place]
+            if item.exists { item.tap(); sleep(1) }
+        }
+        XCTAssertTrue(document.waitForExistence(timeout: 10), "Minswap Batch is not in the app's Documents.")
+        document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: -60)).tap()
+        XCTAssertTrue(app.staticTexts["In short"].waitForExistence(timeout: 20), "The document never opened.")
+        go(to: "Validate", in: app)
+        let mode = app.staticTexts["Signing mode"].firstMatch
+        XCTAssertTrue(mode.waitForExistence(timeout: 10), "No CIP-21 section.")
+        XCTAssertTrue(app.staticTexts["Plutus"].firstMatch.exists, "The batch should sign in Plutus mode.")
+        let verdict = app.staticTexts["cip21Compatible"].firstMatch.exists || app.buttons["cip21Rewrite"].firstMatch.exists
+            || app.images["xmark.octagon"].firstMatch.exists
+        XCTAssertTrue(verdict || app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'hardware'")).count > 0, "No CIP-21 verdict.")
+        save("cip21-section")
+    }
+
     @MainActor
     private func waitFor(_ element: XCUIElement, _ condition: (XCUIElement) -> Bool) -> Bool {
         for _ in 0..<20 {

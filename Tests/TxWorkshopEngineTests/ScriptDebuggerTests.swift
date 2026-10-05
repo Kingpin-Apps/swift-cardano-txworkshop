@@ -93,7 +93,11 @@ struct ScriptDebuggerTests {
             return
         }
         #expect(label == "Script context")
-        #expect((tree.children?.count ?? 0) > 0)
+        // The fixture's script is Plutus V2: its context reads by the ledger's field names.
+        #expect(tree.typeName == "ScriptContext")
+        #expect(tree.children?.map(\.label) == ["transaction", "purpose"])
+        #expect(tree.children?.first?.children?.map(\.label).prefix(4) == ["inputs", "reference_inputs", "outputs", "fee"])
+        #expect(tree.children?.last?.typeName == "Mint")
     }
 
     @Test("A closure reads back in full, with what it closes over")
@@ -120,6 +124,20 @@ struct ScriptDebuggerTests {
             for _ in 0..<100 { _ = await debugger.perform(.step) }
         }
         #expect(elapsed < .seconds(2), "100 steps took \(elapsed)")
+    }
+
+    @Test("A different redeemer runs as a what-if, and fails as phase two would")
+    func edited() async throws {
+        let bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let original = try await debugger(bytes)
+        #expect(!original.redeemerHex.isEmpty)
+        let edited = try await ScriptDebugger.open(
+            bytes, position: 0, snapshot: try TransactionValidationTests.snapshot(), network: .preprod, redeemer: "d88080"
+        )
+        // The same data, however it is written back.
+        #expect(try PlutusData.fromCBOR(data: TxDocumentCodec.bytes(fromHex: edited.redeemerHex)) == PlutusData.fromCBOR(data: TxDocumentCodec.bytes(fromHex: "d88080")))
+        #expect(edited.end.failure?.contains("unConstrData") == true)
+        #expect(original.end.failure == nil)
     }
 
     @Test("A failing run goes to its failure, and stops at a failure breakpoint")
@@ -154,5 +172,60 @@ struct BoundedTermPrinterTests {
         #expect(BoundedTermPrinter.text(term, limit: 200, multiline: true) == "(lam (lam\n  [ #2 #1]))")
         #expect(BoundedTermPrinter.text(term, limit: 200, multiline: false) == "(lam (lam [ #2 #1]))")
         #expect(BoundedTermPrinter.text(term, limit: 8, multiline: false) == "(lam (la …")
+    }
+}
+
+/// A Plutus V3 script: the Aiken fixture's `market.token`, applied and minted with.
+@Suite("Script debugger, Plutus V3")
+struct ScriptDebuggerV3Tests {
+    @Test("A V3 context reads by the ledger's field names, and the run succeeds")
+    func context() async throws {
+        let (blueprint, token) = try BlueprintParameterTests().token()
+        let applied = try blueprint.apply([.bytes("00112233445566778899aabbccddeeff00112233445566778899aabb"), .integer("7")], to: token)
+        let (snapshot, utxo, address) = try TransactionComposerTests.setup()
+        let recipe = BuildRecipe(
+            utxos: [try utxo.toCBORData().hex], outputs: [OutputDraft(address: address)], changeAddress: address,
+            mints: [MintDraft(
+                script: .plutus(version: 3, cborHex: applied.compiledCode),
+                assets: [AssetDraft(assetNameHex: "aa", quantity: 1)], redeemer: "9f01ff"
+            )]
+        )
+        let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        let debugger = try await ScriptDebugger.open(built.transaction, position: 0, snapshot: snapshot, network: .preprod)
+        #expect(debugger.end.failure == nil, "\(debugger.end.failure ?? "")")
+
+        var snapshotNow = await debugger.snapshot()
+        for _ in 0..<200 where !snapshotNow.variables.contains(where: { if case .data(_, "Script context") = $0.value { true } else { false } }) {
+            snapshotNow = await debugger.perform(.step)
+        }
+        let index = try #require(snapshotNow.variables.first { if case .data(_, "Script context") = $0.value { true } else { false } }?.index)
+        guard case .tree(let tree, _)? = await debugger.detail(.variable(index)) else {
+            Issue.record("No context tree")
+            return
+        }
+        #expect(tree.children?.map(\.label) == ["transaction", "redeemer", "info"])
+        #expect(tree.children?.first?.children?.count == 16)
+        #expect(tree.children?.last?.typeName == "Minting")
+    }
+
+    @Test("A redeemer a blueprint knows opens as its form")
+    func redeemerForm() async throws {
+        let stored = try BlueprintRecipeTests().stored()
+        let (blueprint, token) = try BlueprintParameterTests().token()
+        let values: [BlueprintValue] = [.bytes("00112233445566778899aabbccddeeff00112233445566778899aabb"), .integer("7")]
+        let applied = try blueprint.apply(values, to: token)
+        let (snapshot, utxo, address) = try TransactionComposerTests.setup()
+        let mint = MintDraft(
+            script: .plutus(version: 3, cborHex: applied.compiledCode), assets: [AssetDraft(assetNameHex: "aa", quantity: 1)],
+            redeemer: "9f01ff", scriptParameters: BlueprintParameters(blueprint: stored.id, validator: token.title, values: values)
+        )
+        let recipe = BuildRecipe(utxos: [try utxo.toCBORData().hex], outputs: [OutputDraft(address: address)], changeAddress: address, mints: [mint], blueprints: [stored])
+        let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        let debugger = try await ScriptDebugger.open(
+            built.transaction, position: 0, snapshot: snapshot, network: .preprod,
+            blueprints: [stored], applied: BlueprintCatalog.appliedScripts(in: recipe)
+        )
+        #expect(debugger.redeemerForm?.validator == "market.token.mint")
+        #expect(debugger.redeemerForm?.value == .list([.integer("1")]))
     }
 }

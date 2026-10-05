@@ -58,7 +58,8 @@ struct RedeemerBudgetRow: View {
                 }
                 Button(action: onDebug) {
                     Label {
-                        Text("Debug Script", bundle: #bundle)
+                        // A failing script opens at its failure.
+                        redeemer.passed ? Text("Debug Script", bundle: #bundle) : Text("Debug Failure", bundle: #bundle)
                     } icon: {
                         Image(systemName: "ladybug")
                     }

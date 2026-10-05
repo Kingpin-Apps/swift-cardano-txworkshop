@@ -144,6 +144,10 @@ public actor ScriptDebugger {
     public static let termLimit = 6_000
 
     public nonisolated let end: DebugRunEnd
+    /// The redeemer the script runs with, as CBOR hex: to edit and run again.
+    public nonisolated let redeemerHex: String
+    /// The redeemer read through its blueprint, when one knows the script.
+    public nonisolated let redeemerForm: BlueprintForm?
     private var session: CEKSession
     private let labels: Labels
 
@@ -178,19 +182,26 @@ public actor ScriptDebugger {
         }
     }
 
-    init(session: CEKSession, end: DebugRunEnd, labels: Labels) {
+    init(session: CEKSession, end: DebugRunEnd, labels: Labels, redeemerHex: String, redeemerForm: BlueprintForm?) {
         self.session = session
         self.end = end
         self.labels = labels
+        self.redeemerHex = redeemerHex
+        self.redeemerForm = redeemerForm
     }
 
     /// A session for the redeemer at `position` in `bytes`, at its first step.
     /// `blueprints` label the redeemer and datum when they know the script.
+    /// `redeemer` (CBOR hex) runs the script with a different redeemer, as a
+    /// what-if; the transaction itself is not changed.
     public static func open(
         _ bytes: Data, position: Int, snapshot: ChainContextSnapshot, network: CardanoNetwork?,
-        blueprints: [StoredBlueprint] = [], applied: [String: BlueprintParameters] = [:]
+        blueprints: [StoredBlueprint] = [], applied: [String: BlueprintParameters] = [:], redeemer override: String? = nil
     ) async throws -> ScriptDebugger {
-        let transaction = try TransactionValidation.decode(bytes)
+        var transaction = try TransactionValidation.decode(bytes)
+        if let override {
+            transaction = try WhatIf.apply(["redeemer-\(position)": override], to: transaction)
+        }
         guard let parameters = TransactionValidation.protocolParameters(snapshot) else { throw ValidationRunError.noProtocolParameters }
         let redeemers = PhaseTwo.redeemers(of: transaction)
         guard redeemers.indices.contains(position) else { throw ScriptTraceError.noSuchRedeemer(position) }
@@ -199,6 +210,10 @@ public actor ScriptDebugger {
             for: redeemers[position], transaction: transaction, resolvedInputs: TransactionValidation.utxos(snapshot)
         )
         let labels = await Self.labels(prepared, bytes: bytes, position: position, network: network, blueprints: blueprints, applied: applied)
+        let redeemerHex = (try? prepared.redeemer.data.toCBORData().hex) ?? ""
+        let redeemerForm = await Self.redeemerForm(
+            prepared.redeemer.data, bytes: bytes, position: position, network: network, blueprints: blueprints, applied: applied
+        )
         let budget: ExBudget = prepared.budgetMeasured ? .restricted : .unlimited
 
         return await DeepStack.run {
@@ -225,7 +240,8 @@ public actor ScriptDebugger {
                 builtins: builtins.sorted(), traces: traces
             )
             return ScriptDebugger(
-                session: CEKSession(prepared.applied, budget: budget, costModel: prepared.costModel), end: end, labels: labels
+                session: CEKSession(prepared.applied, budget: budget, costModel: prepared.costModel), end: end, labels: labels,
+                redeemerHex: redeemerHex, redeemerForm: redeemerForm
             )
         }
     }
@@ -372,6 +388,10 @@ public actor ScriptDebugger {
         case .frameAwaitArg(let function, _):
             return DebugFrame(id: id, title: "Apply: computing the argument", detail: "for " + summary(function))
         case .frameAwaitFunTerm(_, let argument, _):
+            // The script's own arguments are named.
+            if case .constant(.data(let data)) = argument, let known = labels.known(data) {
+                return DebugFrame(id: id, title: "Apply: computing the function", detail: "then the argument: " + known.label)
+            }
             return DebugFrame(id: id, title: "Apply: computing the function", detail: "then the argument " + oneLine(argument))
         case .frameAwaitFunValue(let argument, _):
             return DebugFrame(id: id, title: "Apply: computing the function", detail: "to apply to " + summary(argument))
@@ -412,6 +432,28 @@ public actor ScriptDebugger {
 
     // MARK: - Naming the script's arguments
 
+    /// The redeemer as a blueprint form, when a blueprint knows its script and
+    /// the data fits the redeemer's type.
+    static func redeemerForm(
+        _ data: PlutusData, bytes: Data, position: Int, network: CardanoNetwork?,
+        blueprints: [StoredBlueprint], applied: [String: BlueprintParameters]
+    ) async -> BlueprintForm? {
+        guard !blueprints.isEmpty, let inspection = try? await TransactionInspector().inspection(of: bytes, network: network),
+            let view = inspection.redeemers.first(where: { $0.view.position == position })?.view,
+            let scriptHash = inspection.redeemerScriptHash(view)
+        else { return nil }
+        let choices = BlueprintCatalog.choices(
+            blueprints, scriptHash: scriptHash, role: .redeemer, purpose: TransactionInspection.purpose(of: view.tag), applied: applied
+        )
+        for choice in choices {
+            guard let schema = choice.validator.redeemer?.schema,
+                let value = try? choice.blueprint.decode(data, as: schema, path: "redeemer")
+            else { continue }
+            return BlueprintForm(blueprint: choice.stored.id, validator: choice.validator.title, value: value)
+        }
+        return nil
+    }
+
     /// The data the script was applied to, named: the context last, the
     /// redeemer before it, a datum before that. The redeemer and datum are
     /// read through a blueprint when one knows the script.
@@ -427,7 +469,20 @@ public actor ScriptDebugger {
         }
         var labels = Labels()
         guard let context = arguments.last else { return labels }
-        labels.add(context, label: "Script context")
+        // A V2 or V3 context reads by field name when it fits the ledger's type.
+        var contextTree: DataNode?
+        let version: Int? = switch prepared.version {
+        case .v2: 2
+        case .v3: 3
+        default: nil
+        }
+        if let version, let schema = ScriptContextSchema.schema(version: version), let blueprint = ScriptContextSchema.blueprint,
+            (try? blueprint.decode(context, as: schema, path: "context")) != nil {
+            var tree = blueprint.dataNode(context, as: schema)
+            tree.validator = nil
+            contextTree = tree
+        }
+        labels.add(context, label: "Script context", tree: contextTree)
         let redeemer = arguments.count >= 2 ? arguments[arguments.count - 2] : nil
         let datum = arguments.count >= 3 ? arguments[arguments.count - 3] : nil
 

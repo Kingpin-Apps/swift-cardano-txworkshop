@@ -7,7 +7,8 @@ struct ValidationResultSections: View {
     let outcome: ValidationOutcome
     let onShow: (String) -> Void
     let onTrace: (Int) -> Void
-    let onDebug: (Int) -> Void
+    /// The redeemer's position, and whether to open at its failure.
+    let onDebug: (Int, Bool) -> Void
 
     var body: some View {
         Section {
@@ -44,7 +45,7 @@ struct ValidationResultSections: View {
         if !outcome.redeemers.isEmpty {
             Section {
                 ForEach(outcome.redeemers) { redeemer in
-                    RedeemerBudgetRow(redeemer: redeemer) { onTrace(redeemer.position) } onDebug: { onDebug(redeemer.position) }
+                    RedeemerBudgetRow(redeemer: redeemer) { onTrace(redeemer.position) } onDebug: { onDebug(redeemer.position, !redeemer.passed) }
                 }
             } header: {
                 Text("Script budgets", bundle: #bundle)

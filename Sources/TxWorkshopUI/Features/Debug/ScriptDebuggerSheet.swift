@@ -5,6 +5,8 @@ import TxWorkshopEngine
 /// Identifies the redeemer whose script to debug.
 struct DebugRequest: Identifiable {
     let position: Int
+    /// Open at the step the run fails at.
+    var atFailure = false
     var id: Int { position }
 }
 
@@ -26,6 +28,10 @@ struct ScriptDebuggerSheet: View {
     @State private var isScrubbing = false
     @State private var pane = DebugPane.term
     @State private var detail: DebugTarget?
+    /// A redeemer to run with instead of the transaction's: a what-if.
+    @State private var redeemerOverride: String?
+    @State private var isEditingRedeemer = false
+    @State private var blueprints: [StoredBlueprint] = []
 
     var body: some View {
         NavigationStack {
@@ -54,8 +60,28 @@ struct ScriptDebuggerSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button { dismiss() } label: { Text("Done", bundle: #bundle) }
                 }
+                ToolbarItem {
+                    Button {
+                        isEditingRedeemer = true
+                    } label: {
+                        Label {
+                            Text("Edit Redeemer", bundle: #bundle)
+                        } icon: {
+                            Image(systemName: "pencil")
+                        }
+                    }
+                    .disabled(debugger == nil)
+                    .accessibilityIdentifier("debugEditRedeemer")
+                }
             }
             .task { await open() }
+            .sheet(isPresented: $isEditingRedeemer) {
+                if let debugger {
+                    RedeemerEditSheet(hex: debugger.redeemerHex, form: debugger.redeemerForm, blueprints: blueprints) { hex in
+                        Task { await open(redeemer: hex) }
+                    }
+                }
+            }
             .sheet(item: $detail) { target in
                 if let debugger {
                     DebugDetailSheet(debugger: debugger, target: target)
@@ -71,6 +97,34 @@ struct ScriptDebuggerSheet: View {
 
     @ViewBuilder private func content(_ debugger: ScriptDebugger, _ snapshot: DebugSnapshot) -> some View {
         VStack(spacing: 0) {
+            // A rerun that could not start keeps the last session on screen.
+            if let problem {
+                TWErrorText(problem)
+                    .padding(.horizontal, TWSpacing.m)
+                    .padding(.top, TWSpacing.s)
+                    .accessibilityIdentifier("debugProblem")
+            }
+            if redeemerOverride != nil {
+                HStack {
+                    Label {
+                        Text("Running with an edited redeemer. The transaction is unchanged.", bundle: #bundle)
+                    } icon: {
+                        Image(systemName: "pencil.circle")
+                    }
+                    .labelStyle(.status(TWColor.warning))
+                    .font(.caption)
+                    Spacer()
+                    Button {
+                        Task { await open(redeemer: nil) }
+                    } label: {
+                        Text("Reset", bundle: #bundle)
+                    }
+                    .buttonStyle(.borderless)
+                    .accessibilityIdentifier("debugResetRedeemer")
+                }
+                .padding(.horizontal, TWSpacing.m)
+                .padding(.top, TWSpacing.s)
+            }
             DebugControls(
                 end: debugger.end, snapshot: snapshot, isBusy: isBusy, breakpoints: $breakpoints,
                 scrub: $scrub, isScrubbing: $isScrubbing, perform: perform
@@ -117,22 +171,29 @@ struct ScriptDebuggerSheet: View {
 
     // MARK: - Running
 
-    private func open() async {
-        guard debugger == nil else { return }
+    /// Opens the session, with `redeemer` (CBOR hex) in place of the
+    /// transaction's when given.
+    private func open(redeemer: String? = nil) async {
+        if redeemer == nil, redeemerOverride == nil, debugger != nil { return }
         guard let bytes = document.content.transaction, let chain = document.content.chainContext else {
             problem = String(localized: "Fetch or enter chain data first: the script needs the inputs it spends and the protocol parameters.", bundle: #bundle)
             return
         }
         let kept = document.content.recipe?.blueprints ?? []
-        let blueprints = kept + library.blueprints.filter { stored in !kept.contains { $0.id == stored.id } }
+        let every = kept + library.blueprints.filter { stored in !kept.contains { $0.id == stored.id } }
+        blueprints = every
         let applied = document.content.recipe.map(BlueprintCatalog.appliedScripts(in:)) ?? [:]
         do {
             let opened = try await ScriptDebugger.open(
                 bytes, position: request.position, snapshot: chain, network: document.content.network,
-                blueprints: blueprints, applied: applied
+                blueprints: every, applied: applied, redeemer: redeemer
             )
-            snapshot = await opened.snapshot()
+            let first = request.atFailure && opened.end.failure != nil ? await opened.perform(.toFailure) : await opened.snapshot()
+            snapshot = first
+            scrub = Double(first.step)
             debugger = opened
+            redeemerOverride = redeemer
+            problem = nil
         } catch {
             problem = String(describing: error)
         }
