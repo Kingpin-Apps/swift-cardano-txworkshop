@@ -30,9 +30,13 @@
         <li><a href="#network">The network</a></li>
         <li><a href="#providers">Chain providers</a></li>
         <li><a href="#inspecting">Inspecting</a></li>
+        <li><a href="#chain-data">Chain data</a></li>
         <li><a href="#explorers">Block explorers</a></li>
         <li><a href="#validating">Validating</a></li>
+        <li><a href="#debugger">The script debugger</a></li>
+        <li><a href="#hardware-check">Hardware wallet check (CIP-21)</a></li>
         <li><a href="#building">Building</a></li>
+        <li><a href="#blueprints">Blueprints (CIP-57)</a></li>
         <li><a href="#signing">Signing</a></li>
         <li><a href="#submitting">Submitting</a></li>
       </ul>
@@ -64,10 +68,14 @@
           <tr><td>cardano-cli (Mac download)</td><td>The socket path; the app finds cardano-cli in Homebrew, <code>/usr/local/bin</code>, <code>~/.local/bin</code> or <code>~/cardano</code>, or you give its path</td></tr>
         </tbody>
       </table>
-      <p>API keys go in the Keychain. The node needs to be running and in sync.</p>
+      <p>The first time there is no provider, <strong>Connect to Cardano</strong> offers Koios in one tap, and says how to start with the others. API keys go in the Keychain. The node needs to be running and in sync.</p>
+      <p><strong>Sync with iCloud</strong>, in Settings, keeps your providers, their API keys and your block explorer the same on your iPhone, iPad, Mac and Apple Vision Pro. It is off until you turn it on. API keys then go in iCloud Keychain, end-to-end encrypted; signing keys never leave the device. A local node or cardano-cli stays on its Mac, and the Mac download has no iCloud.</p>
 
       <h2 id="inspecting">Inspecting</h2>
       <p>The sidebar splits the transaction into Overview, Inputs &amp; Outputs, Certificates &amp; Governance, Scripts &amp; Datums, Metadata, CBOR and CDDL. <strong>Look Up Inputs &amp; Names</strong> on Inputs &amp; Outputs fetches what each input spends, and saves it in the document so it works offline later.</p>
+
+      <h2 id="chain-data">Chain data</h2>
+      <p>Validating, debugging and building need the protocol parameters and the UTxOs a transaction spends. <strong>Chain Data</strong>, at the top of the work sections, fetches them from the document's provider: the tip slot, epoch, era and protocol version; the fees, size and execution limits, prices, deposits and cost models; and whether each input's UTxO is there. Without a transaction it fetches the chain alone. <strong>Enter by Hand…</strong> takes the parameters and UTxOs as JSON or CBOR, for a network no provider reaches. What is fetched is saved in the document, so the work stays repeatable offline. When the debugger or a trace can't run for want of it, <strong>Fetch Chain Data</strong> is offered there, and they try again.</p>
 
       <h2 id="explorers">Block explorers</h2>
       <p>The small arrow next to a transaction id, address, stake account, pool, DRep, governance action or asset opens it in your block explorer. Choose it in <strong>Settings</strong>: Cardanoscan, Cexplorer, AdaStat, DRepTalk, eUTxO, Pool PM or PoolTool. Where yours has no page for something, or no site for the network, another explorer that has one is used, and the link says which.</p>
@@ -75,8 +83,39 @@
       <h2 id="validating">Validating</h2>
       <p><strong>Validate</strong> runs the ledger's Phase 1 rules and evaluates Plutus scripts, offline, from the document's chain data. You get each problem with its cause, the budget each redeemer used, a step-by-step script trace, and what-if runs with changed data.</p>
 
+      <h2 id="debugger">The script debugger</h2>
+      <p><strong>Debug Script</strong>, on a redeemer in Validate or in Scripts &amp; Datums, steps through that script's run with its real datum, redeemer and script context. <strong>Debug Failure</strong> opens at the step a failing run stops. You see the term being computed or the value being returned, the variables in scope, the work still on the stack, the budget used so far, and the traces.</p>
+      <ul>
+        <li><strong>Step</strong>, <strong>Step Back</strong>, <strong>Step Over</strong> and <strong>Step Out</strong>, also as ⌘→, ⌘←, ⌘↓ and ⌘↑ with a keyboard.</li>
+        <li><strong>Continue</strong> runs to the next breakpoint: on failure, on a builtin the run calls, or on a trace message it emits.</li>
+        <li>The <strong>timeline</strong> goes to any step.</li>
+        <li>Open a variable to see it in full. The script context, the redeemer and the datum are named, and read by field when a blueprint knows them.</li>
+        <li><strong>Edit Redeemer</strong> runs the script again with a different redeemer, as a what-if. The transaction is not changed.</li>
+      </ul>
+
+      <h2 id="hardware-check">Hardware wallet check (CIP-21)</h2>
+      <p>Ledger, Trezor and Keystone sign only transactions written the way <a href="https://cips.cardano.org/cip/CIP-0021">CIP-21</a> sets out. <strong>Hardware Wallets (CIP-21)</strong>, in Validate, says which signing mode the transaction needs and what stands in the way: encoding that isn't canonical, empty lists, mixed set tags, fields and certificates hardware wallets refuse, and a pool registration that isn't alone. <strong>Make CIP-21 Compatible…</strong> rewrites the body canonically without changing what it does. Datums, scripts and metadata keep their bytes, so their hashes still hold. A new body is a new transaction id, so its signatures are dropped and it must be signed again.</p>
+
       <h2 id="building">Building</h2>
       <p><strong>Build</strong> starts from source addresses or UTxOs, then outputs, mints, script inputs, certificates, withdrawals, votes and proposals. Every field takes a value in any form: an address as bech32 or hex, or from an <code>.addr</code> or key file; a pool as <code>pool1…</code>, hex, a cold key or <code>pool.json</code>. The line under each field says what it read. Fees, collateral and script budgets are worked out for you.</p>
+      <p>Certificates cover the whole Conway era:</p>
+      <ul>
+        <li>stake registration, deregistration and delegation, to a pool, a DRep or both, alone or with registration;</li>
+        <li>pool registration, update and retirement;</li>
+        <li>DRep registration, update and retirement;</li>
+        <li>committee hot key authorization and resignation.</li>
+      </ul>
+      <p>A pool registration fills in from <strong>Import pool.json…</strong>, or from the pool's registration on chain with <strong>Fetch Registration</strong>, ready to edit and register again.</p>
+      <p><strong>Build</strong> checks the form before it builds and names each problem by place and field.</p>
+
+      <h2 id="blueprints">Blueprints (CIP-57)</h2>
+      <p>A blueprint (<code>plutus.json</code>, from Aiken and other compilers) describes a contract's validators and their datum, redeemer and parameter types. With one, datums and redeemers are typed forms rather than raw CBOR.</p>
+      <ul>
+        <li><strong>Settings › Blueprints › Import plutus.json…</strong> keeps a blueprint for every document. A document keeps a copy of each one it uses, so it opens the same anywhere.</li>
+        <li>In Build, <strong>From Blueprint</strong> on a script input or a mint chooses a validator. When the validator takes parameters, fill them in and the script and its hash are made for you.</li>
+        <li>On an output's datum, or a redeemer, <strong>Fill In with a Blueprint</strong> gives its form; <strong>Enter as Raw Data</strong> goes back to CBOR hex or JSON.</li>
+        <li>In Scripts &amp; Datums, and in the debugger, datums and redeemers a blueprint knows show by their type and field names.</li>
+      </ul>
 
       <h2 id="signing">Signing</h2>
       <ul>

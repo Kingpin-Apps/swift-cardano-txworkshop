@@ -49,11 +49,19 @@
         </div>
         <div class="card">
           <h3>Validate</h3>
-          <p>The ledger's Phase 1 rules and Plutus script evaluation, offline, with budgets per redeemer, a script trace, and what-if runs.</p>
+          <p>The ledger's Phase 1 rules and Plutus script evaluation, offline, with budgets per redeemer, a script trace, what-if runs, and a check that hardware wallets can sign it (CIP-21).</p>
         </div>
         <div class="card">
           <h3>Build</h3>
-          <p>Outputs, mints, script inputs, certificates, withdrawals, votes and proposals. Addresses, pools and keys in any form, typed or from files.</p>
+          <p>Outputs, mints, script inputs, every Conway certificate, withdrawals, votes and proposals. Addresses, pools and keys in any form, typed or from files; datums and redeemers as typed forms from a blueprint.</p>
+        </div>
+        <div class="card">
+          <h3>Debug scripts</h3>
+          <p>Step through a Plutus script's run, forwards and back, with its variables, stack, budget and traces, breakpoints, and a redeemer to try instead.</p>
+        </div>
+        <div class="card">
+          <h3>Chain data</h3>
+          <p>The tip, epoch, era and protocol parameters, and the UTxOs a transaction spends, fetched once and kept in the document for offline work.</p>
         </div>
         <div class="card">
           <h3>Sign</h3>
@@ -66,7 +74,7 @@
       </div>
 
       <h2>Yours, on your device</h2>
-      <p>No account and no analytics. Documents stay where you save them; API keys and signing keys stay in the Keychain and are never written to a document. See the <a href="privacy/">privacy policy</a>.</p>
+      <p>No account and no analytics. Documents stay where you save them; API keys and signing keys stay in the Keychain and are never written to a document. Turn on Sync with iCloud to share providers and API keys between your devices, through iCloud Keychain; signing keys never leave the device. See the <a href="privacy/">privacy policy</a>.</p>
     </div>
   </main>
   <footer class="site">

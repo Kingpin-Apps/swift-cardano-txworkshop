@@ -1,6 +1,6 @@
 # Cardano TxWorkshop
 
-A native app for Cardano transactions: inspect, validate, build, sign, submit and track them.
+A native app for Cardano transactions: inspect, validate, debug, build, sign, submit and track them.
 Runs on macOS, iPadOS, iOS and visionOS. Open source under
 Apache-2.0.
 
@@ -54,8 +54,9 @@ generate their code with the OpenAPI build plugin. In Xcode, trust the plugin on
 ## Providers and secrets
 
 Chain data comes from Blockfrost, Koios, Ogmios (optionally with Kupo), Yaci DevKit, or nothing
-at all (offline). The Developer ID build adds a local node. API keys are kept in the Keychain,
-on the device only, and never in documents or settings.
+at all (offline). The Developer ID build adds a local node and cardano-cli. API keys are kept in
+the Keychain, never in documents or settings, and on the device only unless Sync with iCloud is
+on, when they go in iCloud Keychain. Signing keys never leave the device.
 
 ## License
 
