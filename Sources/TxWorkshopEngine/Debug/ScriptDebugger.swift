@@ -37,6 +37,10 @@ public struct DebugRunEnd: Sendable, Equatable {
     /// The machine's error when the run fails.
     public let failure: String?
     public let consumed: RedeemerOutcome.Budget
+    /// The builtins the run calls, by name, for breakpoints.
+    public let builtins: [String]
+    /// The trace messages the run emits, in order, without repeats.
+    public let traces: [String]
 }
 
 /// A value as a debugger shows it.
@@ -200,13 +204,25 @@ public actor ScriptDebugger {
         return await DeepStack.run {
             // Run once to the end to learn how the run ends.
             var probe = CEKSession(prepared.applied, budget: budget, costModel: prepared.costModel)
-            probe.run(limit: ScriptDebugger.stepLimit) { _ in false }
+            var builtins: Set<String> = []
+            var traces: [String] = []
+            probe.run(limit: ScriptDebugger.stepLimit) { session in
+                for event in session.lastEvents {
+                    switch event {
+                    case .builtin(let function, _): builtins.insert("\(function)")
+                    case .log(let message) where !traces.contains(message): traces.append(message)
+                    default: break
+                    }
+                }
+                return false
+            }
             var failure: String?
             if case .failed(let error) = probe.phase { failure = "\(error)" }
             let consumed = probe.consumedBudget
             let end = DebugRunEnd(
                 steps: probe.stepIndex, failure: failure,
-                consumed: RedeemerOutcome.Budget(memory: consumed.mem, steps: consumed.cpu)
+                consumed: RedeemerOutcome.Budget(memory: consumed.mem, steps: consumed.cpu),
+                builtins: builtins.sorted(), traces: traces
             )
             return ScriptDebugger(
                 session: CEKSession(prepared.applied, budget: budget, costModel: prepared.costModel), end: end, labels: labels

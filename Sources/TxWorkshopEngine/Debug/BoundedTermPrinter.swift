@@ -43,56 +43,77 @@ struct BoundedTermPrinter {
         }
     }
 
-    private mutating func open(_ text: String, indent: Int) {
-        if multiline, written > 0 { emit("\n" + String(repeating: "  ", count: indent)) } else if written > 0 { emit(" ") }
+    /// How deep indentation goes; deeper code is printed at this depth.
+    static let maxIndent = 10
+
+    private mutating func open(_ text: String, indent: Int, inline: Bool = false) {
+        if multiline, written > 0, !inline {
+            emit("\n" + String(repeating: "  ", count: min(indent, Self.maxIndent)))
+        } else if written > 0 {
+            emit(" ")
+        }
         emit(text)
     }
 
-    private mutating func print(_ term: Term<NamedDeBruijn>, indent: Int) {
+    private mutating func print(_ term: Term<NamedDeBruijn>, indent: Int, inline: Bool = false) {
         guard !full else {
             truncated = true
             return
         }
         switch term {
         case .var(let name):
-            open(Self.name(name), indent: indent)
-        case .lambda(let name, let body):
-            open("(lam \(Self.name(name))", indent: indent)
-            print(body, indent: indent + 1)
+            open(Self.name(name), indent: indent, inline: inline)
+        case .lambda(_, let body):
+            // A chain of lambdas stays on one line: (lam (lam (lam …
+            open("(lam", indent: indent, inline: inline)
+            if case .lambda = body { print(body, indent: indent, inline: true) } else { print(body, indent: indent + 1) }
             emit(")")
         case .apply(let function, let argument):
-            open("[", indent: indent)
-            print(function, indent: indent + 1)
-            print(argument, indent: indent + 1)
+            // The function follows the bracket; a short argument stays beside it.
+            open("[", indent: indent, inline: inline)
+            print(function, indent: indent + 1, inline: true)
+            print(argument, indent: indent + 1, inline: Self.isAtom(argument))
             emit("]")
         case .delay(let body):
-            open("(delay", indent: indent)
-            print(body, indent: indent + 1)
+            open("(delay", indent: indent, inline: inline)
+            print(body, indent: indent + 1, inline: true)
             emit(")")
         case .force(let body):
-            open("(force", indent: indent)
-            print(body, indent: indent + 1)
+            open("(force", indent: indent, inline: inline)
+            print(body, indent: indent + 1, inline: true)
             emit(")")
         case .constant(let constant):
-            open("(con \(Self.constant(constant)))", indent: indent)
+            open("(con \(Self.constant(constant)))", indent: indent, inline: inline)
         case .builtin(let function):
-            open("(builtin \(function))", indent: indent)
+            open("(builtin \(function))", indent: indent, inline: inline)
         case .error:
-            open("(error)", indent: indent)
+            open("(error)", indent: indent, inline: inline)
         case .constr(let tag, let fields):
-            open("(constr \(tag)", indent: indent)
-            for field in fields where !full { print(field, indent: indent + 1) }
+            open("(constr \(tag)", indent: indent, inline: inline)
+            for field in fields where !full { print(field, indent: indent + 1, inline: Self.isAtom(field)) }
             emit(")")
         case .case(let scrutinee, let branches):
-            open("(case", indent: indent)
+            open("(case", indent: indent, inline: inline)
             print(scrutinee, indent: indent + 1)
             for branch in branches where !full { print(branch, indent: indent + 1) }
             emit(")")
         }
     }
 
+    /// A term short enough to print beside what holds it.
+    static func isAtom(_ term: Term<NamedDeBruijn>) -> Bool {
+        switch term {
+        case .var, .builtin, .error: true
+        case .constant(.data), .constant(.list), .constant(.pair): false
+        case .constant: true
+        default: false
+        }
+    }
+
+    /// A variable by its De Bruijn index, as the debugger's variables list
+    /// numbers them: `#1` is the nearest binding.
     static func name(_ name: NamedDeBruijn) -> String {
-        name.text.isEmpty ? "i\(name.index.index)" : "\(name.text)_\(name.index.index)"
+        "#\(name.index.index)"
     }
 
     /// A constant, with data shown by its shape rather than in full.

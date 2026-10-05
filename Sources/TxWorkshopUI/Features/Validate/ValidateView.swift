@@ -14,6 +14,7 @@ struct ValidateView: View {
     @State private var requirements: TransactionValidation.Requirements?
     @State private var isAskingWhatIf = false
     @State private var tracing: TraceRequest?
+    @State private var debugging: DebugRequest?
     @State private var report = ReportFile()
     @State private var isExporting = false
     @State private var isPickingFolder = false
@@ -78,6 +79,8 @@ struct ValidateView: View {
                         session.show(fieldPath: fieldPath)
                     } onTrace: { position in
                         tracing = TraceRequest(position: position)
+                    } onDebug: { position in
+                        debugging = DebugRequest(position: position)
                     }
                     if !outcome.redeemers.isEmpty {
                         Section {
@@ -101,6 +104,7 @@ struct ValidateView: View {
         .sheet(item: $tracing) { request in
             ScriptTraceSheet(document: document, request: request)
         }
+        .scriptDebugger(item: $debugging, document: document)
         .toolbar {
             if let outcome {
                 ToolbarItem {

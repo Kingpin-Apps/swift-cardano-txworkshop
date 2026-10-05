@@ -2,6 +2,7 @@ import Foundation
 import SwiftCardanoCore
 import Testing
 import TxWorkshopCore
+import SwiftCardanoUPLC
 
 @testable import TxWorkshopEngine
 
@@ -22,6 +23,7 @@ struct ScriptDebuggerTests {
         #expect(debugger.end.failure == nil)
         #expect(debugger.end.consumed == trace.consumed)
         #expect(debugger.end.steps > 1_000)
+        #expect(Set(debugger.end.builtins) == Set(trace.builtins.map(\.name)))
 
         let start = await debugger.snapshot()
         #expect(start.step == 0)
@@ -137,5 +139,20 @@ struct ScriptDebuggerTests {
         let stopped = await debugger.perform(.resume([.failure]))
         #expect(stopped.stoppedAt == .failure)
         #expect(stopped.phase == .failed(failure))
+    }
+}
+
+@Suite("Bounded term printer")
+struct BoundedTermPrinterTests {
+    @Test("Lambda chains stay on a line, variables read as #n, and long terms stop at the limit")
+    func printing() throws {
+        let body = Term<NamedDeBruijn>.apply(
+            function: .var(NamedDeBruijn(text: "f", index: DeBruijn(2))), argument: .var(NamedDeBruijn(text: "x", index: DeBruijn(1)))
+        )
+        let term = Term<NamedDeBruijn>.lambda(parameterName: NamedDeBruijn(text: "f", index: DeBruijn(0)),
+            body: .lambda(parameterName: NamedDeBruijn(text: "x", index: DeBruijn(0)), body: body))
+        #expect(BoundedTermPrinter.text(term, limit: 200, multiline: true) == "(lam (lam\n  [ #2 #1]))")
+        #expect(BoundedTermPrinter.text(term, limit: 200, multiline: false) == "(lam (lam [ #2 #1]))")
+        #expect(BoundedTermPrinter.text(term, limit: 8, multiline: false) == "(lam (la …")
     }
 }

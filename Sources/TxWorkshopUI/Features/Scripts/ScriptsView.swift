@@ -5,7 +5,9 @@ import TxWorkshopEngine
 /// The scripts the transaction runs, the redeemers it gives them, and the
 /// datums it supplies.
 struct ScriptsView: View {
+    let document: TxWorkshopDocument
     let inspection: LoadState<TransactionInspection>
+    @State private var debugging: DebugRequest?
 
     var body: some View {
         InspectionContainer(inspection: inspection, title: LocalizedStringResource("Scripts & Datums", bundle: #bundle)) { inspection in
@@ -24,7 +26,9 @@ struct ScriptsView: View {
                     if !inspection.redeemers.isEmpty {
                         Section {
                             ForEach(inspection.redeemers) { redeemer in
-                                RedeemerRow(redeemer: redeemer)
+                                RedeemerRow(redeemer: redeemer, onDebug: document.content.chainContext == nil ? nil : {
+                                    debugging = DebugRequest(position: redeemer.view.position)
+                                })
                             }
                         } header: {
                             Text("Redeemers", bundle: #bundle)
@@ -55,6 +59,7 @@ struct ScriptsView: View {
                     }
                 }
                 .formStyle(.grouped)
+                .scriptDebugger(item: $debugging, document: document)
             }
         }
     }

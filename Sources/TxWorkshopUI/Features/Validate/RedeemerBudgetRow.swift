@@ -7,6 +7,7 @@ import TxWorkshopEngine
 struct RedeemerBudgetRow: View {
     let redeemer: RedeemerOutcome
     let onTrace: () -> Void
+    let onDebug: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: TWSpacing.s) {
@@ -47,12 +48,22 @@ struct RedeemerBudgetRow: View {
                     .font(TWFont.bytesSmall)
                     .textSelection(.enabled)
             }
-            Button(action: onTrace) {
-                Label {
-                    Text("Trace Timeline", bundle: #bundle)
-                } icon: {
-                    Image(systemName: "chart.xyaxis.line")
+            HStack(spacing: TWSpacing.l) {
+                Button(action: onTrace) {
+                    Label {
+                        Text("Trace Timeline", bundle: #bundle)
+                    } icon: {
+                        Image(systemName: "chart.xyaxis.line")
+                    }
                 }
+                Button(action: onDebug) {
+                    Label {
+                        Text("Debug Script", bundle: #bundle)
+                    } icon: {
+                        Image(systemName: "ladybug")
+                    }
+                }
+                .accessibilityIdentifier("debugScript-\(redeemer.position)")
             }
             .buttonStyle(.borderless)
             if !redeemer.logs.isEmpty {

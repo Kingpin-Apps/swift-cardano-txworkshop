@@ -32,7 +32,7 @@ struct SectionDetail: View {
         case .body:
             BodyView(inspection: inspection)
         case .scripts:
-            ScriptsView(inspection: inspection)
+            ScriptsView(document: document, inspection: inspection)
         case .metadata:
             MetadataView(inspection: inspection)
         case .sign:
