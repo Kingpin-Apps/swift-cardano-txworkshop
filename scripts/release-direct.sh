@@ -6,6 +6,8 @@
 #
 # Needs, once:
 #   - DEVELOPMENT_TEAM set in project.yml, and a Developer ID Application certificate
+#   - the "Cardano TxWorkshop Developer ID" provisioning profile, for iCloud:
+#     `fastlane direct_profile` makes and installs it
 #   - a notarytool keychain profile: the team's "scm-notarytool" (or NOTARY_PROFILE),
 #     or an App Store Connect API key in NOTARY_KEY_PATH, NOTARY_KEY_ID and NOTARY_ISSUER_ID
 #   - the Sparkle EdDSA private key in the login Keychain (Sparkle's generate_keys),
@@ -68,6 +70,10 @@ cat > "$OUT/ExportOptions.plist" <<EOF
     <key>teamID</key><string>$TEAM</string>
     <key>signingStyle</key><string>manual</string>
     <key>signingCertificate</key><string>Developer ID Application</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.kingpinapps.cardano-txworkshop</key><string>Cardano TxWorkshop Developer ID</string>
+    </dict>
 </dict>
 </plist>
 EOF
@@ -83,7 +89,13 @@ create-dmg --volname "Cardano TxWorkshop $VERSION" --app-drop-link 480 170 \
     --window-size 640 360 --icon "$(basename "$APP")" 160 170 "$DMG" "$APP"
 
 # Gatekeeper checks the disk image's own signature as well as the app's.
-codesign --force --sign "Developer ID Application" --timestamp "$DMG"
+# Signed with the certificate that signed the app: the name alone is ambiguous
+# when the keychain holds more than one Developer ID certificate.
+codesign -d --extract-certificates="$OUT/app-cert" "$APP" 2>/dev/null
+IDENTITY=$(openssl x509 -inform DER -in "$OUT/app-cert0" -noout -fingerprint -sha1 | sed 's/.*=//; s/://g')
+rm -f "$OUT"/app-cert*
+[[ -n "$IDENTITY" ]] || { echo "Could not read the app's signing certificate" >&2; exit 1; }
+codesign --force --sign "$IDENTITY" --timestamp "$DMG"
 
 echo "▶ Notarising"
 if [[ -n "${NOTARY_KEY_PATH:-}" ]]; then

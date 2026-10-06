@@ -55,17 +55,55 @@ public struct KeychainSecretStore: SecretStore {
     }
 
     public func secret(for account: String) throws -> String? {
-        var result: AnyObject?
-        let status = withKeychain { dataProtection in
-            var query = query(account, dataProtection: dataProtection)
-            query[kSecReturnData as String] = true
-            query[kSecMatchLimit as String] = kSecMatchLimitOne
-            return SecItemCopyMatching(query as CFDictionary, &result)
+        switch lookUp({ dataProtection in copy(account, dataProtection: dataProtection) }) {
+        case .found(let secret): return secret
+        case .missing:
+            #if os(macOS)
+            return try moveFromLoginKeychain(account)
+            #else
+            return nil
+            #endif
+        case .failed(let error): throw error
         }
-        if status == errSecItemNotFound { return nil }
-        guard status == errSecSuccess, let data = result as? Data else { throw SecretStoreError(status: status) }
-        return String(data: data, encoding: .utf8)
     }
+
+    private enum Lookup {
+        case found(String?)
+        case missing
+        case failed(SecretStoreError)
+    }
+
+    /// `withKeychain` for a lookup.
+    private func lookUp(_ operation: (Bool) -> Lookup) -> Lookup {
+        let lookup = operation(true)
+        #if os(macOS)
+        if case .failed(let error) = lookup, error.status == errSecMissingEntitlement { return operation(false) }
+        #endif
+        return lookup
+    }
+
+    private func copy(_ account: String, dataProtection: Bool) -> Lookup {
+        var result: AnyObject?
+        var query = query(account, dataProtection: dataProtection)
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        if status == errSecItemNotFound { return .missing }
+        guard status == errSecSuccess, let data = result as? Data else { return .failed(SecretStoreError(status: status)) }
+        return .found(String(data: data, encoding: .utf8))
+    }
+
+    #if os(macOS)
+    /// A secret an earlier Mac download saved in the login keychain, when it
+    /// was signed without a provisioning profile and so could not use the
+    /// data-protection keychain. Moved there once, so it is not lost.
+    private func moveFromLoginKeychain(_ account: String) throws -> String? {
+        guard case .found(let legacy?) = copy(account, dataProtection: false) else { return nil }
+        try setSecret(legacy, for: account)
+        SecItemDelete(query(account, dataProtection: false) as CFDictionary)
+        return legacy
+    }
+    #endif
 
     public func setSecret(_ secret: String, for account: String) throws {
         let data = Data(secret.utf8)
@@ -95,6 +133,10 @@ public struct KeychainSecretStore: SecretStore {
             SecItemDelete(query(account, dataProtection: dataProtection) as CFDictionary)
         }
         guard status == errSecSuccess || status == errSecItemNotFound else { throw SecretStoreError(status: status) }
+        #if os(macOS)
+        // An unmoved copy in the login keychain would otherwise come back.
+        SecItemDelete(query(account, dataProtection: false) as CFDictionary)
+        #endif
     }
 }
 

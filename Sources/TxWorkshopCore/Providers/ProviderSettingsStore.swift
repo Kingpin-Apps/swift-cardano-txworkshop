@@ -55,8 +55,8 @@ public final class ProviderSettingsStore {
     /// App Sandbox rules out.
     public let directDistribution: Bool
 
-    /// Whether this build can sync through iCloud: the App Store build can;
-    /// the Developer ID build has no iCloud.
+    /// Whether this build can sync through iCloud: one signed for it, as the
+    /// App Store build and the released Developer ID build are.
     public let canSyncWithICloud: Bool
     /// Whether providers, their API keys and the explorer sync through iCloud,
     /// as the person chose. See ``setSyncsWithICloud(_:)``.
@@ -92,12 +92,12 @@ public final class ProviderSettingsStore {
         load()
     }
 
-    private init(local: UserDefaultsProviderSettingsPersistence, explorerKey: String, syncs: Bool) {
+    private init(local: UserDefaultsProviderSettingsPersistence, explorerKey: String, syncs: Bool, directDistribution: Bool) {
         self.local = local
         self.explorerKey = explorerKey
         cloud = nil
         mirror = nil
-        directDistribution = false
+        self.directDistribution = directDistribution
         canSyncWithICloud = true
         syncsWithICloud = syncs
         persistence = local
@@ -106,14 +106,17 @@ public final class ProviderSettingsStore {
         load()
     }
 
-    /// The App Store build's settings: on this device, or, once the person
-    /// turns sync on and is signed in to iCloud, synced through iCloud with
-    /// API keys in iCloud Keychain and the chosen explorer (`explorerKey`)
-    /// kept the same everywhere.
-    public static func appStore(explorerKey: String) -> ProviderSettingsStore {
+    /// Settings for a build signed for iCloud: on this device, or, once the
+    /// person turns sync on and is signed in to iCloud, synced through iCloud
+    /// with API keys in iCloud Keychain and the chosen explorer (`explorerKey`)
+    /// kept the same everywhere. The App Store build and the Developer ID
+    /// build share one bundle ID, so they sync with each other too.
+    public static func syncable(explorerKey: String, directDistribution: Bool = false) -> ProviderSettingsStore {
         // Off until the person turns it on: not everyone uses iCloud.
         let syncs = UserDefaults.standard.bool(forKey: syncPreferenceKey)
-        let store = ProviderSettingsStore(local: UserDefaultsProviderSettingsPersistence(), explorerKey: explorerKey, syncs: syncs)
+        let store = ProviderSettingsStore(
+            local: UserDefaultsProviderSettingsPersistence(), explorerKey: explorerKey, syncs: syncs, directDistribution: directDistribution
+        )
         if syncs, store.iCloudAvailable, let cloud = store.cloudStore() {
             store.persistence = cloud
             store.load()

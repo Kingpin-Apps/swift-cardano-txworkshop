@@ -62,6 +62,7 @@
 		BF740F9F6123AA1264F57700 /* AppIconVision.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIconVision.xcassets; sourceTree = "<group>"; };
 		C0B4EA605672FEF0BC879BD4 /* swift-cardano-txworkshop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "swift-cardano-txworkshop"; path = .; sourceTree = SOURCE_ROOT; };
 		C5D7F86C6DDD78E4458DD86B /* TxWorkshop-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "TxWorkshop-macOS.entitlements"; sourceTree = "<group>"; };
+		DBA4DAE82438ACE4023C1E01 /* TxWorkshopDirect-Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "TxWorkshopDirect-Release.entitlements"; sourceTree = "<group>"; };
 		EDE8754AEDE9C228097C3AFE /* Cardano TxWorkshop Direct.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Cardano TxWorkshop Direct.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -119,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				5901409EE1D9EE868F5A0386 /* Info.plist */,
+				DBA4DAE82438ACE4023C1E01 /* TxWorkshopDirect-Release.entitlements */,
 				A680CCB6C7AF1211ED7B0255 /* TxWorkshopDirect.entitlements */,
 				36EFEB6F9E8529B48402BA71 /* TxWorkshopDirectApp.swift */,
 			);
@@ -408,7 +410,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = AppDirect/TxWorkshopDirect.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "AppDirect/TxWorkshopDirect-Release.entitlements";
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -424,7 +426,7 @@
 				OTHER_CODE_SIGN_FLAGS = "--timestamp";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kingpinapps.cardano-txworkshop";
 				PRODUCT_NAME = "Cardano TxWorkshop";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Cardano TxWorkshop Developer ID";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DIRECT_DISTRIBUTION";
 			};

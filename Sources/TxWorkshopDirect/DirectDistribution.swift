@@ -1,4 +1,5 @@
 import Foundation
+import Security
 import TxWorkshopCore
 
 /// What only the Developer ID build can do: reach a local cardano-node over
@@ -16,4 +17,12 @@ public enum DirectDistribution {
         "~/.cardano/node.socket",
         "/opt/cardano/ipc/node.socket",
     ]
+
+    /// Whether this build is signed for iCloud key-value storage: the
+    /// released Developer ID build, with its provisioning profile. A local
+    /// Debug build, signed ad hoc, is not, and keeps its settings on the Mac.
+    public static var hasICloud: Bool {
+        guard let task = SecTaskCreateFromSelf(nil) else { return false }
+        return SecTaskCopyValueForEntitlement(task, "com.apple.developer.ubiquity-kvstore-identifier" as CFString, nil) != nil
+    }
 }

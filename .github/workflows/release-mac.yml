@@ -77,6 +77,14 @@ jobs:
           fi
           printf '%s' "$SPARKLE_PRIVATE_KEY" > "$RUNNER_TEMP/sparkle.key"
 
+      - name: Provisioning profile
+        env:
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+        run: |
+          export APP_STORE_CONNECT_API_KEY_KEY="$(cat "$RUNNER_TEMP/notary.p8")"
+          fastlane direct_profile readonly:true
+
       - name: Homebrew tap
         env:
           TAP_TOKEN: ${{ secrets.TAP_TOKEN }}

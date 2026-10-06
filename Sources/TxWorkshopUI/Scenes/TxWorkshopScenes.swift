@@ -15,11 +15,14 @@ public struct TxWorkshopScenes: Scene {
     @State private var hardwareAccounts = HardwareAccountStore()
     @State private var blueprints = BlueprintLibrary()
 
-    /// - Parameter directDistribution: Whether this is the Developer ID build,
-    ///   which may offer providers the App Sandbox rules out. The App Store
-    ///   build can sync providers, their API keys and the explorer through
-    ///   iCloud; the Developer ID build has no iCloud and keeps them on the Mac.
-    public init(directDistribution: Bool = false) {
+    /// - Parameters:
+    ///   - directDistribution: Whether this is the Developer ID build, which
+    ///     may offer providers the App Sandbox rules out.
+    ///   - iCloud: Whether the build is signed for iCloud, so it can sync
+    ///     providers, their API keys and the explorer. The App Store build
+    ///     always is; the Developer ID build is when it carries its
+    ///     provisioning profile, and a local Debug build is not.
+    public init(directDistribution: Bool = false, iCloud: Bool = true) {
         #if os(macOS)
         // Save a change within seconds, not when macOS next gets round to it,
         // so a document open on two devices through iCloud Drive is rarely
@@ -32,9 +35,9 @@ public struct TxWorkshopScenes: Scene {
             MainActor.assumeIsolated { NSDocumentController.shared.autosavingDelay = 2 }
         }
         #endif
-        providers = directDistribution
-            ? ProviderSettingsStore(directDistribution: true)
-            : .appStore(explorerKey: BlockchainExplorer.storageKey)
+        providers = iCloud
+            ? .syncable(explorerKey: BlockchainExplorer.storageKey, directDistribution: directDistribution)
+            : ProviderSettingsStore(directDistribution: directDistribution)
     }
 
     public var body: some Scene {

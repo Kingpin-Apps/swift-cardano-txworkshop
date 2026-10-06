@@ -1,6 +1,6 @@
 default_platform(:ios)
 
-# Fastlane here does only App Store metadata and version names. Xcode Cloud builds, signs, tests and ships to
+# Fastlane here does only App Store metadata, version names and the Developer ID profile. Xcode Cloud builds, signs, tests and ships to
 # TestFlight; the Developer ID Mac build ships with scripts/release-direct.sh. Do not add gym,
 # match or pilot lanes.
 #
@@ -51,6 +51,38 @@ platform :ios do
         UI.success("#{platform}: #{old} → #{version}")
       end
     end
+  end
+
+  # Made through the API rather than sigh, which puts only one certificate in a
+  # Developer ID profile: this one takes every Developer ID certificate on the
+  # team, so whichever one the Mac or CI signs with, the profile matches.
+  # `readonly:true` only downloads and installs the existing one, as CI does.
+  desc "Make or renew the Developer ID provisioning profile, with iCloud, and install it"
+  lane :direct_profile do |options|
+    api_key = app_store_connect_api_key_if_present
+    UI.user_error!("source ~/.secrets.zsh first, for the App Store Connect API key") unless api_key
+    Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
+    name = "Cardano TxWorkshop Developer ID"
+    bundle = Spaceship::ConnectAPI::BundleId.find("com.kingpinapps.cardano-txworkshop")
+    existing = Spaceship::ConnectAPI::Profile.all(filter: { name: name })
+    if options[:readonly]
+      profile = existing.find { |p| p.profile_state == "ACTIVE" }
+      UI.user_error!("No active #{name} profile: run `fastlane direct_profile` on the Mac") unless profile
+    else
+      certificates = Spaceship::ConnectAPI::Certificate.all(filter: { certificateType: "DEVELOPER_ID_APPLICATION" })
+      existing.each(&:delete!)
+      profile = Spaceship::ConnectAPI::Profile.create(
+        name: name,
+        profile_type: Spaceship::ConnectAPI::Profile::ProfileType::MAC_APP_DIRECT,
+        bundle_id_id: bundle.id,
+        certificate_ids: certificates.map(&:id)
+      )
+    end
+    path = File.expand_path("../build/profiles/TxWorkshopDirect.provisionprofile")
+    FileUtils.mkdir_p(File.dirname(path))
+    File.binwrite(path, Base64.decode64(profile.profile_content))
+    FastlaneCore::ProvisioningProfile.install(path)
+    UI.success("Installed #{name}")
   end
 
   desc "Check the metadata for common App Review problems"

@@ -2,7 +2,8 @@ import SwiftUI
 import TxWorkshopCore
 
 /// The choice to sync settings through iCloud, in Settings and in the provider
-/// set-up. Hidden in the Developer ID build, which has no iCloud.
+/// set-up. Hidden in a build not signed for iCloud, such as a local Debug
+/// build of the Developer ID app.
 struct ICloudSyncSection: View {
     @Environment(ProviderSettingsStore.self) private var store
 

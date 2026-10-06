@@ -27,7 +27,7 @@ struct TxWorkshopDirectApp: App {
 
     private var scenes: TxWorkshopScenes {
         #if DIRECT_DISTRIBUTION
-        TxWorkshopScenes(directDistribution: !DirectDistribution.providerKinds.isEmpty)
+        TxWorkshopScenes(directDistribution: !DirectDistribution.providerKinds.isEmpty, iCloud: DirectDistribution.hasICloud)
         #else
         TxWorkshopScenes()
         #endif
