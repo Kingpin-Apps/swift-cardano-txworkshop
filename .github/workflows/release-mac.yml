@@ -1,0 +1,110 @@
+name: Release Mac download
+
+# Builds, notarises and publishes the Developer ID Mac build when a release tag
+# is pushed, as `just release-direct --publish` does by hand: the GitHub
+# release with the DMG and the Sparkle appcast, then the Homebrew cask.
+#
+# Repository secrets it needs (Settings › Secrets and variables › Actions):
+#   DEVELOPER_ID_P12           the Developer ID Application certificate and key, base64
+#   DEVELOPER_ID_P12_PASSWORD  the .p12's password
+#   NOTARY_KEY_P8              an App Store Connect API key (.p8): its text, or base64
+#   NOTARY_KEY_ID              that key's id
+#   NOTARY_ISSUER_ID           the App Store Connect issuer id
+#   SPARKLE_PRIVATE_KEY        Sparkle's EdDSA private key (generate_keys -x)
+#   TAP_TOKEN                  a token that can push to Kingpin-Apps/homebrew-tap
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to build, such as v0.1.4
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-mac
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Developer ID build
+    # The Xcode 27 image is a preview on GitHub's hosted runners.
+    runs-on: xcode-27
+    timeout-minutes: 90
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+          # The build number is the commit count, so it needs the whole history.
+          fetch-depth: 0
+
+      - name: Select Xcode 27
+        run: sudo xcode-select -s /Applications/Xcode_27.app
+
+      - name: Install tools
+        run: brew install xcodegen create-dmg
+
+      - name: Signing keychain
+        env:
+          P12: ${{ secrets.DEVELOPER_ID_P12 }}
+          P12_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD=$(uuidgen)
+          echo "$P12" | base64 --decode > "$RUNNER_TEMP/developer-id.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/developer-id.p12" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" > /dev/null
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/developer-id.p12"
+
+      - name: Notary and Sparkle keys
+        env:
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          if [[ "$NOTARY_KEY_P8" == *"BEGIN PRIVATE KEY"* ]]; then
+            printf '%s\n' "$NOTARY_KEY_P8" > "$RUNNER_TEMP/notary.p8"
+          else
+            echo "$NOTARY_KEY_P8" | base64 --decode > "$RUNNER_TEMP/notary.p8"
+          fi
+          printf '%s' "$SPARKLE_PRIVATE_KEY" > "$RUNNER_TEMP/sparkle.key"
+
+      - name: Homebrew tap
+        env:
+          TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
+        run: |
+          git clone "https://x-access-token:${TAP_TOKEN}@github.com/Kingpin-Apps/homebrew-tap.git" "$RUNNER_TEMP/tap"
+          git -C "$RUNNER_TEMP/tap" config user.name "github-actions[bot]"
+          git -C "$RUNNER_TEMP/tap" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Build, notarise and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTARY_KEY_PATH: ${{ runner.temp }}/notary.p8
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+          SPARKLE_KEY_FILE: ${{ runner.temp }}/sparkle.key
+          TAP_DIR: ${{ runner.temp }}/tap
+          TAP_PUSH: "1"
+        run: scripts/release-direct.sh --publish
+
+      - name: Logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-logs
+          path: build/direct/*.log
+
+      - name: Clean up
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/notary.p8" "$RUNNER_TEMP/sparkle.key"
+          security delete-keychain "$RUNNER_TEMP/signing.keychain-db" || true

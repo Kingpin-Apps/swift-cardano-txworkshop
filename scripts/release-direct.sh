@@ -6,8 +6,13 @@
 #
 # Needs, once:
 #   - DEVELOPMENT_TEAM set in project.yml, and a Developer ID Application certificate
-#   - a notarytool keychain profile: the team's "scm-notarytool" (or NOTARY_PROFILE)
-#   - the Sparkle EdDSA private key in the login Keychain (Sparkle's generate_keys)
+#   - a notarytool keychain profile: the team's "scm-notarytool" (or NOTARY_PROFILE),
+#     or an App Store Connect API key in NOTARY_KEY_PATH, NOTARY_KEY_ID and NOTARY_ISSUER_ID
+#   - the Sparkle EdDSA private key in the login Keychain (Sparkle's generate_keys),
+#     or in the file SPARKLE_KEY_FILE
+#
+# TAP_PUSH=1 also pushes the cask. .github/workflows/release-mac.yml runs this
+# on each v* tag with the keys from the repository's secrets.
 #   - the public repo Kingpin-Apps/swift-cardano-txworkshop and the tap kingpin-apps/homebrew-tap
 set -euo pipefail
 
@@ -81,7 +86,12 @@ create-dmg --volname "Cardano TxWorkshop $VERSION" --app-drop-link 480 170 \
 codesign --force --sign "Developer ID Application" --timestamp "$DMG"
 
 echo "▶ Notarising"
-xcrun notarytool submit "$DMG" --keychain-profile "$NOTARY_PROFILE" --wait
+if [[ -n "${NOTARY_KEY_PATH:-}" ]]; then
+    NOTARY_AUTH=(--key "$NOTARY_KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID")
+else
+    NOTARY_AUTH=(--keychain-profile "$NOTARY_PROFILE")
+fi
+xcrun notarytool submit "$DMG" "${NOTARY_AUTH[@]}" --wait
 xcrun stapler staple "$DMG"
 spctl --assess --type open --context context:primary-signature -v "$DMG"
 
@@ -97,7 +107,9 @@ SPARKLE_BIN=$(find "$DERIVED/SourcePackages/artifacts" -path "*/Sparkle/bin" -ty
 [[ -n "$SPARKLE_BIN" ]] || { echo "Sparkle tools not found in $DERIVED" >&2; exit 1; }
 mkdir -p "$OUT/updates"
 cp "$DMG" "$OUT/updates/"
-"$SPARKLE_BIN/generate_appcast" \
+APPCAST_KEY=()
+[[ -n "${SPARKLE_KEY_FILE:-}" ]] && APPCAST_KEY=(--ed-key-file "$SPARKLE_KEY_FILE")
+"$SPARKLE_BIN/generate_appcast" "${APPCAST_KEY[@]}" \
     --download-url-prefix "https://github.com/$RELEASES_REPO/releases/download/v$VERSION/" \
     "$OUT/updates"
 SHA=$(shasum -a 256 "$DMG" | cut -d' ' -f1)
@@ -141,4 +153,9 @@ end
 EOF
 git -C "$TAP_DIR" add Casks/cardano-txworkshop.rb
 git -C "$TAP_DIR" commit -m "chore(cardano-txworkshop): $VERSION"
-echo "✓ Cask committed in $TAP_DIR. Push it when ready."
+if [[ "${TAP_PUSH:-0}" == 1 ]]; then
+    git -C "$TAP_DIR" push
+    echo "✓ Cask pushed."
+else
+    echo "✓ Cask committed in $TAP_DIR. Push it when ready."
+fi
