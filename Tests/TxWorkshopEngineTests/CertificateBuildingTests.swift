@@ -39,6 +39,25 @@ struct CertificateBuildingTests {
         )
     }
 
+    @Test("Inspecting a pool registration shows every field Build asked for")
+    func poolRegistrationDetail() async throws {
+        let (built, _, _) = try await build([.registerPool(try poolDraft(isUpdate: false))])
+        let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
+        let detail = try #require(inspection.certificates.first)
+        let fields = Dictionary(detail.fields.map { ($0.label, $0) }, uniquingKeysWith: { first, _ in first })
+        #expect(fields["Pool id"]?.value.hasPrefix("pool1") == true)
+        #expect(fields["VRF key hash"]?.value.count == 64)
+        #expect(fields["Pledge"]?.kind == .lovelace(500_000_000))
+        #expect(fields["Fixed cost per epoch"]?.kind == .lovelace(170_000_000))
+        #expect(fields["Margin"]?.value.hasPrefix("1%") == true)
+        #expect(fields["Reward account"]?.value.hasPrefix("stake_test1") == true)
+        #expect(fields["Owner"]?.value.hasPrefix("stake_test1") == true)
+        #expect(fields["Relay 1"]?.value == "relay.example.com:3001")
+        #expect(fields["Relay 2"]?.value == "203.0.113.7:6000")
+        #expect(fields["Metadata URL"]?.value == "https://example.com/pool.json")
+        #expect(fields["Metadata hash"]?.value == String(repeating: "11", count: 32))
+    }
+
     @Test("Combined registration and delegation certificates each pay the stake deposit")
     func combined() async throws {
         let stake = try GovernanceBuildingTests.stakeAddress()

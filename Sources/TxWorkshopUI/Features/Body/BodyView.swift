@@ -26,8 +26,11 @@ struct BodyView: View {
                 Form {
                     if !view.certificates.isEmpty {
                         Section {
-                            ForEach(view.certificates, id: \.index) { certificate in
-                                CertificateRow(certificate: certificate)
+                            ForEach(Array(view.certificates.enumerated()), id: \.element.index) { position, certificate in
+                                CertificateRow(
+                                    certificate: certificate,
+                                    detail: inspection.certificates.indices.contains(position) ? inspection.certificates[position] : nil
+                                )
                             }
                         } header: {
                             Text("Certificates", bundle: #bundle)

@@ -52,7 +52,10 @@ struct InspectionBuilder {
             datums: datums(witnesses),
             metadata: metadata(),
             requiredSigners: body.requiredSigners?.asList.map { $0.payload.hex } ?? [],
-            signers: signers(witnesses)
+            signers: signers(witnesses),
+            certificates: (body.certificates?.asList ?? []).enumerated().map {
+                CertificateDetail.of($1, index: $0 + 1, network: network)
+            }
         )
     }
 

@@ -21,6 +21,8 @@ public struct TransactionInspection: Sendable, Equatable {
     public let requiredSigners: [String]
     /// The key hashes of the keys that signed, from the vkey witnesses.
     public let signers: [String]
+    /// Each certificate, field by field.
+    public var certificates: [CertificateDetail] = []
 
     public var view: TransactionView { summary.view }
 }
