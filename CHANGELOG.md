@@ -1,3 +1,9 @@
+## v0.1.5 (2026-10-06)
+
+### Feat
+
+- **direct**: iCloud sync in the Mac download, with a Developer ID profile
+
 ## v0.1.4 (2026-10-05)
 
 ### Feat
