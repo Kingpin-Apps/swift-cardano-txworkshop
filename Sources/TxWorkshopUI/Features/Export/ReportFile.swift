@@ -6,7 +6,7 @@ import UniformTypeIdentifiers
 @MainActor
 @Observable
 final class ReportFile: WritableDocument {
-    nonisolated static let writableContentTypes: [UTType] = [.json, .markdown, .pdf]
+    nonisolated static let writableContentTypes: [UTType] = [.cardanoTextEnvelope, .cardanoTransactionCBOR, .cardanoTransactionHex, .json, .markdown, .pdf]
 
     var data: Data
     var contentType: UTType

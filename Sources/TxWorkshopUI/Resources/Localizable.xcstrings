@@ -152,6 +152,9 @@
         }
       }
     },
+    "%lld tokens" : {
+
+    },
     "%lld validators" : {
 
     },
@@ -341,6 +344,9 @@
     "Already spent" : {
 
     },
+    "Always Use" : {
+
+    },
     "Anchor hash (hex, or choose the anchor file)" : {
 
     },
@@ -390,6 +396,9 @@
     "Authorize a committee hot key" : {
 
     },
+    "Automatic" : {
+
+    },
     "Batch Validate a Folder…" : {
 
     },
@@ -409,6 +418,9 @@
 
     },
     "Blueprints" : {
+
+    },
+    "Blueprints in this document" : {
 
     },
     "boolean" : {
@@ -484,6 +496,12 @@
 
     },
     "CBOR" : {
+
+    },
+    "CBOR (.cbor)" : {
+
+    },
+    "CBOR Hex (.hex)" : {
 
     },
     "CDDL" : {
@@ -584,6 +602,12 @@
 
     },
     "Continue" : {
+
+    },
+    "Copies kept with the document, so its forms open the same anywhere. Settings keeps the app's own." : {
+
+    },
+    "Copy CBOR Hex" : {
 
     },
     "Cost model, %@" : {
@@ -702,6 +726,9 @@
     "DNS SRV name" : {
 
     },
+    "Don't Use" : {
+
+    },
     "Donation" : {
 
     },
@@ -724,6 +751,9 @@
 
     },
     "Each a whole UTxO in CBOR hex, one per line." : {
+
+    },
+    "Each a whole UTxO in CBOR hex, one per line. Coin selection picks from them automatically; choose Always Use or Don't Use to decide yourself, for example to leave out a UTxO another transaction still being signed spends." : {
 
     },
     "Edit" : {
@@ -790,6 +820,9 @@
 
     },
     "Export" : {
+
+    },
+    "Export & Share" : {
 
     },
     "Export a report as JSON, Markdown or PDF" : {
@@ -993,6 +1026,9 @@
     "In short" : {
 
     },
+    "In use: clear the forms that use it first." : {
+
+    },
     "Incomplete" : {
 
     },
@@ -1048,6 +1084,9 @@
 
     },
     "JSON" : {
+
+    },
+    "JSON Report" : {
 
     },
     "JSON with Blockfrost or Ogmios field names, as `cardano-cli query protocol-parameters` can give via a provider." : {
@@ -1201,6 +1240,9 @@
 
     },
     "Markdown" : {
+
+    },
+    "Markdown Report" : {
 
     },
     "Matches `%@` in the %@ schema." : {
@@ -1760,6 +1802,9 @@
     "Remove %@" : {
 
     },
+    "Remove %@'s Witness" : {
+
+    },
     "Remove Asset" : {
 
     },
@@ -1772,10 +1817,25 @@
     "Remove this key?" : {
 
     },
+    "Remove this witness from the transaction" : {
+
+    },
+    "Remove Witness" : {
+
+    },
     "Replace API key" : {
 
     },
     "Replace this transaction with one fetched by its ID" : {
+
+    },
+    "Replace this transaction: paste one, open a file, or fetch one by its ID" : {
+
+    },
+    "Replace Transaction" : {
+
+    },
+    "Replace Transaction…" : {
 
     },
     "Replaces the document's transaction, to inspect, validate and sign. Undo brings the old one back." : {
@@ -1965,7 +2025,16 @@
     "Share the transaction with co-signers, then add the witnesses they send back." : {
 
     },
+    "Share the transaction, copy its CBOR, or export it as a text envelope, CBOR or a report" : {
+
+    },
+    "Share the transaction, or export it as a text envelope or a report" : {
+
+    },
     "Share Transaction" : {
+
+    },
+    "Share Transaction…" : {
 
     },
     "Show" : {
@@ -2040,6 +2109,9 @@
 
     },
     "Spends ^[%lld input](inflect: true)" : {
+
+    },
+    "Spent by the last build" : {
 
     },
     "Stack" : {
@@ -2147,6 +2219,9 @@
 
     },
     "Term" : {
+
+    },
+    "Text Envelope (.tx)" : {
 
     },
     "text · ^[%lld byte](inflect: true)" : {

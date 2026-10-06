@@ -75,6 +75,21 @@ struct TxDocumentCodecTests {
         }
     }
 
+    @Test("A text envelope is typed by swift-cardano-core, and says where it came from")
+    func envelopeType() throws {
+        let bytes = try TxDocumentCodec.bytes(fromHex: Self.transactionHex())
+        let file = try TxDocumentCodec.file(for: TxDocumentContent(transaction: bytes), format: .textEnvelope)
+        let object = try #require(try JSONSerialization.jsonObject(with: file) as? [String: String])
+        // The fixture carries its witnesses.
+        #expect(object["type"] == "Tx ConwayEra")
+        #expect(object["description"] == TxDocumentCodec.generatedDescription)
+        #expect(object["cborHex"] == (try Self.transactionHex()))
+        // An era read from an envelope is kept.
+        let babbage = TxDocumentContent(transaction: bytes, envelope: TextEnvelopeInfo(type: "Tx BabbageEra", description: ""))
+        let kept = try #require(try JSONSerialization.jsonObject(with: TxDocumentCodec.file(for: babbage, format: .textEnvelope)) as? [String: String])
+        #expect(kept["type"] == "Tx BabbageEra")
+    }
+
     @Test("A .cbor file holding hex text is read as hex")
     func hexInCBORFile() throws {
         let hex = try Self.transactionHex()

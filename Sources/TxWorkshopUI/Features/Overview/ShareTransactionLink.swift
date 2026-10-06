@@ -8,8 +8,8 @@ struct ShareTransactionLink: View {
     let envelope: TextEnvelopeInfo?
 
     var body: some View {
-        if let text = envelopeText {
-            ShareLink(item: text, preview: SharePreview(Text("Transaction", bundle: #bundle))) {
+        if let file {
+            ShareLink(item: file, preview: SharePreview(Text("Transaction", bundle: #bundle))) {
                 Label {
                     Text("Share Transaction", bundle: #bundle)
                 } icon: {
@@ -20,8 +20,10 @@ struct ShareTransactionLink: View {
         }
     }
 
-    private var envelopeText: String? {
+    /// The transaction as a `.tx` file, written by swift-cardano-core.
+    private var file: TextEnvelopeFile? {
         let content = TxDocumentContent(transaction: transaction, envelope: envelope)
-        return (try? TxDocumentCodec.file(for: content, format: .textEnvelope)).flatMap { String(data: $0, encoding: .utf8) }
+        guard let data = try? TxDocumentCodec.file(for: content, format: .textEnvelope) else { return nil }
+        return TextEnvelopeFile(data: data, name: String(localized: "Transaction", bundle: #bundle))
     }
 }

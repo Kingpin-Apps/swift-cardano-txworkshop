@@ -1,4 +1,5 @@
 import Foundation
+import SwiftCardanoCore
 import UniformTypeIdentifiers
 
 extension UTType {
@@ -194,6 +195,26 @@ public enum TxDocumentCodec {
         throw TxDocumentError.noTransaction
     }
 
+    /// The description of a text envelope this app writes.
+    public static let generatedDescription = "Generated with Cardano TxWorkshop"
+
+    /// `transaction` as a cardano-cli text envelope, written by
+    /// swift-cardano-core: its type is `Unwitnessed Tx <era>` until a witness
+    /// is added and `Tx <era>` after, keeping the era of `type` when given.
+    public static func textEnvelope(
+        _ transaction: Data, type: String? = nil, description: String = generatedDescription
+    ) throws -> Data {
+        if let decoded = try? Transaction(payload: transaction, type: type, description: description),
+            let json = try decoded.toTextEnvelope() {
+            return Data((json + "\n").utf8)
+        }
+        // Bytes the ledger types cannot read are still written, as they are.
+        let envelope = ["type": type ?? "Tx ConwayEra", "description": description, "cborHex": hex(transaction)]
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+        return try encoder.encode(envelope)
+    }
+
     /// `content` as a single file in `format`.
     public static func file(for content: TxDocumentContent, format: TxDocumentFormat) throws -> Data {
         guard let transaction = content.transaction else { throw TxDocumentError.noTransaction }
@@ -201,11 +222,9 @@ public enum TxDocumentCodec {
         case .package:
             throw TxDocumentError.noTransaction
         case .textEnvelope:
-            let info = content.envelope ?? TextEnvelopeInfo(type: "Tx ConwayEra", description: "")
-            let envelope = ["type": info.type, "description": info.description, "cborHex": hex(transaction)]
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
-            return try encoder.encode(envelope)
+            // A description the transaction came with is kept; one made here says so.
+            let kept = content.envelope?.description ?? ""
+            return try textEnvelope(transaction, type: content.envelope?.type, description: kept.isEmpty ? generatedDescription : kept)
         case .rawCBOR:
             return transaction
         case .hex:

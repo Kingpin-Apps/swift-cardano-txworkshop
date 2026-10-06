@@ -9,8 +9,12 @@ struct FetchByHashSection: View {
     let document: TxWorkshopDocument
     /// Called once the transaction is in the document.
     var onFetched: () -> Void = {}
+    /// The document window's, from a sheet: a sheet's own is not the
+    /// document's on macOS.
+    var documentUndoManager: UndoManager?
     @Environment(ProviderSettingsStore.self) private var providers
-    @Environment(\.undoManager) private var undoManager
+    @Environment(\.undoManager) private var environmentUndoManager
+    private var undoManager: UndoManager? { documentUndoManager ?? environmentUndoManager }
     @State private var hash = ""
     @State private var isFetching = false
     @State private var problem: String?
@@ -61,11 +65,10 @@ struct FetchByHashSection: View {
             defer { isFetching = false }
             do {
                 let fetched = try await TransactionFetcher().fetch(hash: hash, from: sources)
-                document.update({ content in
-                    content.transaction = fetched.cbor
-                    content.envelope = nil
-                    content.network = fetched.network
-                }, actionName: LocalizedStringResource("Fetch Transaction", bundle: #bundle), undoManager: undoManager)
+                document.replaceTransaction(
+                    TxDocumentContent(transaction: fetched.cbor), network: fetched.network,
+                    actionName: LocalizedStringResource("Fetch Transaction", bundle: #bundle), undoManager: undoManager
+                )
                 onFetched()
             } catch {
                 problem = String(describing: error)
