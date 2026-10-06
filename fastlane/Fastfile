@@ -1,6 +1,6 @@
 default_platform(:ios)
 
-# Fastlane here does only App Store metadata. Xcode Cloud builds, signs, tests and ships to
+# Fastlane here does only App Store metadata and version names. Xcode Cloud builds, signs, tests and ships to
 # TestFlight; the Developer ID Mac build ships with scripts/release-direct.sh. Do not add gym,
 # match or pilot lanes.
 #
@@ -29,6 +29,28 @@ platform :ios do
     upload_metadata
     upload_metadata_macos
     upload_metadata_visionos
+  end
+
+  desc "Rename each platform's editable App Store version to the version in project.yml"
+  lane :store_version do
+    version = File.read("../project.yml")[/MARKETING_VERSION: "([^"]+)"/, 1]
+    UI.user_error!("No MARKETING_VERSION in project.yml") unless version
+    api_key = app_store_connect_api_key_if_present
+    UI.user_error!("source ~/.secrets.zsh first, for the App Store Connect API key") unless api_key
+    Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
+    app = Spaceship::ConnectAPI::App.find("com.kingpinapps.cardano-txworkshop")
+    %w[IOS MAC_OS VISION_OS].each do |platform|
+      edit = app.get_edit_app_store_version(platform: platform)
+      if edit.nil?
+        UI.important("#{platform}: no editable version; add one in App Store Connect")
+      elsif edit.version_string == version
+        UI.message("#{platform}: already #{version}")
+      else
+        old = edit.version_string
+        edit.update(attributes: { version_string: version })
+        UI.success("#{platform}: #{old} → #{version}")
+      end
+    end
   end
 
   desc "Check the metadata for common App Review problems"

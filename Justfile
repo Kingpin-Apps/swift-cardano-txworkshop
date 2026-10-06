@@ -39,6 +39,10 @@ release-direct *args:
 metadata:
     LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 fastlane upload_metadata_all
 
+# Rename each platform's editable App Store version to project.yml's (source ~/.secrets.zsh first)
+store-version:
+    fastlane store_version
+
 # App Store screenshots on a simulator, e.g. just screenshots "Apple Vision Pro" Vision
 screenshots device prefix:
     scripts/capture-screenshots.sh "{{device}}" "{{prefix}}"
