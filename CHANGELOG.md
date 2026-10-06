@@ -1,3 +1,18 @@
+## v0.1.6 (2026-10-06)
+
+### Feat
+
+- **shell**: whole-transaction buttons on every section's toolbar
+- **build**: start with no output, for certificate-only transactions
+- **overview**: Export & Share menu with text envelope and CBOR, and Replace Transaction
+- **inspect**: every field of each certificate
+- **build**: choose which UTxOs to spend, and remove a document's blueprints
+- **sign**: remove a witness once added
+
+### Fix
+
+- **build**: read a pool.json by its cold key path, and clear stale file errors
+
 ## v0.1.5 (2026-10-06)
 
 ### Feat
