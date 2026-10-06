@@ -59,6 +59,9 @@ struct ValueField: View {
         .fileImporter(isPresented: $isImporting, allowedContentTypes: [.data]) { result in
             if case .success(let url) = result { load(url) }
         }
+        // A file that couldn't be read says so only until the field changes:
+        // a value typed or pasted after it is judged on its own.
+        .onChange(of: text) { fileProblem = nil }
     }
 
     @ViewBuilder private var status: some View {
@@ -96,7 +99,7 @@ struct ValueField: View {
             networkHints?.fromFileName = named
         }
         do {
-            let read = try ValueReader.read(kind, file: data, name: url.lastPathComponent, network: network)
+            let read = try ValueReader.read(kind, file: data, name: url.lastPathComponent, network: network, folder: url.deletingLastPathComponent())
             loaded = read
             fileProblem = nil
             text = read.value

@@ -103,10 +103,18 @@ public enum ValueReader {
     /// A file's contents as a value of `kind`. Text files (`.addr`, `.vkey`,
     /// `.skey`, id files, JSON) are read as their text; a binary file as CBOR;
     /// for an anchor hash, any file is hashed.
-    public static func read(_ kind: ValueKind, file data: Data, name: String, network: CardanoNetwork?) throws -> ReadValue {
+    /// `folder` is the file's own folder, where a pool.json's key files are
+    /// looked for.
+    public static func read(
+        _ kind: ValueKind, file data: Data, name: String, network: CardanoNetwork?, folder: URL? = nil
+    ) throws -> ReadValue {
         guard !data.isEmpty else { throw ValueReadError("\(name) is empty.") }
         if kind == .anchorHash {
             return ReadValue(value: blake2b(data, size: 32).hex, form: "Blake2b-256 of \(name)")
+        }
+        if kind == .pool, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            let read = try poolJSON(json, folder: folder, name: name)
+            return ReadValue(value: read.value, form: "\(read.form), from \(name)")
         }
         if let text = String(data: data, encoding: .utf8) {
             let read = try read(kind, text: text, network: network)
@@ -219,6 +227,32 @@ public enum ValueReader {
 
     // MARK: Pools
 
+    /// The keys a pool.json, or a provider's pool record, gives the id under.
+    static let poolIDKeys = ["id_bech", "id_hex", "pool_id_bech32", "pool_id_hex", "pool_id", "poolId", "pool"]
+
+    /// The pool a pool.json names: by its id, or by its cold key, read from
+    /// the path it gives, relative to `folder`.
+    static func poolJSON(_ json: [String: Any], folder: URL?, name: String) throws -> ReadValue {
+        for key in poolIDKeys {
+            if let id = (json[key] as? String)?.trimmingCharacters(in: .whitespaces), !id.isEmpty {
+                return try relabel(pool(id), "Pool, from pool.json")
+            }
+        }
+        if let path = (json["cold_vkey"] as? String)?.trimmingCharacters(in: .whitespaces), !path.isEmpty {
+            let url = path.hasPrefix("/") || path.hasPrefix("~")
+                ? URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
+                : folder.map { $0.appendingPathComponent(path) } ?? URL(fileURLWithPath: path)
+            guard let key = try? String(contentsOf: url, encoding: .utf8) else {
+                throw ValueReadError("\(name) names its cold key as \(path), which can't be read here. Choose that cold key file, or enter the pool id.")
+            }
+            return try relabel(pool(key), "Pool, from pool.json's cold key")
+        }
+        if json["ticker"] != nil || json["homepage"] != nil {
+            throw ValueReadError("\(name) is the pool's metadata, which doesn't say which pool it is. Enter the pool id, or choose its pool.json or cold key file.")
+        }
+        throw ValueReadError("\(name) doesn't name a pool: it has no pool id or cold key.")
+    }
+
     static func pool(_ text: String) throws -> ReadValue {
         if let key = try KeyFile(text) {
             guard key.role == .stakePool else {
@@ -228,9 +262,8 @@ public enum ValueReader {
             }
             return try poolValue(PoolKeyHash(payload: key.hash.payload), form: "Pool, from its cold \(key.kindName)")
         }
-        if let json = jsonObject(text), json["id_bech"] != nil || json["id_hex"] != nil {
-            if let bech = json["id_bech"] as? String, !bech.isEmpty { return try relabel(pool(bech), "Pool, from pool.json") }
-            if let hex = json["id_hex"] as? String, !hex.isEmpty { return try relabel(pool(hex), "Pool, from pool.json") }
+        if let json = jsonObject(text) {
+            return try poolJSON(json, folder: nil, name: "That JSON")
         }
         if text.hasPrefix("pool1") {
             guard let pool = try? PoolOperator(from: text) else { throw ValueReadError("That is not a valid pool id.") }

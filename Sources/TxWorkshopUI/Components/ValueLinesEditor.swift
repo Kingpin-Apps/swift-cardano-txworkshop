@@ -47,6 +47,8 @@ struct ValueLinesEditor: View {
         .fileImporter(isPresented: $isImporting, allowedContentTypes: [.data], allowsMultipleSelection: true) { result in
             if case .success(let urls) = result { add(urls) }
         }
+        // A file's problem goes once the lines change.
+        .onChange(of: lines) { problem = nil }
         if let problem {
             TWErrorText(problem)
         }
@@ -81,7 +83,7 @@ struct ValueLinesEditor: View {
                 networkHints?.fromFileName = named
             }
             do {
-                added.append(try ValueReader.read(kind, file: data, name: url.lastPathComponent, network: network).value)
+                added.append(try ValueReader.read(kind, file: data, name: url.lastPathComponent, network: network, folder: url.deletingLastPathComponent()).value)
             } catch {
                 problem = "\(url.lastPathComponent): \(error)"
             }

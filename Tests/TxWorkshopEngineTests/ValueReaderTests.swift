@@ -64,6 +64,23 @@ struct ValueReaderTests {
         #expect(try Self.read(.pool, #"{"name": "alice", "id_bech": "\#(id)"}"#).value == id)
         #expect(try Self.read(.pool, #"{"name": "alice", "id_hex": "\#(hash.payload.hex)"}"#).value == id)
         #expect(throws: ValueReadError.self) { try Self.read(.pool, "pool1nope") }
+
+        // A pool.json that names its cold key by path, read from its folder.
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        try Self.envelope(keys.verificationKey).write(to: folder.appendingPathComponent("cold.vkey"), atomically: true, encoding: .utf8)
+        let poolJSON = Data(#"{"name": "alice", "cold_vkey": "cold.vkey", "pledge": 100}"#.utf8)
+        let fromFile = try ValueReader.read(.pool, file: poolJSON, name: "alice.pool.json", network: nil, folder: folder)
+        #expect(fromFile.value == id)
+        #expect(fromFile.form.contains("alice.pool.json"))
+        // Without the folder, it says which file it needs.
+        #expect(throws: ValueReadError.self) { try ValueReader.read(.pool, file: poolJSON, name: "alice.pool.json", network: nil) }
+        // The metadata JSON doesn't name a pool, and says so.
+        let metadata = Data(#"{"name": "Alice", "ticker": "ALICE", "homepage": "https://example.com", "description": ""}"#.utf8)
+        #expect {
+            try ValueReader.read(.pool, file: metadata, name: "alice.metadata.json", network: nil)
+        } throws: { "\($0)".contains("metadata") }
     }
 
     @Test("DReps: special values, ids, hex and key files")
