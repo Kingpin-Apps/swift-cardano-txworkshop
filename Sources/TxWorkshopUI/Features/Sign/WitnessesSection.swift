@@ -6,19 +6,38 @@ import TxWorkshopEngine
 struct WitnessesSection: View {
     let document: TxWorkshopDocument
     let onImport: () -> Void
+    @Environment(\.undoManager) private var undoManager
+    @State private var problem: String?
 
     var body: some View {
         Section {
             ForEach(document.content.witnesses) { witness in
-                VStack(alignment: .leading, spacing: TWSpacing.xxs) {
-                    Text(verbatim: witness.label)
-                    TWBytesText(witness.keyHash, font: TWFont.bytesSmall)
-                        .foregroundStyle(TWColor.secondaryText)
-                    Text(witness.addedAt, format: .dateTime)
-                        .font(.caption)
-                        .foregroundStyle(TWColor.secondaryText)
+                HStack(alignment: .firstTextBaseline) {
+                    VStack(alignment: .leading, spacing: TWSpacing.xxs) {
+                        Text(verbatim: witness.label)
+                        TWBytesText(witness.keyHash, font: TWFont.bytesSmall)
+                            .foregroundStyle(TWColor.secondaryText)
+                        Text(witness.addedAt, format: .dateTime)
+                            .font(.caption)
+                            .foregroundStyle(TWColor.secondaryText)
+                    }
+                    .accessibilityElement(children: .combine)
+                    Spacer()
+                    Button(role: .destructive) {
+                        remove(witness)
+                    } label: {
+                        Label {
+                            Text("Remove \(witness.label)'s Witness", bundle: #bundle)
+                        } icon: {
+                            Image(systemName: "trash")
+                        }
+                        .labelStyle(.iconOnly)
+                        .twHitTarget()
+                    }
+                    .buttonStyle(.borderless)
+                    .help(Text("Remove this witness from the transaction", bundle: #bundle))
+                    .accessibilityIdentifier("removeWitness-\(witness.keyHash)")
                 }
-                .accessibilityElement(children: .combine)
             }
             Button(action: onImport) {
                 Label {
@@ -34,6 +53,25 @@ struct WitnessesSection: View {
             Text("Witnesses", bundle: #bundle)
         } footer: {
             Text("Share the transaction with co-signers, then add the witnesses they send back.", bundle: #bundle)
+        }
+        if let problem {
+            TWErrorText(problem)
+        }
+    }
+
+    /// Takes the witness out of the transaction, and off the list.
+    private func remove(_ witness: CollectedWitness) {
+        guard let bytes = document.content.transaction else { return }
+        do {
+            let unsigned = try WitnessAssembler.remove(bytes, keyHashes: [witness.keyHash])
+            document.update({ content in
+                content.transaction = unsigned
+                content.envelope = nil
+                content.witnesses.removeAll { $0.keyHash == witness.keyHash }
+            }, actionName: LocalizedStringResource("Remove Witness", bundle: #bundle), undoManager: undoManager)
+            problem = nil
+        } catch {
+            problem = String(describing: error)
         }
     }
 }

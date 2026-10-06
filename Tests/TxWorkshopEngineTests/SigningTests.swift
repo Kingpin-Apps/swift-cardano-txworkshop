@@ -82,6 +82,28 @@ struct SigningTests {
         #expect(allPass)
     }
 
+    @Test("Removing a witness takes out only its signature, and keeps the id")
+    func removesWitness() async throws {
+        let bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let wallet = try Self.testWallet()
+        let transaction = try TransactionValidation.decode(bytes)
+        let extra = VerificationKeyWitness(
+            vkey: try wallet.ring.keys[wallet.keyHash]!.toVerificationKeyType(),
+            signature: try wallet.ring.keys[wallet.keyHash]!.sign(data: transaction.id!.payload)
+        )
+        let merged = try WitnessAssembler.merge(bytes, adding: [extra])
+        let removed = try WitnessAssembler.remove(merged, keyHashes: [try WitnessAssembler.keyHash(extra)])
+        // Back to exactly what it was before the witness was added.
+        #expect(removed == bytes)
+        #expect(try await TransactionInspector().inspect(removed).id == (try await TransactionInspector().inspect(bytes).id))
+
+        // The last witness gone: no vkey witnesses left at all.
+        let original = try WitnessAssembler.existing(in: bytes).map(WitnessAssembler.keyHash)
+        let bare = try WitnessAssembler.remove(bytes, keyHashes: Set(original))
+        #expect(try WitnessAssembler.existing(in: bare).isEmpty)
+        #expect(try await TransactionInspector().inspect(bare).id == (try await TransactionInspector().inspect(bytes).id))
+    }
+
     @Test("Witnesses read from a witness set, a single witness, or a cardano-cli file")
     func importWitnesses() throws {
         let wallet = try Self.testWallet()

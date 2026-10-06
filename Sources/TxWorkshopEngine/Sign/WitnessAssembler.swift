@@ -11,6 +11,27 @@ import TxWorkshopCore
 public enum WitnessAssembler {
     /// `bytes` with `witnesses` added to any it already has, one per key.
     public static func merge(_ bytes: Data, adding witnesses: [VerificationKeyWitness]) throws -> Data {
+        try rewrite(bytes) { existing in
+            // The witnesses already there, then the new ones for keys not yet
+            // signed.
+            var all = existing
+            var keys = Set(all.map { $0.vkey.payload })
+            for witness in witnesses where keys.insert(witness.vkey.payload).inserted {
+                all.append(witness)
+            }
+            return all
+        }
+    }
+
+    /// `bytes` without the witnesses of the keys hashing to `keyHashes` (hex).
+    public static func remove(_ bytes: Data, keyHashes: Set<String>) throws -> Data {
+        try rewrite(bytes) { existing in
+            existing.filter { witness in !((try? keyHash(witness)).map(keyHashes.contains) ?? false) }
+        }
+    }
+
+    /// `bytes` with its vkey witnesses replaced by what `change` makes of them.
+    static func rewrite(_ bytes: Data, _ change: ([VerificationKeyWitness]) throws -> [VerificationKeyWitness]) throws -> Data {
         let raw = [UInt8](bytes)
         let decoding = CBORNode.decodeAnnotated(raw)
         guard decoding.error == nil, let root = decoding.root, root.children.count >= 2,
@@ -18,13 +39,7 @@ public enum WitnessAssembler {
         else { throw WitnessError.notATransaction }
         let set = root.children[1]
 
-        // The witnesses already there, then the new ones for keys not yet
-        // signed.
-        var all = try existing(in: bytes)
-        var keys = Set(all.map { $0.vkey.payload })
-        for witness in witnesses where keys.insert(witness.vkey.payload).inserted {
-            all.append(witness)
-        }
+        let all = try change(try existing(in: bytes))
 
         // Every entry of the witness set but the vkey witnesses, as written.
         var entries: [ArraySlice<UInt8>] = []
@@ -38,17 +53,21 @@ public enum WitnessAssembler {
             }
             entries.append(raw[key.span.start..<value.span.end])
         }
-        let list = try (tagged
-            ? ListOrNonEmptyOrderedSet<VerificationKeyWitness>.nonEmptyOrderedSet(NonEmptyOrderedSet(all))
-            : .list(all)).toCBORData()
         var newSet = header(majorType: 5, count: UInt64(entries.count + (all.isEmpty ? 0 : 1)))
-        if !all.isEmpty { newSet += [0x00] + [UInt8](list) }
+        // No witnesses left: the entry goes, as an empty set may not be written.
+        if !all.isEmpty {
+            let list = try (tagged
+                ? ListOrNonEmptyOrderedSet<VerificationKeyWitness>.nonEmptyOrderedSet(NonEmptyOrderedSet(all))
+                : .list(all)).toCBORData()
+            newSet += [0x00] + [UInt8](list)
+        }
         for entry in entries { newSet += entry }
 
         return Data(raw[..<set.span.start] + newSet + raw[set.span.end...])
     }
 
-    static func existing(in bytes: Data) throws -> [VerificationKeyWitness] {
+    /// The vkey witnesses `bytes` carries.
+    public static func existing(in bytes: Data) throws -> [VerificationKeyWitness] {
         (try TransactionValidation.decode(bytes)).transactionWitnessSet.vkeyWitnesses?.asList ?? []
     }
 
