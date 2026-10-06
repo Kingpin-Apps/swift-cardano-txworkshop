@@ -750,9 +750,6 @@
     "Drop Transaction" : {
 
     },
-    "Each a whole UTxO in CBOR hex, one per line." : {
-
-    },
     "Each a whole UTxO in CBOR hex, one per line. Coin selection picks from them automatically; choose Always Use or Don't Use to decide yourself, for example to leave out a UTxO another transaction still being signed spends." : {
 
     },
@@ -825,9 +822,6 @@
     "Export & Share" : {
 
     },
-    "Export a report as JSON, Markdown or PDF" : {
-
-    },
     "Export failed" : {
 
     },
@@ -860,12 +854,6 @@
 
     },
     "Fetch by id" : {
-
-    },
-    "Fetch by ID" : {
-
-    },
-    "Fetch by ID…" : {
 
     },
     "Fetch Chain Data" : {
@@ -1826,9 +1814,6 @@
     "Replace API key" : {
 
     },
-    "Replace this transaction with one fetched by its ID" : {
-
-    },
     "Replace this transaction: paste one, open a file, or fetch one by its ID" : {
 
     },
@@ -2028,9 +2013,6 @@
     "Share the transaction, copy its CBOR, or export it as a text envelope, CBOR or a report" : {
 
     },
-    "Share the transaction, or export it as a text envelope or a report" : {
-
-    },
     "Share Transaction" : {
 
     },
@@ -2221,10 +2203,10 @@
     "Term" : {
 
     },
-    "Text Envelope (.tx)" : {
+    "text · ^[%lld byte](inflect: true)" : {
 
     },
-    "text · ^[%lld byte](inflect: true)" : {
+    "Text Envelope (.tx)" : {
 
     },
     "That file is not a transaction." : {

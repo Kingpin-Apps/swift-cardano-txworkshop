@@ -39,6 +39,21 @@ struct CertificateBuildingTests {
         )
     }
 
+    @Test("A certificate alone builds, with no output: what is left goes back as change")
+    func noOutputs() async throws {
+        let (snapshot, utxo, address) = try TransactionComposerTests.setup()
+        let recipe = BuildRecipe(
+            utxos: [try utxo.toCBORData().hex], changeAddress: address,
+            certificates: [CertificateItem(certificate: .registerStake(stakeAddress: try GovernanceBuildingTests.stakeAddress()))]
+        )
+        #expect(RecipeCheck.problems(recipe, network: .preprod).isEmpty)
+        let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
+        #expect(inspection.outputs.count == 1, "Only the change output.")
+        #expect(built.change != nil)
+        #expect(inspection.certificates.count == 1)
+    }
+
     @Test("Inspecting a pool registration shows every field Build asked for")
     func poolRegistrationDetail() async throws {
         let (built, _, _) = try await build([.registerPool(try poolDraft(isUpdate: false))])

@@ -23,7 +23,9 @@ struct BuildView: View {
 
     init(document: TxWorkshopDocument) {
         self.document = document
-        recipe = document.content.recipe ?? BuildRecipe(outputs: [OutputDraft()])
+        // No output to start with: a transaction may only register or
+        // delegate, with what is left going back as change.
+        recipe = document.content.recipe ?? BuildRecipe()
     }
 
     private var provider: ProviderConfiguration? {

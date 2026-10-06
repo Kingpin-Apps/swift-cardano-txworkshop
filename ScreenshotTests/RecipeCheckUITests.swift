@@ -27,6 +27,7 @@ final class RecipeCheckUITests: XCTestCase {
         go(to: "Build", in: app)
         let build = app.buttons["buildRecipe"].firstMatch
         let heading = app.staticTexts["Fix before building"].firstMatch
+        let nothing = problem("Outputs · Output", in: app)
         let output1 = problem("Output 1 · Address", in: app)
         let output2 = problem("Output 2 · Address", in: app)
         let change = problem("Sources · Change address", in: app)
@@ -35,22 +36,24 @@ final class RecipeCheckUITests: XCTestCase {
         scroll(app, toReveal: build)
         build.tap()
 
-        // The empty recipe: an output with no address, and nowhere for change.
-        // The list is under the button, and the form loads rows as they
-        // scroll into view.
+        // The empty recipe: nothing to do yet, and nowhere for change. A new
+        // form has no output, as a transaction may only carry certificates.
         scroll(app, toReveal: change)
         XCTAssertTrue(heading.exists, "Build did not list the recipe's problems.")
         XCTAssertTrue(change.exists, "The missing change address is not named.")
-        scroll(app, toReveal: output1)
-        XCTAssertTrue(output1.exists, "The empty output's address is not named.")
-        XCTAssertFalse(output2.exists)
+        scroll(app, toReveal: nothing)
+        XCTAssertTrue(nothing.exists, "An empty recipe is not named.")
+        XCTAssertFalse(output1.exists, "A new form should start with no output.")
 
-        // A second, empty output joins the list without pressing Build again.
+        // An output, added, joins the list without pressing Build again, and
+        // the recipe is no longer empty.
         let addOutput = app.buttons["Add Output"].firstMatch
         scroll(app, toReveal: addOutput, upwards: true)
         addOutput.tap()
-        scroll(app, toReveal: output2)
-        XCTAssertTrue(output2.waitForExistence(timeout: 5), "The list did not follow the new output.")
+        scroll(app, toReveal: output1)
+        XCTAssertTrue(output1.waitForExistence(timeout: 5), "The list did not follow the new output.")
+        XCTAssertFalse(nothing.exists)
+        XCTAssertFalse(output2.exists)
     }
 
     /// A row in the problem list: its place, field and message read as one.
