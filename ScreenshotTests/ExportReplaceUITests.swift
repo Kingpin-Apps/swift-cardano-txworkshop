@@ -52,6 +52,26 @@ final class ExportReplaceUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Open from File…"].firstMatch.exists, "No Open from File in the sheet.")
         XCTAssertTrue(app.staticTexts["PASTE A TRANSACTION"].firstMatch.exists || app.staticTexts["Paste a transaction"].firstMatch.exists, "No paste section.")
         save("replace-transaction-sheet")
+
+        // The same buttons are on every section, not only Overview.
+        app.buttons["Close"].firstMatch.tap()
+        go(to: "Validate", in: app)
+        XCTAssertTrue(app.buttons["exportShare"].firstMatch.waitForExistence(timeout: 10), "No Export & Share on Validate.")
+        XCTAssertTrue(app.buttons["replaceTransaction"].firstMatch.exists, "No Replace Transaction on Validate.")
+        save("validate-toolbar")
+    }
+
+    @MainActor
+    private func go(to section: String, in app: XCUIApplication) {
+        func row() -> XCUIElement {
+            let button = app.buttons[section].firstMatch
+            return button.isHittable ? button : app.staticTexts[section].firstMatch
+        }
+        if !row().exists, UIDevice.current.userInterfaceIdiom == .phone {
+            app.navigationBars.buttons.firstMatch.tap()
+        }
+        XCTAssertTrue(row().waitForExistence(timeout: 5), "No \(section) in the sidebar.")
+        row().tap()
     }
 
     @MainActor

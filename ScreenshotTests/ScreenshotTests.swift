@@ -79,8 +79,12 @@ final class ScreenshotTests: XCTestCase {
     @MainActor
     private func openDocument(_ app: XCUIApplication) throws {
         let document = app.staticTexts[Self.document]
+        // The name renames; the icon above it opens.
+        func open() {
+            document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: -60)).tap()
+        }
         if document.waitForExistence(timeout: 10) {
-            document.tap()
+            open()
             return
         }
         for place in ["Browse", "On My Apple Vision Pro", "On My iPhone", "On My iPad", "TxWorkshop"] {
@@ -89,7 +93,7 @@ final class ScreenshotTests: XCTestCase {
             if document.exists { break }
         }
         XCTAssertTrue(document.waitForExistence(timeout: 10), "\(Self.document) is not in the app's Documents.")
-        document.tap()
+        open()
     }
 
     /// Shows a section: a sidebar row on iPad and visionOS; on iPhone, back

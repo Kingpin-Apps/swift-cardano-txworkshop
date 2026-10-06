@@ -2,10 +2,16 @@ import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
 
+/// One section of a document, under a toolbar that is the same on every
+/// section: the network, and what works on the whole transaction (export and
+/// share, compare, replace). A section adds its own buttons beside them.
 struct SectionDetail: View {
     let section: WorkshopSection
     let document: TxWorkshopDocument
     let inspection: LoadState<TransactionInspection>
+    @Environment(\.undoManager) private var undoManager
+    @State private var isComparing = false
+    @State private var isReplacing = false
 
     var body: some View {
         content
@@ -19,6 +25,48 @@ struct SectionDetail: View {
             .toolbar {
                 ToolbarItem {
                     NetworkToolbarMenu(document: document)
+                }
+                if let transaction = document.content.transaction {
+                    ToolbarItem {
+                        ExportShareMenu(document: document, transaction: transaction, inspection: inspection.value)
+                    }
+                    if inspection.value != nil {
+                        ToolbarItem {
+                            Button {
+                                isComparing = true
+                            } label: {
+                                Label {
+                                    Text("Compare With…", bundle: #bundle)
+                                } icon: {
+                                    Image(systemName: "arrow.left.arrow.right.square")
+                                }
+                            }
+                            .help(Text("Compare this transaction with another", bundle: #bundle))
+                        }
+                    }
+                    // Replacing the transaction sits apart from the actions
+                    // that work on it.
+                    ToolbarItem(placement: .navigation) {
+                        Button {
+                            isReplacing = true
+                        } label: {
+                            Label {
+                                Text("Replace Transaction…", bundle: #bundle)
+                            } icon: {
+                                Image(systemName: "square.and.arrow.down")
+                            }
+                        }
+                        .help(Text("Replace this transaction: paste one, open a file, or fetch one by its ID", bundle: #bundle))
+                        .accessibilityIdentifier("replaceTransaction")
+                    }
+                }
+            }
+            .sheet(isPresented: $isReplacing) {
+                ReplaceTransactionSheet(document: document, undoManager: undoManager)
+            }
+            .sheet(isPresented: $isComparing) {
+                if let current = inspection.value {
+                    CompareSheet(document: document, current: current)
                 }
             }
     }
