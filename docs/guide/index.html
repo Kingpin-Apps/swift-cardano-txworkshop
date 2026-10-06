@@ -31,6 +31,7 @@
         <li><a href="#providers">Chain providers</a></li>
         <li><a href="#inspecting">Inspecting</a></li>
         <li><a href="#chain-data">Chain data</a></li>
+        <li><a href="#exporting">Exporting and sharing</a></li>
         <li><a href="#explorers">Block explorers</a></li>
         <li><a href="#validating">Validating</a></li>
         <li><a href="#debugger">The script debugger</a></li>
@@ -51,6 +52,7 @@
         <li><strong>Open from File…</strong> or drop a file: <code>.tx</code>, <code>.signed</code>, <code>.json</code>, <code>.cbor</code> or <code>.hex</code>.</li>
         <li><strong>Fetch by ID…</strong> with a transaction id or an explorer link. It searches mainnet, preprod and preview, through your providers and Koios's public API.</li>
       </ul>
+      <p>To load another transaction into the same document, choose <strong>Replace Transaction…</strong> in Overview's toolbar: it offers the same three ways. Replacing can be undone, and signatures recorded for the old transaction that the new one doesn't carry are dropped.</p>
 
       <h2 id="network">The network</h2>
       <p>The network menu in the toolbar says which network the document is on: mainnet, preprod or preview. It picks the provider and places the validity window in time. When you open a transaction, or type addresses to build one, the app sets it from the addresses when they make it clear, and says so when they disagree.</p>
@@ -73,6 +75,16 @@
 
       <h2 id="inspecting">Inspecting</h2>
       <p>The sidebar splits the transaction into Overview, Inputs &amp; Outputs, Certificates &amp; Governance, Scripts &amp; Datums, Metadata, CBOR and CDDL. <strong>Look Up Inputs &amp; Names</strong> on Inputs &amp; Outputs fetches what each input spends, and saves it in the document so it works offline later.</p>
+      <p>Certificates &amp; Governance shows every field of each certificate, as Build asks for them: a pool registration's id, cold and VRF key hashes, pledge, cost, margin, reward account, owners, relays and metadata; a delegation's stake address, pool and DRep; deposits, refunds and anchors.</p>
+
+      <h2 id="exporting">Exporting and sharing</h2>
+      <p><strong>Export &amp; Share</strong>, in Overview's toolbar, keeps every way out of the app in one place:</p>
+      <ul>
+        <li><strong>Share Transaction…</strong> sends a <code>.tx</code> file, a cardano-cli text envelope, to Messages, Mail, AirDrop or any app.</li>
+        <li><strong>Copy CBOR Hex</strong> puts the transaction's CBOR on the clipboard.</li>
+        <li><strong>Text Envelope (.tx)</strong>, <strong>CBOR (.cbor)</strong> and <strong>CBOR Hex (.hex)</strong> save the transaction for cardano-cli and other tools. The envelope's type says whether it is signed yet: <code>Unwitnessed Tx ConwayEra</code> before any witness, <code>Tx ConwayEra</code> after.</li>
+        <li><strong>JSON</strong>, <strong>Markdown</strong> and <strong>PDF Report</strong> save a report of the whole transaction.</li>
+      </ul>
 
       <h2 id="chain-data">Chain data</h2>
       <p>Validating, debugging and building need the protocol parameters and the UTxOs a transaction spends. <strong>Chain Data</strong>, at the top of the work sections, fetches them from the document's provider: the tip slot, epoch, era and protocol version; the fees, size and execution limits, prices, deposits and cost models; and whether each input's UTxO is there. Without a transaction it fetches the chain alone. <strong>Enter by Hand…</strong> takes the parameters and UTxOs as JSON or CBOR, for a network no provider reaches. What is fetched is saved in the document, so the work stays repeatable offline. When the debugger or a trace can't run for want of it, <strong>Fetch Chain Data</strong> is offered there, and they try again.</p>
@@ -98,6 +110,7 @@
 
       <h2 id="building">Building</h2>
       <p><strong>Build</strong> starts from source addresses or UTxOs, then outputs, mints, script inputs, certificates, withdrawals, votes and proposals. Every field takes a value in any form: an address as bech32 or hex, or from an <code>.addr</code> or key file; a pool as <code>pool1…</code>, hex, a cold key or <code>pool.json</code>. The line under each field says what it read. Fees, collateral and script budgets are worked out for you.</p>
+      <p>Coin selection picks from the source addresses' UTxOs on its own. To decide yourself, fetch them with <strong>Fetch Their UTxOs</strong> and set each one to <strong>Always Use</strong> or <strong>Don't Use</strong>; for example, leave out a UTxO that a transaction still being signed spends. Changing a choice builds again at once, and each UTxO says whether the last build spent it.</p>
       <p>Certificates cover the whole Conway era:</p>
       <ul>
         <li>stake registration, deregistration and delegation, to a pool, a DRep or both, alone or with registration;</li>
@@ -105,7 +118,8 @@
         <li>DRep registration, update and retirement;</li>
         <li>committee hot key authorization and resignation.</li>
       </ul>
-      <p>A pool registration fills in from <strong>Import pool.json…</strong>, or from the pool's registration on chain with <strong>Fetch Registration</strong>, ready to edit and register again.</p>
+      <p>A pool registration fills in from <strong>Import pool.json…</strong>, or from the pool's registration on chain with <strong>Fetch Registration</strong>, ready to edit and register again. A pool field takes a <code>pool.json</code> that names its pool id, or its cold key by path; the pool's metadata JSON doesn't say which pool it is, so it isn't accepted.</p>
+      <p>Anything added can be taken out again: outputs, mints, script inputs, certificates and the rest each have <strong>Remove</strong>, and a blueprint the document keeps can be removed under <strong>Blueprints in this document</strong> once no form uses it.</p>
       <p><strong>Build</strong> checks the form before it builds and names each problem by place and field.</p>
 
       <h2 id="blueprints">Blueprints (CIP-57)</h2>
@@ -125,6 +139,7 @@
         <li><strong>Keystone:</strong> by QR code, on iPhone and iPad.</li>
       </ul>
       <p>Import a hardware account under <strong>Import a Hardware Account…</strong>. Hardware wallets sign payments, stake registration and delegation, vote delegation and withdrawals.</p>
+      <p>Witnesses list every signature collected so far. <strong>Add a Co-signer's Witness…</strong> adds one a co-signer sends back; the trash button takes one out again, leaving the transaction's id and its other signatures as they were.</p>
       <p class="note">The app never moves funds on its own. It signs only what you confirm, and never asks for a recovery phrase except when you choose to add one.</p>
 
       <h2 id="submitting">Submitting</h2>
