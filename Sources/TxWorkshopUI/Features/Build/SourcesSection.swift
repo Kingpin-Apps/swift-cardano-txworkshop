@@ -3,10 +3,14 @@ import TxWorkshopCore
 import TxWorkshopEngine
 
 /// Where the builder may take funds from: watch-only addresses, and UTxOs
-/// pasted or fetched from them.
+/// pasted or fetched from them, each spent when coin selection picks it,
+/// always, or never.
 struct SourcesSection: View {
     @Binding var recipe: BuildRecipe
     let provider: ProviderConfiguration?
+    /// What the last build spent, so an input it picked can be left out even
+    /// when it was not fetched here.
+    var spent: [TransactionComposer.SpentInput] = []
     @Environment(ProviderSettingsStore.self) private var providers
     @State private var utxos = ""
     @State private var isFetching = false
@@ -37,11 +41,10 @@ struct SourcesSection: View {
                 .accessibilityLabel(Text("UTxOs as CBOR hex, one per line", bundle: #bundle))
             ForEach(recipe.utxos, id: \.self) { hex in
                 if let described = TransactionComposer.describe(utxoHex: hex) {
-                    HStack {
-                        TWBytesText(described.id, font: TWFont.bytesSmall)
-                        Spacer()
-                        Text(verbatim: TWFormat.ada(described.lovelace)).font(TWFont.figure)
-                    }
+                    UTxOChoiceRow(
+                        id: described.id, lovelace: described.lovelace, assetCount: described.assetCount,
+                        isSpent: spentIDs.contains(described.id), choice: choice(for: described.id)
+                    )
                 } else {
                     Label {
                         Text("Not a UTxO: \(String(hex.prefix(16)))…", bundle: #bundle)
@@ -51,15 +54,39 @@ struct SourcesSection: View {
                     .labelStyle(.status(TWColor.warning))
                 }
             }
+            // Inputs the last build took from the provider, or chosen before
+            // and no longer listed above.
+            ForEach(otherInputs) { input in
+                UTxOChoiceRow(
+                    id: input.id, lovelace: input.lovelace, assetCount: input.assetCount,
+                    isSpent: spentIDs.contains(input.id), choice: choice(for: input.id)
+                )
+            }
         } header: {
             Text("UTxOs to spend", bundle: #bundle)
         } footer: {
-            Text("Each a whole UTxO in CBOR hex, one per line.", bundle: #bundle)
+            Text("Each a whole UTxO in CBOR hex, one per line. Coin selection picks from them automatically; choose Always Use or Don't Use to decide yourself, for example to leave out a UTxO another transaction still being signed spends.", bundle: #bundle)
         }
         .onAppear {
             utxos = recipe.utxos.joined(separator: "\n")
         }
         .onChange(of: utxos) { _, text in recipe.utxos = Self.lines(text) }
+    }
+
+    private var spentIDs: Set<String> { Set(spent.map(\.id)) }
+
+    /// Inputs not among the listed UTxOs: spent by the last build, or chosen.
+    private var otherInputs: [TransactionComposer.SpentInput] {
+        let listed = Set(recipe.utxos.compactMap { TransactionComposer.describe(utxoHex: $0)?.id })
+        var others = spent.filter { !listed.contains($0.id) }
+        for id in recipe.fixedInputs + recipe.excludedInputs where !listed.contains(id) && !others.contains(where: { $0.id == id }) {
+            others.append(TransactionComposer.SpentInput(id: id, lovelace: 0, assetCount: 0))
+        }
+        return others
+    }
+
+    private func choice(for id: String) -> Binding<BuildRecipe.InputChoice> {
+        Binding { recipe.choice(for: id) } set: { recipe.setChoice($0, for: id) }
     }
 
     static func lines(_ text: String) -> [String] {
@@ -83,5 +110,49 @@ struct SourcesSection: View {
                 problem = String(describing: error)
             }
         }
+    }
+}
+
+/// One UTxO, what it holds, whether the last build spent it, and how coin
+/// selection should treat it.
+private struct UTxOChoiceRow: View {
+    let id: String
+    let lovelace: Int64
+    let assetCount: Int
+    let isSpent: Bool
+    @Binding var choice: BuildRecipe.InputChoice
+
+    var body: some View {
+        Picker(selection: $choice) {
+            Text("Automatic", bundle: #bundle).tag(BuildRecipe.InputChoice.automatic)
+            Text("Always Use", bundle: #bundle).tag(BuildRecipe.InputChoice.always)
+            Text("Don't Use", bundle: #bundle).tag(BuildRecipe.InputChoice.never)
+        } label: {
+            VStack(alignment: .leading, spacing: TWSpacing.xxs) {
+                TWBytesText(id, font: TWFont.bytesSmall)
+                HStack(spacing: TWSpacing.s) {
+                    if lovelace > 0 {
+                        Text(verbatim: TWFormat.ada(lovelace)).font(TWFont.figure)
+                    }
+                    if assetCount > 0 {
+                        Text("\(assetCount) tokens", bundle: #bundle)
+                            .font(.caption)
+                            .foregroundStyle(TWColor.secondaryText)
+                    }
+                    if isSpent {
+                        Label {
+                            Text("Spent by the last build", bundle: #bundle)
+                        } icon: {
+                            Image(systemName: "checkmark.circle")
+                        }
+                        .labelStyle(.status(TWColor.success))
+                        .font(.caption)
+                    }
+                }
+            }
+            .strikethrough(choice == .never, color: TWColor.secondaryText)
+        }
+        .pickerStyle(.menu)
+        .accessibilityIdentifier("utxoChoice-\(id)")
     }
 }

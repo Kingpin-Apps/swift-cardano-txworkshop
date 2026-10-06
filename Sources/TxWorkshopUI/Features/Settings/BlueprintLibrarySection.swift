@@ -54,8 +54,10 @@ struct BlueprintLibrarySection: View {
 }
 
 /// One kept blueprint: its title, version, compiler and validators.
-private struct BlueprintLibraryRow: View {
+struct BlueprintLibraryRow: View {
     let stored: StoredBlueprint
+    /// Why it can't be removed, when it can't.
+    var inUse: LocalizedStringResource?
     let onRemove: () -> Void
 
     var body: some View {
@@ -69,6 +71,11 @@ private struct BlueprintLibraryRow: View {
                     Text(String(localized: "\(Set(blueprint.validators.compactMap(\.hash)).count) validators", bundle: #bundle))
                         .font(.caption)
                         .foregroundStyle(TWColor.secondaryText)
+                    if let inUse {
+                        Text(inUse)
+                            .font(.caption)
+                            .foregroundStyle(TWColor.secondaryText)
+                    }
                 }
             } else {
                 Text("A blueprint that no longer reads", bundle: #bundle)
@@ -85,6 +92,7 @@ private struct BlueprintLibraryRow: View {
                 .twHitTarget()
             }
             .buttonStyle(.borderless)
+            .disabled(inUse != nil)
         }
     }
 }

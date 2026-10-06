@@ -1,0 +1,60 @@
+{
+  "blueprints" : [
+
+  ],
+  "certificates" : [
+
+  ],
+  "changeAddress" : "addr_test1vqzxr8cgrpg2n3rgcfdvfjnj77pmdslsqmxzmljw3gnlmsqyskzqq",
+  "coinSelection" : "largestFirst",
+  "collateral" : [
+
+  ],
+  "excludedInputs" : [
+
+  ],
+  "fixedInputs" : [
+
+  ],
+  "message" : "",
+  "mints" : [
+
+  ],
+  "outputs" : [
+    {
+      "address" : "addr_test1vqzxr8cgrpg2n3rgcfdvfjnj77pmdslsqmxzmljw3gnlmsqyskzqq",
+      "assets" : [
+
+      ],
+      "datum" : {
+        "none" : {
+
+        }
+      },
+      "id" : "EDDC695A-75B7-4D19-BDE4-2CFB66760A9D",
+      "lovelace" : 10000000
+    }
+  ],
+  "proposals" : [
+
+  ],
+  "requiredSigners" : [
+
+  ],
+  "scriptInputs" : [
+
+  ],
+  "sourceAddresses" : [
+
+  ],
+  "utxos" : [
+    "8282582080e03970283fb74823f5c825f3b16c213e93058ef9d1f1603b782ea246c400cb0182581d6004619f081850a9c468c25ac4ca72f783b6c3f006cc2dfe4e8a27fdc0821b000000014a204fbaa2581c1ba3934a2a180a3863b0a28c6295ac9ad34aa46d95aeb16a99617451a1476d797447454e531b000000129ccb9902581cc6e65ba7878b2f8ea0ad39287d3e2fd256dc5c4160fc19bdf4c4d87ea1457447454e531ade37de56",
+    "8282582080e03970283fb74823f5c825f3b16c213e93058ef9d1f1603b782ea246c400cb0282581d6004619f081850a9c468c25ac4ca72f783b6c3f006cc2dfe4e8a27fdc01b0000000528813ee8"
+  ],
+  "votes" : [
+
+  ],
+  "withdrawals" : [
+
+  ]
+}

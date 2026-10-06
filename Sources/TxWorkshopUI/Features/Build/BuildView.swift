@@ -12,6 +12,8 @@ struct BuildView: View {
     @Environment(\.undoManager) private var undoManager
     @State private var recipe: BuildRecipe
     @State private var composition: LoadState<TransactionComposer.Composition> = .idle
+    /// What the last build spent, kept while the next one runs.
+    @State private var lastSpent: [TransactionComposer.SpentInput] = []
     @State private var usesProvider = true
     @State private var networkHints = BuildNetworkHints()
     /// What is wrong with the recipe, shown after Build is pressed and kept
@@ -37,7 +39,7 @@ struct BuildView: View {
                     NetworkSuggestion(document: document, hint: hint, source: Text("The addresses here", bundle: #bundle))
                 }
             }
-            SourcesSection(recipe: $recipe, provider: provider)
+            SourcesSection(recipe: $recipe, provider: provider, spent: lastSpent)
             ForEach($recipe.outputs) { $output in
                 OutputDraftSection(output: $output, blueprints: $recipe.blueprints, applied: BlueprintCatalog.appliedScripts(in: recipe)) {
                     recipe.outputs.removeAll { $0.id == output.id }
@@ -127,6 +129,7 @@ struct BuildView: View {
                 .font(TWFont.figure)
             }
             BuildOptionsSection(recipe: $recipe)
+            DocumentBlueprintsSection(recipe: $recipe)
             Section {
                 if provider != nil {
                     Toggle(isOn: $usesProvider) {
@@ -193,6 +196,14 @@ struct BuildView: View {
         .onChange(of: recipe) {
             if checksRecipe { problems = RecipeCheck.problems(recipe, network: document.content.network) }
         }
+        // Choosing which UTxOs to spend builds again at once, so the result
+        // shown is always for the inputs chosen.
+        .onChange(of: [recipe.fixedInputs, recipe.excludedInputs]) {
+            switch composition {
+            case .loaded, .failed: build()
+            case .idle, .loading: break
+            }
+        }
         .navigationTitle(Text("Build", bundle: #bundle))
     }
 
@@ -227,7 +238,9 @@ struct BuildView: View {
         document.update({ $0.recipe = recipe }, actionName: LocalizedStringResource("Edit Recipe", bundle: #bundle), undoManager: undoManager)
         Task {
             do {
-                composition = .loaded(try await TransactionComposer().compose(recipe, snapshot: snapshot, network: network, provider: provider, apiKey: apiKey))
+                let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: network, provider: provider, apiKey: apiKey)
+                composition = .loaded(built)
+                lastSpent = built.spent
             } catch {
                 composition = .failed(String(describing: error))
             }

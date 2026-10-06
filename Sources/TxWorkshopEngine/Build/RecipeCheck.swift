@@ -70,6 +70,7 @@ private struct Checker {
         let sources = lines(r.sourceAddresses)
         for address in sources { value(.address, address, "Sources", "Source address") }
         for input in lines(r.fixedInputs) { value(.transactionInput, input, "Sources", "Inputs to spend") }
+        for input in lines(r.excludedInputs) { value(.transactionInput, input, "Sources", "Inputs not to spend") }
         for input in lines(r.collateral) { value(.transactionInput, input, "Options", "Collateral") }
         for signer in lines(r.requiredSigners) { value(.keyHash, signer, "Options", "Required signers") }
         value(.address, r.changeAddress, required: false, "Sources", "Change address")

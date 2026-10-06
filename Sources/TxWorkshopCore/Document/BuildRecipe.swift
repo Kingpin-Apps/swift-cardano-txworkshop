@@ -11,6 +11,9 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
     /// Inputs (`<transaction id>#<index>`) to spend whatever coin selection
     /// picks.
     public var fixedInputs: [String]
+    /// Inputs (`<transaction id>#<index>`) coin selection and collateral must
+    /// leave alone, such as ones a transaction still being signed spends.
+    public var excludedInputs: [String]
     public var outputs: [OutputDraft]
     /// Where change goes; the first source address when empty.
     public var changeAddress: String
@@ -41,12 +44,47 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
     /// The CIP-57 blueprints the recipe's forms use, kept with the document.
     public var blueprints: [StoredBlueprint]
 
+    /// How coin selection treats the UTxO `<transaction id>#<index>`.
+    public enum InputChoice: String, Sendable, CaseIterable {
+        /// Spent if coin selection picks it.
+        case automatic
+        /// Always spent.
+        case always
+        /// Never spent, nor put up as collateral.
+        case never
+    }
+
+    public func choice(for input: String) -> InputChoice {
+        if fixedInputs.contains(input) { return .always }
+        if excludedInputs.contains(input) { return .never }
+        return .automatic
+    }
+
+    public mutating func setChoice(_ choice: InputChoice, for input: String) {
+        fixedInputs.removeAll { $0 == input }
+        excludedInputs.removeAll { $0 == input }
+        switch choice {
+        case .automatic: break
+        case .always: fixedInputs.append(input)
+        case .never: excludedInputs.append(input)
+        }
+    }
+
+    /// Whether a form or a script's parameters use the blueprint `id`.
+    public func uses(blueprint id: String) -> Bool {
+        let forms = outputs.compactMap(\.datumForm) + mints.compactMap(\.redeemerForm)
+            + scriptInputs.flatMap { [$0.datumForm, $0.redeemerForm].compactMap { $0 } }
+        let parameters = mints.compactMap(\.scriptParameters) + scriptInputs.compactMap(\.scriptParameters)
+        return forms.contains { $0.blueprint == id } || parameters.contains { $0.blueprint == id }
+    }
+
     public enum CoinSelection: String, Codable, Sendable, CaseIterable {
         case randomImprove, largestFirst
     }
 
     public init(
-        sourceAddresses: [String] = [], utxos: [String] = [], fixedInputs: [String] = [], outputs: [OutputDraft] = [],
+        sourceAddresses: [String] = [], utxos: [String] = [], fixedInputs: [String] = [], excludedInputs: [String] = [],
+        outputs: [OutputDraft] = [],
         changeAddress: String = "", coinSelection: CoinSelection = .randomImprove, validFrom: UInt64? = nil,
         validUntil: UInt64? = nil, message: String = "", requiredSigners: [String] = [], feeBuffer: UInt64? = nil,
         mints: [MintDraft] = [], scriptInputs: [ScriptInputDraft] = [], collateral: [String] = [],
@@ -56,6 +94,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         self.sourceAddresses = sourceAddresses
         self.utxos = utxos
         self.fixedInputs = fixedInputs
+        self.excludedInputs = excludedInputs
         self.outputs = outputs
         self.changeAddress = changeAddress
         self.coinSelection = coinSelection
@@ -81,6 +120,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         sourceAddresses = try c.decodeIfPresent([String].self, forKey: .sourceAddresses) ?? []
         utxos = try c.decodeIfPresent([String].self, forKey: .utxos) ?? []
         fixedInputs = try c.decodeIfPresent([String].self, forKey: .fixedInputs) ?? []
+        excludedInputs = try c.decodeIfPresent([String].self, forKey: .excludedInputs) ?? []
         outputs = try c.decodeIfPresent([OutputDraft].self, forKey: .outputs) ?? []
         changeAddress = try c.decodeIfPresent(String.self, forKey: .changeAddress) ?? ""
         coinSelection = try c.decodeIfPresent(CoinSelection.self, forKey: .coinSelection) ?? .randomImprove

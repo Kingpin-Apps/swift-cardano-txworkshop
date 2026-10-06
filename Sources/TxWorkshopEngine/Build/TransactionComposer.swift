@@ -17,12 +17,28 @@ public struct TransactionComposer: Sendable {
         public let fee: FeeBreakdownView
         /// The inputs coin selection spent, as `<transaction id>#<index>`.
         public let inputs: [String]
+        /// Those inputs with what they hold, so they can be chosen again.
+        public let spent: [SpentInput]
         public let totalIn: Int64
         public let totalOut: Int64
         /// Lovelace the change output carries, when there is one.
         public let change: Int64?
         public let deposits: Int64
         public let refunds: Int64
+    }
+
+    /// An input the transaction spends.
+    public struct SpentInput: Sendable, Equatable, Identifiable {
+        /// `<transaction id>#<index>`.
+        public let id: String
+        public let lovelace: Int64
+        public let assetCount: Int
+
+        public init(id: String, lovelace: Int64, assetCount: Int) {
+            self.id = id
+            self.lovelace = lovelace
+            self.assetCount = assetCount
+        }
     }
 
     /// The fee, item by item.
@@ -90,6 +106,8 @@ public struct TransactionComposer: Sendable {
     }
 
     func build(_ recipe: BuildRecipe, context: WorkshopChainContext, parameters: ProtocolParameters) async throws -> Composition {
+        var context = context
+        context.excluded = Set(recipe.excludedInputs.map { $0.trimmingCharacters(in: .whitespaces) })
         let selectors: [UTxOSelector] = switch recipe.coinSelection {
         case .randomImprove: [RandomImproveMultiAsset(), LargestFirstSelector()]
         case .largestFirst: [LargestFirstSelector(), RandomImproveMultiAsset()]
@@ -147,8 +165,11 @@ public struct TransactionComposer: Sendable {
 
         let inputs = body.inputs.asArray
         var totalIn: Int64 = 0
+        var spent: [SpentInput] = []
         for input in inputs {
-            if let (utxo, _) = try await context.utxo(input: input) { totalIn += utxo.output.amount.coin }
+            guard let (utxo, _) = try await context.utxo(input: input) else { continue }
+            totalIn += utxo.output.amount.coin
+            spent.append(SpentInput(id: InputResolver.id(input), lovelace: utxo.output.amount.coin, assetCount: Self.assetCount(utxo)))
         }
         let totalOut = body.outputs.reduce(Int64(0)) { $0 + $1.amount.coin }
         // The builder adds change after the outputs asked for.
@@ -158,6 +179,7 @@ public struct TransactionComposer: Sendable {
             id: transaction.id?.payload.hex ?? "",
             fee: Self.view(breakdown),
             inputs: inputs.map(InputResolver.id),
+            spent: spent,
             totalIn: totalIn,
             totalOut: totalOut,
             change: changeOutput?.amount.coin,
@@ -323,6 +345,10 @@ extension TransactionComposer {
     /// A UTxO's reference and lovelace, for listing pasted UTxOs.
     public static func describe(utxoHex: String) -> (id: String, lovelace: Int64, assetCount: Int)? {
         guard let utxo = try? utxo(utxoHex) else { return nil }
-        return (InputResolver.id(utxo.input), utxo.output.amount.coin, utxo.output.amount.multiAsset.data.values.reduce(0) { $0 + $1.data.count })
+        return (InputResolver.id(utxo.input), utxo.output.amount.coin, assetCount(utxo))
+    }
+
+    static func assetCount(_ utxo: UTxO) -> Int {
+        utxo.output.amount.multiAsset.data.values.reduce(0) { $0 + $1.data.count }
     }
 }

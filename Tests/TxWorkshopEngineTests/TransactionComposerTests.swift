@@ -19,6 +19,42 @@ struct TransactionComposerTests {
         return (snapshot, utxo, try utxo.output.address.toBech32())
     }
 
+    @Test("A UTxO marked Don't Use is left out, and Always Use is spent")
+    func inputChoices() async throws {
+        let (snapshot, utxo, address) = try Self.setup()
+        // A larger UTxO at the same address, which largest-first picks first.
+        let larger = UTxO(
+            input: TransactionInput(transactionId: utxo.input.transactionId, index: utxo.input.index + 1),
+            output: TransactionOutput(address: utxo.output.address, amount: Value(coin: utxo.output.amount.coin * 4))
+        )
+        var recipe = BuildRecipe(
+            utxos: [try utxo.toCBORData().hex, try larger.toCBORData().hex],
+            outputs: [OutputDraft(address: address, lovelace: 10_000_000)],
+            changeAddress: address, coinSelection: .largestFirst
+        )
+        let largerID = InputResolver.id(larger.input)
+        let smallerID = InputResolver.id(utxo.input)
+        #expect(try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod).inputs == [largerID])
+
+        recipe.setChoice(.never, for: largerID)
+        #expect(recipe.choice(for: largerID) == .never)
+        let without = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        #expect(without.inputs == [smallerID])
+        #expect(without.spent.map(\.id) == [smallerID])
+
+        recipe.setChoice(.always, for: largerID)
+        #expect(recipe.excludedInputs.isEmpty && recipe.fixedInputs == [largerID])
+        let both = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        #expect(both.inputs.contains(largerID))
+
+        // Nothing left to spend.
+        recipe.setChoice(.never, for: largerID)
+        recipe.setChoice(.never, for: smallerID)
+        await #expect(throws: (any Error).self) {
+            try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
+        }
+    }
+
     @Test("A payment balances: inputs = outputs + fee, with change back")
     func payment() async throws {
         let (snapshot, utxo, address) = try Self.setup()

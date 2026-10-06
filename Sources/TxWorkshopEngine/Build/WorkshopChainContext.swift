@@ -18,6 +18,9 @@ struct WorkshopChainContext: ChainContext {
     var resolvable: [UTxO] = []
     let tipSlot: UInt64?
     let live: (any ChainContext)?
+    /// Inputs (`<transaction id>#<index>`) never offered for coin selection
+    /// or collateral.
+    var excluded: Set<String> = []
 
     var name: String { "Cardano TxWorkshop" }
     var type: ContextType { live == nil ? .offline : .online }
@@ -45,7 +48,7 @@ struct WorkshopChainContext: ChainContext {
             let ids = Set(found.map { InputResolver.id($0.input) })
             found += try await live.utxos(address: address).filter { !ids.contains(InputResolver.id($0.input)) }
         }
-        return found
+        return found.filter { !excluded.contains(InputResolver.id($0.input)) }
     }
 
     func utxo(input: TransactionInput) async throws -> (UTxO, isSpent: Bool)? {
