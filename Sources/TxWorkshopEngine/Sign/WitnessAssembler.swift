@@ -43,7 +43,10 @@ public enum WitnessAssembler {
 
         // Every entry of the witness set but the vkey witnesses, as written.
         var entries: [ArraySlice<UInt8>] = []
-        var tagged = false
+        // A set tagged 258, as the Conway ledger, cardano-cli and hardware
+        // wallets write it, unless the transaction already writes its
+        // witnesses as a plain list. The fee was sized for the tagged form.
+        var tagged = true
         for index in stride(from: 0, to: set.children.count - 1, by: 2) {
             let key = set.children[index]
             let value = set.children[index + 1]

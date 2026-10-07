@@ -99,6 +99,14 @@ public struct TransactionValidation: Sendable {
         return ValidationOutcome(ranAt: .now, mode: mode, issues: issues, redeemers: redeemers)
     }
 
+    /// A witness the size of a real one: a 32-byte key and a 64-byte signature.
+    static func placeholderWitness(_ index: UInt8) throws -> VerificationKeyWitness {
+        VerificationKeyWitness(
+            vkey: .verificationKey(try VerificationKey(payload: Data(repeating: index, count: 32))),
+            signature: Data(repeating: index, count: 64)
+        )
+    }
+
     /// The script data hash covers the cost models, and only today's
     /// protocol parameters can be fetched: judged as written, a transaction
     /// from before a cost model change no longer matches. That is expected,
