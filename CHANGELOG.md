@@ -1,3 +1,14 @@
+## v0.1.8 (2026-10-07)
+
+### Feat
+
+- **app**: TxWorkshop under the icon and the Utilities category; Direct debug builds sign with the team
+- **build**: the hardware wallet option beside Build, and say why a build cannot sync
+
+### Fix
+
+- **keychain**: never lose an API key moving it to or from iCloud Keychain
+
 ## v0.1.7 (2026-10-07)
 
 ### Feat
