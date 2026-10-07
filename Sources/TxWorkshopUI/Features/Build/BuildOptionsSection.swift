@@ -26,8 +26,14 @@ struct BuildOptionsSection: View {
                 Text("Extra fee (lovelace)", bundle: #bundle)
             }
             .font(TWFont.figure)
+            Toggle(isOn: $recipe.cip21Compatible) {
+                Text("For hardware wallets (CIP-21)", bundle: #bundle)
+            }
+            .accessibilityIdentifier("buildCIP21")
         } header: {
             Text("Options", bundle: #bundle)
+        } footer: {
+            Text("For hardware wallets, the transaction is written the way Ledger, Trezor and Keystone ask, and the fee is worked out from those bytes.", bundle: #bundle)
         }
         Section {
             TextEditor(text: $recipe.message)

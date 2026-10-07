@@ -3,12 +3,20 @@ import TxWorkshopCore
 import TxWorkshopEngine
 
 /// Whether hardware wallets can sign the transaction (CIP-21), what is in the
-/// way, and a rewrite that fixes what can be fixed.
+/// way, and building it again so they can.
+///
+/// Writing a body the way CIP-21 asks changes its bytes, and with them the
+/// transaction id and the fee the ledger charges. So the transaction is built
+/// again for hardware wallets, with the fee worked out from the bytes that
+/// will be signed, rather than its bytes rewritten.
 struct CIP21Section: View {
     let document: TxWorkshopDocument
+    @Environment(ProviderSettingsStore.self) private var providers
     @Environment(\.undoManager) private var undoManager
     @State private var report: LoadState<CIP21Report> = .idle
-    @State private var proposal: CIP21Transform.Result?
+    @State private var proposal: CIP21Rebuild.Result?
+    @State private var isRebuilding = false
+    @State private var rebuildProblem: String?
 
     var body: some View {
         Section {
@@ -25,15 +33,18 @@ struct CIP21Section: View {
         } footer: {
             Text("Ledger, Trezor and Keystone sign only transactions written the way CIP-21 sets out.", bundle: #bundle)
         }
-        .task(id: document.content.transaction) { check() }
+        .task(id: document.content.transaction) {
+            rebuildProblem = nil
+            check()
+        }
         .confirmationDialog(
-            Text("Rewrite for Hardware Wallets?", bundle: #bundle), isPresented: isProposing, titleVisibility: .visible,
+            Text("Rebuild for Hardware Wallets?", bundle: #bundle), isPresented: isProposing, titleVisibility: .visible,
             presenting: proposal
         ) { result in
             Button {
                 apply(result)
             } label: {
-                Text("Rewrite", bundle: #bundle)
+                Text("Rebuild", bundle: #bundle)
             }
             Button(role: .cancel) {} label: { Text("Cancel", bundle: #bundle) }
         } message: { result in
@@ -73,15 +84,22 @@ struct CIP21Section: View {
             }
             if !report.fixable.isEmpty {
                 Button {
-                    propose()
+                    rebuild()
                 } label: {
                     Label {
-                        Text("Make CIP-21 Compatible…", bundle: #bundle)
+                        Text("Rebuild for Hardware Wallets…", bundle: #bundle)
                     } icon: {
                         Image(systemName: "wand.and.stars")
                     }
                 }
-                .accessibilityIdentifier("cip21Rewrite")
+                .disabled(isRebuilding)
+                .accessibilityIdentifier("cip21Rebuild")
+                if isRebuilding {
+                    ProgressView()
+                }
+                if let rebuildProblem {
+                    TWErrorText(rebuildProblem)
+                }
             }
         }
     }
@@ -102,35 +120,61 @@ struct CIP21Section: View {
         }
     }
 
-    private func propose() {
+    /// Builds the transaction again for hardware wallets: from the build
+    /// form when the document has one, from the transaction otherwise.
+    private func rebuild() {
         guard let bytes = document.content.transaction else { return }
-        do {
-            proposal = try CIP21Transform.compatible(bytes)
-        } catch {
-            report = .failed(String(describing: error))
+        let content = document.content
+        let provider = content.network.flatMap { providers.selectedProvider(for: $0) }
+        let apiKey = provider.flatMap { providers.apiKey(for: $0) }
+        isRebuilding = true
+        rebuildProblem = nil
+        Task {
+            defer { isRebuilding = false }
+            do {
+                proposal = try await CIP21Rebuild.rebuild(
+                    bytes, recipe: content.recipe, snapshot: content.chainContext, network: content.network,
+                    provider: provider, apiKey: apiKey
+                )
+            } catch {
+                rebuildProblem = String(describing: error)
+            }
         }
     }
 
-    private func apply(_ result: CIP21Transform.Result) {
-        guard result.changed else { return }
+    private func apply(_ result: CIP21Rebuild.Result) {
         document.update({ content in
-            content.transaction = result.bytes
-            if result.droppedSignatures > 0 {
-                // They signed the old body.
-                content.envelope = nil
-                content.witnesses = []
+            content.transaction = result.transaction
+            // Every signature, kept or collected, signed the old id.
+            content.envelope = nil
+            content.witnesses = []
+            if let recipe = result.recipe {
+                content.recipe = recipe
             }
-        }, actionName: LocalizedStringResource("Rewrite for Hardware Wallets", bundle: #bundle), undoManager: undoManager)
+        }, actionName: LocalizedStringResource("Rebuild for Hardware Wallets", bundle: #bundle), undoManager: undoManager)
         proposal = nil
     }
 
-    static func message(_ result: CIP21Transform.Result) -> String {
-        var lines = result.changes
+    static func message(_ result: CIP21Rebuild.Result) -> String {
+        var lines: [String] = []
+        switch result.source {
+        case .recipe:
+            lines.append(String(localized: "It is built again from its build form, for hardware wallets, spending the same inputs. The build form keeps building for hardware wallets.", bundle: #bundle))
+        case .transaction:
+            lines.append(String(localized: "It is built again from the transaction, for hardware wallets: the same inputs and outputs, with the change worked out again.", bundle: #bundle))
+        }
+        if result.fee == result.previousFee {
+            lines.append(String(localized: "The fee stays \(result.fee) lovelace.", bundle: #bundle))
+        } else {
+            lines.append(String(localized: "The fee goes from \(result.previousFee) to \(result.fee) lovelace, worked out from the bytes that will be signed.", bundle: #bundle))
+        }
         if result.droppedSignatures > 0 {
             lines.append(String(localized: "The transaction id changes, so its \(result.droppedSignatures) signatures are removed: sign it again.", bundle: #bundle))
+        } else {
+            lines.append(String(localized: "The transaction id changes: sign the new one.", bundle: #bundle))
         }
-        if !result.remaining.isEmpty {
-            lines.append(String(localized: "Still in the way, which a rewrite cannot fix: \(result.remaining.map(\.message).joined(separator: " "))", bundle: #bundle))
+        if !result.report.isCompatible {
+            lines.append(String(localized: "Still in the way: \(result.report.findings.map(\.message).joined(separator: " "))", bundle: #bundle))
         }
         return lines.joined(separator: "\n")
     }

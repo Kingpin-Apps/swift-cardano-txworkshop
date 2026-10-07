@@ -4,16 +4,6 @@
     "" : {
 
     },
-    "%@ · %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ · %2$lld"
-          }
-        }
-      }
-    },
     "%@ (takes parameters)" : {
 
     },
@@ -103,12 +93,12 @@
         }
       }
     },
-    "%@… is on %@." : {
+    "%@ · %lld" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@… is on %2$@."
+            "value" : "%1$@ · %2$lld"
           }
         }
       }
@@ -119,6 +109,16 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@%2$@"
+          }
+        }
+      }
+    },
+    "%@… is on %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@… is on %2$@."
           }
         }
       }
@@ -178,31 +178,6 @@
         }
       }
     },
-    "^[%lld input](inflect: true) chosen" : {
-
-    },
-    "^[%lld input](inflect: true) not found." : {
-
-    },
-    "^[%lld input](inflect: true) not looked up, so their signers are not listed. Fetch chain data in Validate." : {
-
-    },
-    "^[%lld mismatch](inflect: true) with `%@` in the %@ schema." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "^[%1$lld mismatch](inflect: true) with `%2$@` in the %3$@ schema."
-          }
-        }
-      }
-    },
-    "^[%lld native asset](inflect: true)" : {
-
-    },
-    "^[%lld trace](inflect: true)" : {
-
-    },
     "+%@" : {
 
     },
@@ -226,10 +201,10 @@
     "A script (%@)" : {
 
     },
-    "a testnet" : {
+    "A witness set or witness in CBOR hex, or a cardano-cli witness file." : {
 
     },
-    "A witness set or witness in CBOR hex, or a cardano-cli witness file." : {
+    "API key" : {
 
     },
     "Abstain" : {
@@ -250,52 +225,16 @@
     "Add" : {
 
     },
-    "Add a Co-signer's Witness…" : {
-
-    },
-    "Add a provider for %@ in Settings first." : {
-
-    },
-    "Add a provider for %@ in Settings to fetch chain data, or enter it by hand." : {
-
-    },
-    "Add a provider for %@ in Settings to look inputs up. Asset names come from the token registry." : {
-
-    },
-    "Add a provider for this network in Settings first." : {
-
-    },
-    "Add a provider in Settings, or enter chain data by hand in Chain Data." : {
-
-    },
-    "Add a Signing Key…" : {
-
-    },
-    "Add a transaction in Overview first." : {
-
-    },
     "Add Asset" : {
 
     },
     "Add Entry" : {
 
     },
-    "Add from Files…" : {
-
-    },
     "Add Item" : {
 
     },
     "Add Mint or Burn" : {
-
-    },
-    "Add more, or change them, any time in Settings › Providers." : {
-
-    },
-    "Add notes" : {
-
-    },
-    "Add or build a transaction first." : {
 
     },
     "Add Output" : {
@@ -320,6 +259,42 @@
 
     },
     "Add Witness" : {
+
+    },
+    "Add a Co-signer's Witness…" : {
+
+    },
+    "Add a Signing Key…" : {
+
+    },
+    "Add a provider for %@ in Settings first." : {
+
+    },
+    "Add a provider for %@ in Settings to fetch chain data, or enter it by hand." : {
+
+    },
+    "Add a provider for %@ in Settings to look inputs up. Asset names come from the token registry." : {
+
+    },
+    "Add a provider for this network in Settings first." : {
+
+    },
+    "Add a provider in Settings, or enter chain data by hand in Chain Data." : {
+
+    },
+    "Add a transaction in Overview first." : {
+
+    },
+    "Add from Files…" : {
+
+    },
+    "Add more, or change them, any time in Settings › Providers." : {
+
+    },
+    "Add notes" : {
+
+    },
+    "Add or build a transaction first." : {
 
     },
     "Added" : {
@@ -347,28 +322,22 @@
     "Always Use" : {
 
     },
-    "Anchor hash (hex, or choose the anchor file)" : {
-
-    },
     "Anchor URL" : {
 
     },
     "Anchor URL (optional)" : {
 
     },
-    "Animated QR code with the transaction for the Keystone" : {
+    "Anchor hash (hex, or choose the anchor file)" : {
 
     },
-    "API key" : {
+    "Animated QR code with the transaction for the Keystone" : {
 
     },
     "Appearance" : {
 
     },
     "Apply" : {
-
-    },
-    "array · ^[%lld item](inflect: true)" : {
 
     },
     "As written" : {
@@ -423,9 +392,6 @@
     "Blueprints in this document" : {
 
     },
-    "boolean" : {
-
-    },
     "Breakpoints (%lld)" : {
 
     },
@@ -441,16 +407,10 @@
     "Built" : {
 
     },
-    "burns ^[%lld asset](inflect: true)" : {
-
-    },
     "By hash" : {
 
     },
     "Bytes" : {
-
-    },
-    "bytes · ^[%lld byte](inflect: true)" : {
 
     },
     "Bytes %lld–%lld" : {
@@ -464,6 +424,21 @@
       }
     },
     "Bytes in hex" : {
+
+    },
+    "CBOR" : {
+
+    },
+    "CBOR (.cbor)" : {
+
+    },
+    "CBOR Hex (.hex)" : {
+
+    },
+    "CDDL" : {
+
+    },
+    "CIP-67 label %lld" : {
 
     },
     "Cancel" : {
@@ -481,31 +456,6 @@
     "Cardano TxWorkshop reads the chain through a provider: to look up the outputs a transaction spends, fetch the protocol parameters and ledger state for validating, and submit. Without one you can still open, inspect and edit transactions offline." : {
       "comment" : "A description of what a chain data provider does.",
       "isCommentAutoGenerated" : true
-    },
-    "cardano-cli path" : {
-
-    },
-    "cardano-cli querying your own node. Give the node's socket path; cardano-cli is found where it is usually installed." : {
-      "comment" : "Guide for setting up a Cardano CLI for querying a local node.",
-      "isCommentAutoGenerated" : true
-    },
-    "carries ^[%lld certificate](inflect: true)" : {
-
-    },
-    "casts ^[%lld vote](inflect: true)" : {
-
-    },
-    "CBOR" : {
-
-    },
-    "CBOR (.cbor)" : {
-
-    },
-    "CBOR Hex (.hex)" : {
-
-    },
-    "CDDL" : {
-
     },
     "Certificate" : {
 
@@ -525,13 +475,13 @@
     "Change" : {
 
     },
+    "Change Network" : {
+
+    },
     "Change a redeemer or datum and see what it does to each script." : {
 
     },
     "Change address (first source address if empty)" : {
-
-    },
-    "Change Network" : {
 
     },
     "Check" : {
@@ -549,9 +499,6 @@
     "Choose Script File…" : {
 
     },
-    "CIP-67 label %lld" : {
-
-    },
     "Clear Breakpoints" : {
 
     },
@@ -564,10 +511,10 @@
     "Collateral" : {
 
     },
-    "Collateral inputs, one per line" : {
+    "Collateral Return" : {
 
     },
-    "Collateral Return" : {
+    "Collateral inputs, one per line" : {
 
     },
     "Committee cold id, key hash or cold key file" : {
@@ -579,10 +526,10 @@
     "Compare" : {
 
     },
-    "Compare this transaction with another" : {
+    "Compare With…" : {
 
     },
-    "Compare With…" : {
+    "Compare this transaction with another" : {
 
     },
     "Computing" : {
@@ -622,25 +569,40 @@
     "Covers %@. Where it has no page for something, another explorer that does is used." : {
 
     },
-    "creates ^[%lld output](inflect: true)" : {
+    "Current Value" : {
 
     },
     "Current slot" : {
 
     },
-    "Current Value" : {
+    "Custom URL (optional)" : {
 
     },
-    "Custom URL (optional)" : {
+    "DNS SRV name" : {
+
+    },
+    "DNS name" : {
+
+    },
+    "DRep" : {
+
+    },
+    "DRep id, key hash or DRep key file" : {
+
+    },
+    "DRep id, key hash or key file" : {
+
+    },
+    "DRep id, key hash, key file, abstain or no-confidence" : {
 
     },
     "Datum" : {
 
     },
-    "Datum (only for a datum hash; CBOR hex, JSON or a file)" : {
+    "Datum %@…" : {
 
     },
-    "Datum %@…" : {
+    "Datum (only for a datum hash; CBOR hex, JSON or a file)" : {
 
     },
     "Datum hash" : {
@@ -720,12 +682,6 @@
     "Different transactions, with ^[%lld change](inflect: true)." : {
 
     },
-    "DNS name" : {
-
-    },
-    "DNS SRV name" : {
-
-    },
     "Don't Use" : {
 
     },
@@ -733,18 +689,6 @@
 
     },
     "Done" : {
-
-    },
-    "DRep" : {
-
-    },
-    "DRep id, key hash or DRep key file" : {
-
-    },
-    "DRep id, key hash or key file" : {
-
-    },
-    "DRep id, key hash, key file, abstain or no-confidence" : {
 
     },
     "Drop Transaction" : {
@@ -780,6 +724,9 @@
     "Empty: this is the top of the program." : {
 
     },
+    "Enter Chain Data" : {
+
+    },
     "Enter as" : {
 
     },
@@ -787,9 +734,6 @@
 
     },
     "Enter by Hand…" : {
-
-    },
-    "Enter Chain Data" : {
 
     },
     "Epoch" : {
@@ -822,13 +766,13 @@
     "Export & Share" : {
 
     },
-    "Export failed" : {
-
-    },
     "Export Report" : {
 
     },
     "Export Summary…" : {
+
+    },
+    "Export failed" : {
 
     },
     "Extra fee (lovelace)" : {
@@ -853,16 +797,7 @@
     "Fee" : {
 
     },
-    "Fetch by id" : {
-
-    },
     "Fetch Chain Data" : {
-
-    },
-    "Fetch or enter chain data first: the script needs the inputs it spends and the protocol parameters." : {
-
-    },
-    "Fetch or enter chain data first." : {
 
     },
     "Fetch Registration" : {
@@ -872,6 +807,15 @@
 
     },
     "Fetch Transaction" : {
+
+    },
+    "Fetch by id" : {
+
+    },
+    "Fetch or enter chain data first." : {
+
+    },
+    "Fetch or enter chain data first: the script needs the inputs it spends and the protocol parameters." : {
 
     },
     "Fetched" : {
@@ -907,10 +851,13 @@
     "Fixed cost per epoch (lovelace)" : {
 
     },
-    "float" : {
+    "Float wider than needed" : {
 
     },
-    "Float wider than needed" : {
+    "For hardware wallets (CIP-21)" : {
+
+    },
+    "For hardware wallets, the transaction is written the way Ledger, Trezor and Keystone ask, and the fee is worked out from those bytes." : {
 
     },
     "Forget %@" : {
@@ -947,10 +894,10 @@
     "Governance action (gov_action1… or transaction id#index)" : {
 
     },
-    "Hardware wallets" : {
+    "Hardware Wallets (CIP-21)" : {
 
     },
-    "Hardware Wallets (CIP-21)" : {
+    "Hardware wallets" : {
 
     },
     "Hardware wallets can sign it as written." : {
@@ -990,16 +937,22 @@
     "ID" : {
 
     },
+    "IPv4" : {
+
+    },
+    "IPv6" : {
+
+    },
     "If submitted now" : {
 
     },
     "Import" : {
 
     },
-    "Import a Hardware Account…" : {
+    "Import Hardware Account" : {
 
     },
-    "Import Hardware Account" : {
+    "Import a Hardware Account…" : {
 
     },
     "Import plutus.json…" : {
@@ -1035,10 +988,10 @@
     "Inputs" : {
 
     },
-    "Inputs (transaction id#index), one per line. Left empty, the builder picks collateral from the source addresses when scripts run." : {
+    "Inputs & Outputs" : {
 
     },
-    "Inputs & Outputs" : {
+    "Inputs (transaction id#index), one per line. Left empty, the builder picks collateral from the source addresses when scripts run." : {
 
     },
     "Inputs without their UTxO" : {
@@ -1050,16 +1003,16 @@
     "Inspector" : {
 
     },
-    "IPv4" : {
-
-    },
-    "IPv6" : {
-
-    },
     "It also carries signatures nothing asks for." : {
 
     },
     "It goes to %@ and cannot be taken back once it is on chain." : {
+
+    },
+    "It is built again from its build form, for hardware wallets, spending the same inputs. The build form keeps building for hardware wallets." : {
+
+    },
+    "It is built again from the transaction, for hardware wallets: the same inputs and outputs, with the change worked out again." : {
 
     },
     "It is not in scope at this step." : {
@@ -1169,9 +1122,6 @@
     "Left empty, cardano-cli is looked for in Homebrew, /usr/local/bin, ~/.local/bin, ~/cardano/bin and the node releases in ~/cardano." : {
 
     },
-    "line %lld" : {
-
-    },
     "Line %lld, column %lld: %@" : {
       "localizations" : {
         "en" : {
@@ -1210,12 +1160,6 @@
 
     },
     "Make CIP-21 Compatible…" : {
-
-    },
-    "makes ^[%lld proposal](inflect: true)" : {
-
-    },
-    "map · ^[%lld entry](inflect: true)" : {
 
     },
     "Map has duplicate keys" : {
@@ -1258,10 +1202,10 @@
     "Metadata" : {
 
     },
-    "Metadata hash (hex, or choose the metadata file)" : {
+    "Metadata URL (optional, at most 64 bytes)" : {
 
     },
-    "Metadata URL (optional, at most 64 bytes)" : {
+    "Metadata hash (hex, or choose the metadata file)" : {
 
     },
     "Mint or burn" : {
@@ -1270,13 +1214,13 @@
     "Minted & Burned" : {
 
     },
-    "mints ^[%lld asset](inflect: true)" : {
-
-    },
     "Mismatches" : {
 
     },
     "Multisig" : {
+
+    },
+    "NFT (CIP-68)" : {
 
     },
     "Name" : {
@@ -1297,9 +1241,6 @@
     "Native script JSON" : {
 
     },
-    "negative integer" : {
-
-    },
     "Negative quantities burn. The policy id comes from the script." : {
 
     },
@@ -1318,10 +1259,22 @@
     "New Transaction" : {
 
     },
-    "NFT (CIP-68)" : {
+    "No" : {
 
     },
-    "No" : {
+    "No CBOR" : {
+
+    },
+    "No Metadata" : {
+
+    },
+    "No Network" : {
+
+    },
+    "No Scripts" : {
+
+    },
+    "No Transaction" : {
 
     },
     "No blueprints yet." : {
@@ -1333,9 +1286,6 @@
     "No budget: the protocol parameters have no cost model for this script." : {
 
     },
-    "No CBOR" : {
-
-    },
     "No chain data yet." : {
 
     },
@@ -1343,12 +1293,6 @@
 
     },
     "No datum" : {
-
-    },
-    "No Metadata" : {
-
-    },
-    "No Network" : {
 
     },
     "No protocol parameters" : {
@@ -1360,16 +1304,10 @@
     "No schema of its own" : {
 
     },
-    "No Scripts" : {
-
-    },
     "No trace" : {
 
     },
     "No traces yet." : {
-
-    },
-    "No Transaction" : {
 
     },
     "Node socket path" : {
@@ -1421,20 +1359,8 @@
     "Now %@" : {
 
     },
-    "null" : {
+    "OK" : {
 
-    },
-    "of %@ · %@" : {
-      "comment" : "A label displaying the number of steps and memory consumed by the run, out of the total consumed by the run.",
-      "isCommentAutoGenerated" : true,
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "of %1$@ · %2$@"
-          }
-        }
-      }
     },
     "Offset %lld: %@" : {
       "localizations" : {
@@ -1506,7 +1432,7 @@
         }
       }
     },
-    "OK" : {
+    "On Failure" : {
 
     },
     "On a Builtin" : {
@@ -1516,9 +1442,6 @@
 
     },
     "On chain since %@" : {
-
-    },
-    "On Failure" : {
 
     },
     "On the Keystone, open Connect Software Wallet and show the account QR code." : {
@@ -1533,6 +1456,9 @@
     "Only the first %lld events are listed." : {
 
     },
+    "Open Transaction" : {
+
+    },
     "Open a File…" : {
 
     },
@@ -1540,9 +1466,6 @@
 
     },
     "Open in %@" : {
-
-    },
-    "Open Transaction" : {
 
     },
     "Options" : {
@@ -1579,6 +1502,9 @@
     "Owner: stake address, key hash or stake key" : {
 
     },
+    "PDF Report" : {
+
+    },
     "Pane" : {
 
     },
@@ -1591,6 +1517,9 @@
     "Passphrase (optional)" : {
 
     },
+    "Paste Transaction" : {
+
+    },
     "Paste a transaction" : {
 
     },
@@ -1598,9 +1527,6 @@
 
     },
     "Paste or open a transaction on the Overview first." : {
-
-    },
-    "Paste Transaction" : {
 
     },
     "Pay to stake address" : {
@@ -1618,9 +1544,6 @@
     "Pays to" : {
 
     },
-    "PDF Report" : {
-
-    },
     "Pick an item in the tree, or tap a byte." : {
 
     },
@@ -1630,15 +1553,6 @@
     "Plutus" : {
 
     },
-    "Plutus data (CBOR hex, JSON or a file)" : {
-
-    },
-    "Plutus data (CBOR hex, JSON or a number)" : {
-
-    },
-    "Plutus data as CBOR hex. The scripts run against the document's chain data; nothing is saved." : {
-
-    },
     "Plutus V1" : {
 
     },
@@ -1646,6 +1560,15 @@
 
     },
     "Plutus V3" : {
+
+    },
+    "Plutus data (CBOR hex, JSON or a file)" : {
+
+    },
+    "Plutus data (CBOR hex, JSON or a number)" : {
+
+    },
+    "Plutus data as CBOR hex. The scripts run against the document's chain data; nothing is saved." : {
 
     },
     "Policy id or policy script" : {
@@ -1669,10 +1592,10 @@
     "Proposals" : {
 
     },
-    "Protocol parameters" : {
+    "Protocol Parameters" : {
 
     },
-    "Protocol Parameters" : {
+    "Protocol parameters" : {
 
     },
     "Protocol parameters come from the document's chain data, or the provider. Without a provider, only pasted UTxOs are spent." : {
@@ -1702,10 +1625,10 @@
     "Random-improve" : {
 
     },
-    "Rationale hash (hex, or choose the rationale file)" : {
+    "Rationale URL (optional)" : {
 
     },
-    "Rationale URL (optional)" : {
+    "Rationale hash (hex, or choose the rationale file)" : {
 
     },
     "Raw" : {
@@ -1715,6 +1638,18 @@
 
     },
     "Read through this validator's blueprint" : {
+
+    },
+    "Rebuild" : {
+
+    },
+    "Rebuild for Hardware Wallets" : {
+
+    },
+    "Rebuild for Hardware Wallets?" : {
+
+    },
+    "Rebuild for Hardware Wallets…" : {
 
     },
     "Record Confirmation" : {
@@ -1802,25 +1737,25 @@
     "Remove Relay" : {
 
     },
+    "Remove Witness" : {
+
+    },
     "Remove this key?" : {
 
     },
     "Remove this witness from the transaction" : {
 
     },
-    "Remove Witness" : {
-
-    },
     "Replace API key" : {
-
-    },
-    "Replace this transaction: paste one, open a file, or fetch one by its ID" : {
 
     },
     "Replace Transaction" : {
 
     },
     "Replace Transaction…" : {
+
+    },
+    "Replace this transaction: paste one, open a file, or fetch one by its ID" : {
 
     },
     "Replaces the document's transaction, to inspect, validate and sign. Undo brings the old one back." : {
@@ -1895,19 +1830,16 @@
     "Running with an edited redeemer. The transaction is unchanged." : {
 
     },
-    "runs ^[%lld script](inflect: true)" : {
-
-    },
     "Same body and id. Only the witnesses differ, as between an unsigned transaction and its signed copy." : {
 
     },
     "Save" : {
 
     },
-    "Scan the account QR code the Keystone shows." : {
+    "Scan the Keystone's Signature" : {
 
     },
-    "Scan the Keystone's Signature" : {
+    "Scan the account QR code the Keystone shows." : {
 
     },
     "Scan the signature the Keystone shows" : {
@@ -1922,16 +1854,19 @@
     "Script" : {
 
     },
-    "Script address" : {
-
-    },
-    "Script budgets" : {
-
-    },
     "Script CBOR hex" : {
 
     },
     "Script Debugger" : {
+
+    },
+    "Script Trace" : {
+
+    },
+    "Script address" : {
+
+    },
+    "Script budgets" : {
 
     },
     "Script hash" : {
@@ -1944,9 +1879,6 @@
 
     },
     "Script steps: %llu" : {
-
-    },
-    "Script Trace" : {
 
     },
     "Scripts" : {
@@ -1979,6 +1911,10 @@
     "Server URL" : {
 
     },
+    "Set Up…" : {
+      "comment" : "A button label that opens a provider setup flow.",
+      "isCommentAutoGenerated" : true
+    },
     "Set the document's network first." : {
 
     },
@@ -1997,11 +1933,13 @@
     "Set the network in Overview to look inputs up." : {
 
     },
-    "Set Up…" : {
-      "comment" : "A button label that opens a provider setup flow.",
-      "isCommentAutoGenerated" : true
-    },
     "Settings" : {
+
+    },
+    "Share Transaction" : {
+
+    },
+    "Share Transaction…" : {
 
     },
     "Share as a cardano-cli text envelope" : {
@@ -2011,12 +1949,6 @@
 
     },
     "Share the transaction, copy its CBOR, or export it as a text envelope, CBOR or a report" : {
-
-    },
-    "Share Transaction" : {
-
-    },
-    "Share Transaction…" : {
 
     },
     "Show" : {
@@ -2060,9 +1992,6 @@
 
     },
     "Signing mode" : {
-
-    },
-    "simple value" : {
 
     },
     "Size" : {
@@ -2153,6 +2082,9 @@
     "Still in the way, which a rewrite cannot fix: %@" : {
 
     },
+    "Still in the way: %@" : {
+
+    },
     "Stopped at %@" : {
 
     },
@@ -2171,9 +2103,6 @@
     "Submit this transaction?" : {
 
     },
-    "Submit…" : {
-
-    },
     "Submitted %@ through %@; waiting" : {
       "localizations" : {
         "en" : {
@@ -2183,6 +2112,9 @@
           }
         }
       }
+    },
+    "Submit…" : {
+
     },
     "Succeeded in %lld machine steps." : {
 
@@ -2194,19 +2126,16 @@
     "System follows your device's light or dark setting." : {
 
     },
-    "tag %llu" : {
-
-    },
     "Takes the deposit back." : {
 
     },
     "Term" : {
 
     },
-    "text · ^[%lld byte](inflect: true)" : {
+    "Text Envelope (.tx)" : {
 
     },
-    "Text Envelope (.tx)" : {
+    "That JSON file is not a cardano-cli text envelope: it needs a cborHex field." : {
 
     },
     "That file is not a transaction." : {
@@ -2221,10 +2150,13 @@
     "That is not a transaction in hex, base64, a text envelope or a transaction file." : {
 
     },
-    "That JSON file is not a cardano-cli text envelope: it needs a cborHex field." : {
+    "That witness does not sign this transaction: it was made for different bytes." : {
 
     },
-    "That witness does not sign this transaction: it was made for different bytes." : {
+    "The Transaction Did Not Decode" : {
+
+    },
+    "The Transaction's Inputs" : {
 
     },
     "The addresses here" : {
@@ -2243,6 +2175,19 @@
 
     },
     "The document's schema does not parse (line %lld). Fix it in the CDDL section." : {
+
+    },
+    "The fee goes from %llu to %llu lovelace, worked out from the bytes that will be signed." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The fee goes from %1$llu to %2$llu lovelace, worked out from the bytes that will be signed."
+          }
+        }
+      }
+    },
+    "The fee stays %llu lovelace." : {
 
     },
     "The first choices are for this script." : {
@@ -2281,16 +2226,13 @@
     "The token registry could not be reached." : {
 
     },
-    "The Transaction Did Not Decode" : {
-
-    },
     "The transaction id changes, so its %lld signatures are removed: sign it again." : {
 
     },
-    "The transaction's addresses" : {
+    "The transaction id changes: sign the new one." : {
 
     },
-    "The Transaction's Inputs" : {
+    "The transaction's addresses" : {
 
     },
     "The transactions are identical." : {
@@ -2305,10 +2247,10 @@
     "These parameters' blueprint is no longer in the document. Choose the validator again." : {
 
     },
-    "This device has no camera the scanner can use." : {
+    "This Document's Schema" : {
 
     },
-    "This Document's Schema" : {
+    "This device has no camera the scanner can use." : {
 
     },
     "This form's blueprint is no longer in the document. Choose it again, or enter the data as Raw." : {
@@ -2358,10 +2300,10 @@
     "Tip slot" : {
 
     },
-    "Trace messages only" : {
+    "Trace Timeline" : {
 
     },
-    "Trace Timeline" : {
+    "Trace messages only" : {
 
     },
     "Traces (%lld)" : {
@@ -2400,55 +2342,6 @@
     "Two keys in this map are written the same. Decoders disagree on which one wins." : {
 
     },
-    "undefined" : {
-
-    },
-    "Unknown" : {
-
-    },
-    "unsigned integer" : {
-
-    },
-    "Unspent" : {
-
-    },
-    "Update DRep metadata" : {
-
-    },
-    "Updates a registered pool: no deposit. Signed by the pool's cold key and every owner." : {
-
-    },
-    "Use %@" : {
-
-    },
-    "Use a Validator as the Script" : {
-
-    },
-    "Use as the Document's Transaction" : {
-
-    },
-    "Use Built Transaction" : {
-
-    },
-    "Use Koios" : {
-      "comment" : "A button that opens a web page for Koios.",
-      "isCommentAutoGenerated" : true
-    },
-    "Use the provider for address UTxOs and the tip" : {
-
-    },
-    "Used by" : {
-
-    },
-    "Uses" : {
-
-    },
-    "Uses the Cardano ledger's own CDDL for the era." : {
-
-    },
-    "Uses the schema written in the CDDL section." : {
-
-    },
     "UTxO (transaction id#index)" : {
 
     },
@@ -2465,6 +2358,52 @@
 
     },
     "UTxOs to spend" : {
+
+    },
+    "Unknown" : {
+
+    },
+    "Unspent" : {
+
+    },
+    "Update DRep metadata" : {
+
+    },
+    "Updates a registered pool: no deposit. Signed by the pool's cold key and every owner." : {
+
+    },
+    "Use %@" : {
+
+    },
+    "Use Built Transaction" : {
+
+    },
+    "Use Koios" : {
+      "comment" : "A button that opens a web page for Koios.",
+      "isCommentAutoGenerated" : true
+    },
+    "Use a Validator as the Script" : {
+
+    },
+    "Use as the Document's Transaction" : {
+
+    },
+    "Use the provider for address UTxOs and the tip" : {
+
+    },
+    "Used by" : {
+
+    },
+    "Uses" : {
+
+    },
+    "Uses the Cardano ledger's own CDDL for the era." : {
+
+    },
+    "Uses the schema written in the CDDL section." : {
+
+    },
+    "VRF key hash or VRF key file" : {
 
     },
     "Valid" : {
@@ -2507,10 +2446,10 @@
     "Validation" : {
 
     },
-    "Validation error" : {
+    "Validation Report" : {
 
     },
-    "Validation Report" : {
+    "Validation error" : {
 
     },
     "Validation warning" : {
@@ -2540,9 +2479,6 @@
     "Votes" : {
 
     },
-    "VRF key hash or VRF key file" : {
-
-    },
     "Warning" : {
 
     },
@@ -2570,9 +2506,6 @@
     "Withdrawals" : {
 
     },
-    "withdraws rewards from ^[%lld account](inflect: true)" : {
-
-    },
     "Witness" : {
 
     },
@@ -2598,6 +2531,116 @@
     "Your own node's Ogmios server, or a hosted one such as Demeter. Give its URL, and a Kupo URL beside it to look up outputs by address." : {
       "comment" : "Guide description for the \"Ogmios\" provider type.",
       "isCommentAutoGenerated" : true
+    },
+    "^[%lld input](inflect: true) chosen" : {
+
+    },
+    "^[%lld input](inflect: true) not found." : {
+
+    },
+    "^[%lld input](inflect: true) not looked up, so their signers are not listed. Fetch chain data in Validate." : {
+
+    },
+    "^[%lld mismatch](inflect: true) with `%@` in the %@ schema." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "^[%1$lld mismatch](inflect: true) with `%2$@` in the %3$@ schema."
+          }
+        }
+      }
+    },
+    "^[%lld native asset](inflect: true)" : {
+
+    },
+    "^[%lld trace](inflect: true)" : {
+
+    },
+    "a testnet" : {
+
+    },
+    "array · ^[%lld item](inflect: true)" : {
+
+    },
+    "boolean" : {
+
+    },
+    "burns ^[%lld asset](inflect: true)" : {
+
+    },
+    "bytes · ^[%lld byte](inflect: true)" : {
+
+    },
+    "cardano-cli path" : {
+
+    },
+    "cardano-cli querying your own node. Give the node's socket path; cardano-cli is found where it is usually installed." : {
+      "comment" : "Guide for setting up a Cardano CLI for querying a local node.",
+      "isCommentAutoGenerated" : true
+    },
+    "carries ^[%lld certificate](inflect: true)" : {
+
+    },
+    "casts ^[%lld vote](inflect: true)" : {
+
+    },
+    "creates ^[%lld output](inflect: true)" : {
+
+    },
+    "float" : {
+
+    },
+    "line %lld" : {
+
+    },
+    "makes ^[%lld proposal](inflect: true)" : {
+
+    },
+    "map · ^[%lld entry](inflect: true)" : {
+
+    },
+    "mints ^[%lld asset](inflect: true)" : {
+
+    },
+    "negative integer" : {
+
+    },
+    "null" : {
+
+    },
+    "of %@ · %@" : {
+      "comment" : "A label displaying the number of steps and memory consumed by the run, out of the total consumed by the run.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "of %1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "runs ^[%lld script](inflect: true)" : {
+
+    },
+    "simple value" : {
+
+    },
+    "tag %llu" : {
+
+    },
+    "text · ^[%lld byte](inflect: true)" : {
+
+    },
+    "undefined" : {
+
+    },
+    "unsigned integer" : {
+
+    },
+    "withdraws rewards from ^[%lld account](inflect: true)" : {
+
     }
   },
   "version" : "1.1"

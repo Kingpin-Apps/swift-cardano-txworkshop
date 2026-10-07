@@ -118,7 +118,7 @@ final class ScriptDebuggerUITests: XCTestCase {
         let mode = app.staticTexts["Signing mode"].firstMatch
         XCTAssertTrue(mode.waitForExistence(timeout: 10), "No CIP-21 section.")
         XCTAssertTrue(app.staticTexts["Plutus"].firstMatch.exists, "The batch should sign in Plutus mode.")
-        let verdict = app.staticTexts["cip21Compatible"].firstMatch.exists || app.buttons["cip21Rewrite"].firstMatch.exists
+        let verdict = app.staticTexts["cip21Compatible"].firstMatch.exists || app.buttons["cip21Rebuild"].firstMatch.exists
             || app.images["xmark.octagon"].firstMatch.exists
         XCTAssertTrue(verdict || app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'hardware'")).count > 0, "No CIP-21 verdict.")
         save("cip21-section")

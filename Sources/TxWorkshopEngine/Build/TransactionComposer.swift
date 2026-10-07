@@ -114,6 +114,7 @@ public struct TransactionComposer: Sendable {
         }
         let builder = TxBuilder(context: context, utxoSelectors: selectors)
         builder.feeBuffer = recipe.feeBuffer.map { Int($0) }
+        builder.cip21Compatible = recipe.cip21Compatible
         builder.validityStart = recipe.validFrom.map { SlotNumber($0) }
         builder.ttl = recipe.validUntil.map { SlotNumber($0) }
 

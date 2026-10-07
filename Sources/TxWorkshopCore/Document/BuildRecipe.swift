@@ -28,6 +28,9 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
     public var requiredSigners: [String]
     /// Lovelace added to the computed fee.
     public var feeBuffer: UInt64?
+    /// Build for hardware wallets (CIP-21): the body written as they ask, and
+    /// the fee sized from those bytes.
+    public var cip21Compatible: Bool
     /// Assets to mint (positive) or burn (negative), by policy script.
     public var mints: [MintDraft]
     /// Script-locked UTxOs to spend, with what unlocks them.
@@ -87,7 +90,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         outputs: [OutputDraft] = [],
         changeAddress: String = "", coinSelection: CoinSelection = .randomImprove, validFrom: UInt64? = nil,
         validUntil: UInt64? = nil, message: String = "", requiredSigners: [String] = [], feeBuffer: UInt64? = nil,
-        mints: [MintDraft] = [], scriptInputs: [ScriptInputDraft] = [], collateral: [String] = [],
+        cip21Compatible: Bool = false, mints: [MintDraft] = [], scriptInputs: [ScriptInputDraft] = [], collateral: [String] = [],
         certificates: [CertificateItem] = [], withdrawals: [WithdrawalDraft] = [], votes: [VoteDraft] = [],
         proposals: [ProposalDraft] = [], donation: UInt64? = nil, blueprints: [StoredBlueprint] = []
     ) {
@@ -103,6 +106,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         self.message = message
         self.requiredSigners = requiredSigners
         self.feeBuffer = feeBuffer
+        self.cip21Compatible = cip21Compatible
         self.mints = mints
         self.scriptInputs = scriptInputs
         self.collateral = collateral
@@ -129,6 +133,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         message = try c.decodeIfPresent(String.self, forKey: .message) ?? ""
         requiredSigners = try c.decodeIfPresent([String].self, forKey: .requiredSigners) ?? []
         feeBuffer = try c.decodeIfPresent(UInt64.self, forKey: .feeBuffer)
+        cip21Compatible = try c.decodeIfPresent(Bool.self, forKey: .cip21Compatible) ?? false
         mints = try c.decodeIfPresent([MintDraft].self, forKey: .mints) ?? []
         scriptInputs = try c.decodeIfPresent([ScriptInputDraft].self, forKey: .scriptInputs) ?? []
         collateral = try c.decodeIfPresent([String].self, forKey: .collateral) ?? []
