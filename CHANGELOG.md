@@ -1,3 +1,11 @@
+## v0.1.9 (2026-10-07)
+
+### Feat
+
+- **ui**: field labels above their values, and copy buttons beside ids and addresses
+- **sign**: choose a co-signer's witness file
+- **build**: add certificates from files
+
 ## v0.1.8 (2026-10-07)
 
 ### Feat
