@@ -11,7 +11,7 @@ struct CompositionSections: View {
     var body: some View {
         Section {
             TWFieldRow(LocalizedStringResource("Transaction id", bundle: #bundle)) {
-                TWBytesText(composition.id, font: TWFont.bytesSmall)
+                CopyableBytes(composition.id)
             }
             TWFieldRow(LocalizedStringResource("In", bundle: #bundle)) {
                 Text(verbatim: TWFormat.ada(composition.totalIn)).font(TWFont.figure)
@@ -36,7 +36,7 @@ struct CompositionSections: View {
             }
             DisclosureGroup {
                 ForEach(composition.inputs, id: \.self) { input in
-                    TWBytesText(input, font: TWFont.bytesSmall)
+                    CopyableBytes(input)
                 }
             } label: {
                 Text(AttributedString(localized: "^[\(composition.inputs.count) input](inflect: true) chosen", bundle: #bundle))

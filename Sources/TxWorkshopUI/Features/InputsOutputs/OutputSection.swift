@@ -13,6 +13,7 @@ struct OutputSection: View {
             TWFieldRow(LocalizedStringResource("Address", bundle: #bundle)) {
                 HStack(alignment: .firstTextBaseline) {
                     TWBytesText(output.address.text, font: TWFont.bytesSmall)
+                    CopyButton(text: output.address.text)
                     ExplorerLinkButton(item: ExplorerItem.address(output.address.text))
                 }
             }
@@ -23,6 +24,7 @@ struct OutputSection: View {
                 TWFieldRow(LocalizedStringResource("Stake", bundle: #bundle)) {
                     HStack(alignment: .firstTextBaseline) {
                         TWBytesText(stake, font: TWFont.bytesSmall)
+                        CopyButton(text: stake)
                         ExplorerLinkButton(item: ExplorerItem.account(output.address.text))
                     }
                 }
@@ -42,11 +44,11 @@ struct OutputSection: View {
             switch output.datum {
             case .hash(let hash)?:
                 TWFieldRow(LocalizedStringResource("Datum hash", bundle: #bundle)) {
-                    TWBytesText(hash, font: TWFont.bytesSmall)
+                    CopyableBytes(hash)
                 }
             case .inline(let hash, let tree, _)?:
                 TWFieldRow(LocalizedStringResource("Inline datum", bundle: #bundle)) {
-                    TWBytesText(hash, font: TWFont.bytesSmall)
+                    CopyableBytes(hash)
                 }
                 DataTreeView(node: tree)
             case nil:

@@ -30,7 +30,7 @@ struct ProviderEditor: View {
     var body: some View {
         Form {
             Section {
-                TextField(text: $draft.name) { Text("Name", bundle: #bundle) }
+                TWLabeledField(Text("Name", bundle: #bundle), text: $draft.name)
                 Picker(selection: $draft.kind) {
                     ForEach(store.availableKinds) { kind in
                         Text(kind.name).tag(kind)
@@ -48,13 +48,11 @@ struct ProviderEditor: View {
             }
             if draft.kind.needsURL || draft.kind == .koios || draft.kind == .blockfrost {
                 Section {
-                    TextField(text: $urlText) {
-                        Text(draft.kind.needsURL ? "Server URL" : "Custom URL (optional)", bundle: #bundle)
-                    }
+                    TWLabeledField(Text(draft.kind.needsURL ? "Server URL" : "Custom URL (optional)", bundle: #bundle), text: $urlText)
                     .textContentType(.URL)
                     .autocorrectionDisabled()
                     if draft.kind == .ogmios {
-                        TextField(text: $kupoText) { Text("Kupo URL (optional)", bundle: #bundle) }
+                        TWLabeledField(Text("Kupo URL (optional)", bundle: #bundle), text: $kupoText)
                             .textContentType(.URL)
                             .autocorrectionDisabled()
                     }
@@ -62,14 +60,13 @@ struct ProviderEditor: View {
             }
             if draft.kind.needsSocket {
                 Section {
-                    TextField(text: $socketPath) {
-                        Text("Node socket path", bundle: #bundle)
-                    }
+                    TWLabeledField(Text("Node socket path", bundle: #bundle), text: $socketPath)
                     .autocorrectionDisabled()
                     if draft.kind == .cardanoCLI {
-                        TextField(text: $cliPath, prompt: Text(verbatim: configured.resolvedCLIPath ?? "cardano-cli")) {
-                            Text("cardano-cli path", bundle: #bundle)
-                        }
+                        TWLabeledField(
+                            Text("cardano-cli path", bundle: #bundle), text: $cliPath,
+                            prompt: Text(verbatim: configured.resolvedCLIPath ?? "cardano-cli")
+                        )
                         .autocorrectionDisabled()
                     }
                 } footer: {
@@ -82,9 +79,7 @@ struct ProviderEditor: View {
             }
             if draft.kind.acceptsAPIKey {
                 Section {
-                    SecureField(text: $apiKey) {
-                        Text(store.hasAPIKey(draft) ? "Replace API key" : "API key", bundle: #bundle)
-                    }
+                    TWLabeledField(Text(store.hasAPIKey(draft) ? "Replace API key" : "API key", bundle: #bundle), secret: $apiKey)
                 } footer: {
                     if store.syncsWithICloud {
                         Text("Kept in iCloud Keychain, end-to-end encrypted, and on your other devices signed in to the same Apple Account.", bundle: #bundle)

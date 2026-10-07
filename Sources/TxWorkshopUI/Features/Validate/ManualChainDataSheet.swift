@@ -42,10 +42,8 @@ struct ManualChainDataSheet: View {
                     Section {
                         ForEach($utxos) { $entry in
                             VStack(alignment: .leading, spacing: TWSpacing.xs) {
-                                TWBytesText(entry.id, font: TWFont.bytesSmall)
-                                TextField(text: $entry.hex) {
-                                    Text("UTxO or output CBOR, hex", bundle: #bundle)
-                                }
+                                CopyableBytes(entry.id)
+                                TWLabeledField(Text("UTxO or output CBOR, hex", bundle: #bundle), text: $entry.hex)
                                 .font(TWFont.bytesSmall)
                                 .autocorrectionDisabled()
                             }
@@ -55,9 +53,7 @@ struct ManualChainDataSheet: View {
                     }
                 }
                 Section {
-                    TextField(text: $slot) {
-                        Text("Slot", bundle: #bundle)
-                    }
+                    TWLabeledField(Text("Slot", bundle: #bundle), text: $slot)
                     .font(TWFont.figure)
                 } header: {
                     Text("Current slot", bundle: #bundle)

@@ -19,7 +19,7 @@ struct SignaturesSection: View {
                         .foregroundStyle(signer.isSigned ? TWColor.success : TWColor.secondaryText)
                         .accessibilityLabel(signer.isSigned ? Text("Signed", bundle: #bundle) : Text("Not signed", bundle: #bundle))
                     VStack(alignment: .leading, spacing: TWSpacing.xxs) {
-                        TWBytesText(signer.keyHash, font: TWFont.bytesSmall)
+                        CopyableBytes(signer.keyHash)
                         Text(verbatim: signer.reasons.joined(separator: "; "))
                             .font(.caption)
                             .foregroundStyle(TWColor.secondaryText)

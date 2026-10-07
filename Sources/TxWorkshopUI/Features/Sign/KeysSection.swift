@@ -74,7 +74,7 @@ struct AddKeySheet: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField(text: $name) { Text("Name", bundle: #bundle) }
+                    TWLabeledField(Text("Name", bundle: #bundle), text: $name)
                     Picker(selection: $kind) {
                         Text("Recovery phrase", bundle: #bundle).tag(StoredSigningKey.Kind.mnemonic)
                         Text("Key file (.skey)", bundle: #bundle).tag(StoredSigningKey.Kind.keyFile)
@@ -87,7 +87,7 @@ struct AddKeySheet: View {
                         .autocorrectionDisabled()
                         .accessibilityLabel(kind == .mnemonic ? Text("Recovery phrase", bundle: #bundle) : Text("Key file contents", bundle: #bundle))
                     if kind == .mnemonic {
-                        SecureField(text: $passphrase) { Text("Passphrase (optional)", bundle: #bundle) }
+                        TWLabeledField(Text("Passphrase (optional)", bundle: #bundle), secret: $passphrase)
                         Stepper(value: $accounts, in: 1...5) {
                             Text("Accounts: \(accounts)", bundle: #bundle)
                         }

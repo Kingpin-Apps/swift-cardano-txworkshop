@@ -49,7 +49,7 @@ struct ScriptsView: View {
                         Section {
                             ForEach(inspection.datums) { datum in
                                 VStack(alignment: .leading, spacing: TWSpacing.xs) {
-                                    TWBytesText(datum.hash, font: TWFont.bytesSmall)
+                                    CopyableBytes(datum.hash)
                                     DataTreeView(node: datum.tree)
                                 }
                             }

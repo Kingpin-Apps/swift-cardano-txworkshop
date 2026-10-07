@@ -19,10 +19,10 @@ struct AssetRow: View {
                         .foregroundStyle(TWColor.secondaryText)
                 }
                 if let fingerprint = asset.fingerprint {
-                    TWBytesText(fingerprint, font: TWFont.bytesSmall)
+                    CopyableBytes(fingerprint)
                         .foregroundStyle(TWColor.secondaryText)
                 }
-                TWBytesText(asset.policyID, font: TWFont.bytesSmall)
+                CopyableBytes(asset.policyID)
                     .foregroundStyle(TWColor.secondaryText)
             }
             Spacer()

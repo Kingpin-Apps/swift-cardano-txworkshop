@@ -52,11 +52,11 @@ struct PoolRegistrationFields: View {
         }
         ValueField(kind: .pool, text: $draft.pool, prompt: Text("Pool id, hex or cold key", bundle: #bundle))
         ValueField(kind: .vrfKeyHash, text: $draft.vrfKey, prompt: Text("VRF key hash or VRF key file", bundle: #bundle))
-        TextField(value: $draft.pledge, format: .number) { Text("Pledge (lovelace)", bundle: #bundle) }
+        TWLabeledField(Text("Pledge (lovelace)", bundle: #bundle), value: $draft.pledge, format: .number)
             .font(TWFont.figure)
-        TextField(value: $draft.cost, format: .number) { Text("Fixed cost per epoch (lovelace)", bundle: #bundle) }
+        TWLabeledField(Text("Fixed cost per epoch (lovelace)", bundle: #bundle), value: $draft.cost, format: .number)
             .font(TWFont.figure)
-        TextField(text: $draft.margin) { Text("Margin: 0.05, 5% or 1/20", bundle: #bundle) }
+        TWLabeledField(Text("Margin: 0.05, 5% or 1/20", bundle: #bundle), text: $draft.margin)
             .font(TWFont.figure)
             .autocorrectionDisabled()
         ValueField(kind: .stakeAddress, text: $draft.rewardAccount, prompt: Text("Reward account: stake address, key hash or stake key", bundle: #bundle))
@@ -90,7 +90,7 @@ struct PoolRegistrationFields: View {
             }
         }
 
-        TextField(text: $draft.metadataURL) { Text("Metadata URL (optional, at most 64 bytes)", bundle: #bundle) }
+        TWLabeledField(Text("Metadata URL (optional, at most 64 bytes)", bundle: #bundle), text: $draft.metadataURL)
             .font(TWFont.bytesSmall)
             .autocorrectionDisabled()
         AnchorHashField(hash: $draft.metadataHash, url: draft.metadataURL, prompt: Text("Metadata hash (hex, or choose the metadata file)", bundle: #bundle))
@@ -175,18 +175,18 @@ private struct RelayRow: View {
                 }
                 .buttonStyle(.borderless)
             }
-            HStack {
-                TextField(text: $relay.host) {
-                    relay.kind == .ipv4 || relay.kind == .ipv6
-                        ? Text("Address", bundle: #bundle) : Text("Host name", bundle: #bundle)
-                }
+            HStack(alignment: .top) {
+                TWLabeledField(
+                    relay.kind == .ipv4 || relay.kind == .ipv6 ? Text("Address", bundle: #bundle) : Text("Host name", bundle: #bundle),
+                    text: $relay.host
+                )
                 .font(TWFont.bytesSmall)
                 .autocorrectionDisabled()
                 #if os(iOS) || os(visionOS)
                 .textInputAutocapitalization(.never)
                 #endif
                 if relay.kind != .srvName {
-                    TextField(value: $relay.port, format: .number.grouping(.never)) { Text("Port", bundle: #bundle) }
+                    TWLabeledField(Text("Port", bundle: #bundle), value: $relay.port, format: .number.grouping(.never))
                         .font(TWFont.figure)
                         .frame(maxWidth: 90)
                 }

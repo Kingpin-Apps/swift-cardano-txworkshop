@@ -13,6 +13,7 @@ struct InputRow: View {
                 TWFieldRow(LocalizedStringResource("Address", bundle: #bundle)) {
                     HStack(alignment: .firstTextBaseline) {
                         TWBytesText(output.address.text, font: TWFont.bytesSmall)
+                        CopyButton(text: output.address.text)
                         ExplorerLinkButton(item: ExplorerItem.address(output.address.text))
                     }
                 }
@@ -39,6 +40,7 @@ struct InputRow: View {
                 InputStatusLabel(status: input.status)
             }
             Spacer()
+            CopyButton(text: input.id)
             ExplorerLinkButton(item: ExplorerItem.transaction(input.transactionID))
             if let output {
                 // The amount stays on one line; the id gives way first.

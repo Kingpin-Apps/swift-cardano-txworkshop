@@ -20,9 +20,7 @@ struct TransactionSourceSection: View {
 
     var body: some View {
         Section {
-            TextField(text: $text, axis: .vertical) {
-                Text("Hex, base64 or text envelope", bundle: #bundle)
-            }
+            TWLabeledField(Text("Hex, base64 or text envelope", bundle: #bundle), text: $text, axis: .vertical)
                 .font(TWFont.bytesSmall)
                 .lineLimit(8...)
                 .autocorrectionDisabled()

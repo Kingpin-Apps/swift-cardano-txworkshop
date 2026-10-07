@@ -172,7 +172,7 @@ struct ChainDataView: View {
             }
             .labelStyle(.status(requirements.missingInputs.isEmpty ? TWColor.success : TWColor.warning))
             ForEach(requirements.missingInputs, id: \.self) { input in
-                TWBytesText(input, font: TWFont.bytesSmall)
+                CopyableBytes(input)
             }
             if requirements.allInputsSpent {
                 Text("Every input is already spent: the transaction is likely on chain.", bundle: #bundle)

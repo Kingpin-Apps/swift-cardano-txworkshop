@@ -10,6 +10,7 @@ struct SummaryRows: View {
         TWFieldRow(LocalizedStringResource("ID", bundle: #bundle)) {
             HStack(alignment: .firstTextBaseline) {
                 TWBytesText(summary.id)
+                CopyButton(text: summary.id)
                 ExplorerLinkButton(item: ExplorerItem.transaction(summary.id))
             }
         }

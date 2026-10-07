@@ -21,9 +21,7 @@ struct FetchByHashSection: View {
 
     var body: some View {
         Section {
-            TextField(text: $hash) {
-                Text("Transaction id or explorer link", bundle: #bundle)
-            }
+            TWLabeledField(Text("Transaction id or explorer link", bundle: #bundle), text: $hash)
             .font(TWFont.bytesSmall)
             .autocorrectionDisabled()
             #if os(iOS) || os(visionOS)

@@ -36,7 +36,7 @@ struct SubmitSection: View {
                     Image(systemName: confirmed == nil ? "clock" : "checkmark.circle.fill")
                         .foregroundStyle(confirmed == nil ? TWColor.warning : TWColor.success)
                     VStack(alignment: .leading, spacing: TWSpacing.xxs) {
-                        TWBytesText(submission.transactionID, font: TWFont.bytesSmall)
+                        CopyableBytes(submission.transactionID)
                         if let confirmed {
                             Text("On chain since \(confirmed, format: .dateTime)", bundle: #bundle).font(.caption)
                         } else {

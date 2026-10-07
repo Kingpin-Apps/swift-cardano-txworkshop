@@ -21,6 +21,7 @@ struct AnchorLine: View {
                 HStack {
                     TWBytesText(hash, font: TWFont.bytesSmall)
                         .foregroundStyle(TWColor.secondaryText)
+                    CopyButton(text: hash)
                     Spacer()
                     switch check {
                     case .idle:

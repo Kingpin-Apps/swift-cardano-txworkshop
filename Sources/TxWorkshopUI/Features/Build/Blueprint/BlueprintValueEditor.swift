@@ -134,10 +134,7 @@ struct BlueprintValueEditor: View {
     }
 
     private func textField(_ text: Binding<String>, prompt: String) -> some View {
-        TextField(text: text, prompt: Text(verbatim: prompt)) {
-            Text(verbatim: label)
-        }
-        .multilineTextAlignment(.trailing)
+        TWLabeledField(Text(verbatim: label), text: text, prompt: Text(verbatim: prompt))
         .autocorrectionDisabled()
         .accessibilityIdentifier(path)
         #if os(iOS) || os(visionOS)

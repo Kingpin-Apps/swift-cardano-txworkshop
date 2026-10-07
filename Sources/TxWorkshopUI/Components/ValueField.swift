@@ -18,7 +18,8 @@ extension EnvironmentValues {
 /// A field for a value that can be given in several forms: pasted as
 /// bech32, hex or a key file's JSON, or read from a file (`.addr`, `.vkey`,
 /// `.skey`, id files, `pool.json`, scripts, datums). The line below says
-/// what it was read as, or why it can't be.
+/// what it was read as, or why it can't be. The label sits small above the
+/// value, so a long one never squeezes or hides it.
 struct ValueField: View {
     let kind: ValueKind
     @Binding var text: String
@@ -33,8 +34,13 @@ struct ValueField: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: TWSpacing.xxs) {
+            prompt
+                .font(.caption)
+                .foregroundStyle(TWColor.secondaryText)
+                .accessibilityHidden(true)
             HStack(alignment: .firstTextBaseline) {
                 TextField(text: $text, axis: axis) { prompt }
+                    .labelsHidden()
                     .font(TWFont.bytesSmall)
                     .autocorrectionDisabled()
                     #if os(iOS) || os(visionOS)

@@ -16,7 +16,7 @@ struct ScriptRow: View {
                     .font(TWFont.figure)
                     .foregroundStyle(TWColor.secondaryText)
             }
-            TWBytesText(script.hash, font: TWFont.bytesSmall)
+            CopyableBytes(script.hash)
             if let listing = script.listing {
                 DisclosureGroup(isExpanded: $showsListing) {
                     ScrollView([.horizontal, .vertical]) {

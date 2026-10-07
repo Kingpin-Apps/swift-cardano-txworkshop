@@ -14,17 +14,11 @@ struct BuildOptionsSection: View {
             } label: {
                 Text("Coin selection", bundle: #bundle)
             }
-            TextField(value: $recipe.validFrom, format: .number) {
-                Text("Valid from slot", bundle: #bundle)
-            }
+            TWLabeledField(Text("Valid from slot", bundle: #bundle), value: $recipe.validFrom, format: .number)
             .font(TWFont.figure)
-            TextField(value: $recipe.validUntil, format: .number) {
-                Text("Valid until slot", bundle: #bundle)
-            }
+            TWLabeledField(Text("Valid until slot", bundle: #bundle), value: $recipe.validUntil, format: .number)
             .font(TWFont.figure)
-            TextField(value: $recipe.feeBuffer, format: .number) {
-                Text("Extra fee (lovelace)", bundle: #bundle)
-            }
+            TWLabeledField(Text("Extra fee (lovelace)", bundle: #bundle), value: $recipe.feeBuffer, format: .number)
             .font(TWFont.figure)
         } header: {
             Text("Options", bundle: #bundle)

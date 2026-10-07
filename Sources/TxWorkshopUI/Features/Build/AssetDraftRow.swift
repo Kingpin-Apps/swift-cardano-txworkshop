@@ -25,7 +25,7 @@ struct AssetDraftRow: View {
                     prompt: showsPolicy ? Text("Name (hex or text)", bundle: #bundle) : Text("Asset name (hex or text)", bundle: #bundle)
                 )
                 .frame(maxWidth: isStacked || !showsPolicy ? .infinity : 160)
-                TextField(value: $asset.quantity, format: .number) { Text("Quantity", bundle: #bundle) }
+                TWLabeledField(Text("Quantity", bundle: #bundle), value: $asset.quantity, format: .number)
                     .font(TWFont.figure)
                     .frame(maxWidth: isStacked ? .infinity : showsPolicy ? 110 : 140)
             }

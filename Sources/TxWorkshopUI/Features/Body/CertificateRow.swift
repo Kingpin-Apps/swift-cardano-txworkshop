@@ -57,7 +57,7 @@ private struct CertificateFieldLine: View {
             case .lovelace(let lovelace):
                 Text(verbatim: TWFormat.ada(lovelace)).font(TWFont.figure)
             case .identifier:
-                TWBytesText(field.value, font: TWFont.bytesSmall)
+                CopyableBytes(field.value)
             case .pool:
                 IdentifierLine(text: field.value, item: ExplorerItem.pool(field.value))
             case .stakeAddress:
@@ -116,15 +116,13 @@ struct ProposalRow: View {
     }
 }
 
-/// An identifier, with a link to it in the chosen explorer.
+/// An identifier, with buttons to copy it and to open it in the chosen
+/// explorer.
 struct IdentifierLine: View {
     let text: String
     let item: ExplorerItem?
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline) {
-            TWBytesText(text, font: TWFont.bytesSmall)
-            ExplorerLinkButton(item: item)
-        }
+        CopyableBytes(text, item: item)
     }
 }

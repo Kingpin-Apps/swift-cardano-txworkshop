@@ -9,7 +9,7 @@ struct WithdrawalDraftSection: View {
     var body: some View {
         Section {
             ValueField(kind: .stakeAddress, text: $withdrawal.stakeAddress, prompt: Text("Stake address, key hash or stake key", bundle: #bundle))
-            TextField(value: $withdrawal.lovelace, format: .number) { Text("Lovelace", bundle: #bundle) }
+            TWLabeledField(Text("Lovelace", bundle: #bundle), value: $withdrawal.lovelace, format: .number)
                 .font(TWFont.figure)
         } header: {
             RemovableHeader(title: Text("Withdrawal", bundle: #bundle), onRemove: onRemove)
@@ -50,7 +50,7 @@ struct VoteDraftSection: View {
                 Text("Vote", bundle: #bundle)
             }
             .pickerStyle(.segmented)
-            TextField(text: $vote.anchorURL) { Text("Rationale URL (optional)", bundle: #bundle) }
+            TWLabeledField(Text("Rationale URL (optional)", bundle: #bundle), text: $vote.anchorURL)
                 .font(TWFont.bytesSmall)
                 .autocorrectionDisabled()
             AnchorHashField(hash: $vote.anchorHash, url: vote.anchorURL, prompt: Text("Rationale hash (hex, or choose the rationale file)", bundle: #bundle))
@@ -78,11 +78,11 @@ struct ProposalDraftSection: View {
             }
             if isTreasury {
                 ValueField(kind: .stakeAddress, text: $payee, prompt: Text("Pay to stake address", bundle: #bundle))
-                TextField(value: $amount, format: .number) { Text("Lovelace", bundle: #bundle) }
+                TWLabeledField(Text("Lovelace", bundle: #bundle), value: $amount, format: .number)
                     .font(TWFont.figure)
             }
             ValueField(kind: .stakeAddress, text: $proposal.returnAddress, prompt: Text("Deposit return stake address", bundle: #bundle))
-            TextField(text: $proposal.anchorURL) { Text("Anchor URL", bundle: #bundle) }
+            TWLabeledField(Text("Anchor URL", bundle: #bundle), text: $proposal.anchorURL)
                 .font(TWFont.bytesSmall)
                 .autocorrectionDisabled()
             AnchorHashField(hash: $proposal.anchorHash, url: proposal.anchorURL, prompt: Text("Anchor hash (hex, or choose the anchor file)", bundle: #bundle))

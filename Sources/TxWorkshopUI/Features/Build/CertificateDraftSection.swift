@@ -117,9 +117,7 @@ struct CertificateDraftSection: View {
         }
         switch kind {
         case .retirePool:
-            TextField(value: $epoch, format: .number.grouping(.never)) {
-                Text("Retirement epoch", bundle: #bundle)
-            }
+            TWLabeledField(Text("Retirement epoch", bundle: #bundle), value: $epoch, format: .number.grouping(.never))
             .font(TWFont.figure)
         case .registerPool:
             PoolRegistrationFields(draft: $poolDraft)
@@ -139,7 +137,7 @@ struct CertificateDraftSection: View {
     }
 
     @ViewBuilder private var anchorFields: some View {
-        TextField(text: $anchorURL) { Text("Anchor URL (optional)", bundle: #bundle) }
+        TWLabeledField(Text("Anchor URL (optional)", bundle: #bundle), text: $anchorURL)
             .font(TWFont.bytesSmall)
             .autocorrectionDisabled()
         AnchorHashField(hash: $anchorHash, url: anchorURL, prompt: Text("Anchor hash (hex, or choose the anchor file)", bundle: #bundle))

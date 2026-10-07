@@ -17,9 +17,7 @@ struct OutputDraftSection: View {
     var body: some View {
         Section {
             ValueField(kind: .address, text: $output.address, prompt: Text("Address, hex or payment key", bundle: #bundle))
-            TextField(value: $output.lovelace, format: .number) {
-                Text("Lovelace (empty for the minimum)", bundle: #bundle)
-            }
+            TWLabeledField(Text("Lovelace (empty for the minimum)", bundle: #bundle), value: $output.lovelace, format: .number)
             .font(TWFont.figure)
             if let lovelace = output.lovelace {
                 Text(verbatim: TWFormat.ada(lovelace))
@@ -45,9 +43,7 @@ struct OutputDraftSection: View {
                 Text("Datum", bundle: #bundle)
             }
             if datumKind == .hash {
-                TextField(text: $datumHex) {
-                    Text("Hash (hex)", bundle: #bundle)
-                }
+                TWLabeledField(Text("Hash (hex)", bundle: #bundle), text: $datumHex)
                 .font(TWFont.bytesSmall)
                 .autocorrectionDisabled()
             } else if datumKind == .inline {

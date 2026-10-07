@@ -132,7 +132,7 @@ struct ImportHardwareAccountSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField(text: $name) { Text("Name", bundle: #bundle) }
+                    TWLabeledField(Text("Name", bundle: #bundle), text: $name)
                     Picker(selection: $connection) {
                         ForEach(HardwareConnection.available, id: \.self) { connection in
                             Text(connection.title).tag(connection)
