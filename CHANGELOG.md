@@ -1,3 +1,13 @@
+## v0.1.7 (2026-10-07)
+
+### Feat
+
+- **cip21**: rebuild for hardware wallets with the fee worked out again, and build for them from the start
+
+### Fix
+
+- **validate**: fail a transaction whose fee will be too small once signed
+
 ## v0.1.6 (2026-10-06)
 
 ### Feat
