@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 import TxWorkshopCore
 import TxWorkshopEngine
 
@@ -15,7 +16,7 @@ struct WitnessesSection: View {
                 HStack(alignment: .firstTextBaseline) {
                     VStack(alignment: .leading, spacing: TWSpacing.xxs) {
                         Text(verbatim: witness.label)
-                        TWBytesText(witness.keyHash, font: TWFont.bytesSmall)
+                        CopyableBytes(witness.keyHash)
                             .foregroundStyle(TWColor.secondaryText)
                         Text(witness.addedAt, format: .dateTime)
                             .font(.caption)
@@ -76,7 +77,8 @@ struct WitnessesSection: View {
     }
 }
 
-/// Pastes a witness, checks it signs this transaction, and adds it.
+/// Pastes a witness, or reads it from a file, checks it signs this
+/// transaction, and adds it.
 struct ImportWitnessSheet: View {
     let document: TxWorkshopDocument
     /// The document window's; a sheet's own is not the document's on macOS.
@@ -85,25 +87,42 @@ struct ImportWitnessSheet: View {
     @State private var label = ""
     @State private var text = ""
     @State private var problem: String?
+    @State private var isImporting = false
+    /// The name the last chosen file gave the witness, so the next file
+    /// replaces it; a name typed in is kept.
+    @State private var labelFromFile: String?
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    TextField(text: $label) { Text("Who it is from", bundle: #bundle) }
+                    TWLabeledField(Text("Who it is from", bundle: #bundle), text: $label)
                     TextEditor(text: $text)
                         .font(TWFont.bytesSmall)
                         .frame(minHeight: 100, maxHeight: 220)
                         .autocorrectionDisabled()
                         .accessibilityLabel(Text("Witness", bundle: #bundle))
+                    Button {
+                        isImporting = true
+                    } label: {
+                        Label {
+                            Text("Choose File…", bundle: #bundle)
+                        } icon: {
+                            Image(systemName: "doc.badge.plus")
+                        }
+                    }
+                    .accessibilityIdentifier("witnessFromFile")
                 } footer: {
-                    Text("A witness set or witness in CBOR hex, or a cardano-cli witness file.", bundle: #bundle)
+                    Text("A witness set or witness in CBOR hex, or a cardano-cli witness file: paste it, or choose the file.", bundle: #bundle)
                 }
                 if let problem {
                     Section { TWErrorText(problem) }
                 }
             }
             .formStyle(.grouped)
+            .fileImporter(isPresented: $isImporting, allowedContentTypes: [.data, .json, .plainText]) { result in
+                if case .success(let url) = result { load(url) }
+            }
             .navigationTitle(Text("Add Witness", bundle: #bundle))
             .twSheetRoot()
             .toolbar {
@@ -119,6 +138,46 @@ struct ImportWitnessSheet: View {
         #if os(macOS)
         .frame(minWidth: 520, minHeight: 380)
         #endif
+    }
+
+    /// Puts a witness file's contents in the field, and names the witness
+    /// after the file unless a name was typed.
+    private func load(_ url: URL) {
+        let accessing = url.startAccessingSecurityScopedResource()
+        defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+        guard let data = try? Data(contentsOf: url) else {
+            problem = String(localized: "\(url.lastPathComponent) could not be read.", bundle: #bundle)
+            return
+        }
+        let file = Self.read(data, named: url.lastPathComponent, label: label, labelFromFile: labelFromFile)
+        text = file.text
+        label = file.label
+        labelFromFile = file.label
+        problem = file.isWitness
+            ? nil
+            : String(localized: "\(url.lastPathComponent) is not a witness: choose a cardano-cli witness file, or a witness in CBOR.", bundle: #bundle)
+    }
+
+    /// What a chosen witness file puts in the sheet: its text, as written, or
+    /// raw CBOR as hex; and the witness's name, the file's without its
+    /// extension, when the name is empty or came from an earlier file.
+    static func read(_ data: Data, named fileName: String, label: String, labelFromFile: String?)
+        -> (text: String, label: String, isWitness: Bool)
+    {
+        let asText = String(data: data, encoding: .utf8)
+        let hex = TxDocumentCodec.hex(data)
+        let text: String
+        if let asText, (try? WitnessAssembler.witnesses(from: asText)) != nil {
+            text = asText
+        } else if (try? WitnessAssembler.witnesses(from: hex)) != nil {
+            text = hex
+        } else {
+            // Neither: shown as written, so it is plain what was chosen.
+            text = asText ?? hex
+        }
+        let typed = label.trimmingCharacters(in: .whitespaces)
+        let name = typed.isEmpty || typed == labelFromFile ? URL(fileURLWithPath: fileName).deletingPathExtension().lastPathComponent : label
+        return (text, name, (try? WitnessAssembler.witnesses(from: text)) != nil)
     }
 
     private func add() {
