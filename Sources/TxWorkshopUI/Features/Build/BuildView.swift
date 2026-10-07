@@ -1,6 +1,7 @@
 import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
+import UniformTypeIdentifiers
 
 /// A form for a transaction, built with swift-cardano-txbuilder: coin
 /// selection, change, min-ADA and the fee. The recipe is kept in the
@@ -20,6 +21,9 @@ struct BuildView: View {
     /// up to date as it is fixed.
     @State private var problems: [RecipeProblem] = []
     @State private var checksRecipe = false
+    @State private var isImportingCertificates = false
+    /// Certificate files that could not be read, by name, with why.
+    @State private var certificateFileProblems: [String] = []
 
     init(document: TxWorkshopDocument) {
         self.document = document
@@ -110,6 +114,10 @@ struct BuildView: View {
                         recipe.certificates.append(CertificateItem(certificate: .registerStake(stakeAddress: "")))
                     } label: { Text("Certificate", bundle: #bundle) }
                     Button {
+                        isImportingCertificates = true
+                    } label: { Text("Certificate from File…", bundle: #bundle) }
+                    .accessibilityIdentifier("certificateFromFile")
+                    Button {
                         recipe.withdrawals.append(WithdrawalDraft())
                     } label: { Text("Withdrawal", bundle: #bundle) }
                     Button {
@@ -125,9 +133,15 @@ struct BuildView: View {
                         Image(systemName: "building.columns")
                     }
                 }
-                TextField(value: $recipe.donation, format: .number) {
-                    Text("Treasury donation (lovelace)", bundle: #bundle)
+                .fileImporter(
+                    isPresented: $isImportingCertificates, allowedContentTypes: [.data, .json, .plainText], allowsMultipleSelection: true
+                ) { result in
+                    if case .success(let urls) = result { addCertificates(from: urls) }
                 }
+                ForEach(certificateFileProblems, id: \.self) { problem in
+                    TWErrorText(problem)
+                }
+                TWLabeledField(Text("Treasury donation (lovelace)", bundle: #bundle), value: $recipe.donation, format: .number)
                 .font(TWFont.figure)
             }
             BuildOptionsSection(recipe: $recipe)
@@ -254,6 +268,23 @@ struct BuildView: View {
                 lastSpent = built.spent
             } catch {
                 composition = .failed(String(describing: error))
+            }
+        }
+    }
+
+    /// Adds the certificate each file holds, a cardano-cli certificate file
+    /// or its CBOR, as a certificate the form edits. Files that cannot be read
+    /// say why, and the others are still added.
+    private func addCertificates(from urls: [URL]) {
+        certificateFileProblems = []
+        for url in urls {
+            let accessing = url.startAccessingSecurityScopedResource()
+            defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+            do {
+                let draft = try CertificateFile.draft(from: try Data(contentsOf: url), network: document.content.network)
+                recipe.certificates.append(CertificateItem(certificate: draft))
+            } catch {
+                certificateFileProblems.append("\(url.lastPathComponent): \(error)")
             }
         }
     }
