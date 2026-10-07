@@ -131,8 +131,26 @@ public final class ProviderSettingsStore {
     private func moveAPIKeysToICloudKeychainOnce() {
         let flag = "providerKeysInICloudKeychain"
         guard !UserDefaults.standard.bool(forKey: flag) else { return }
-        for (account, key) in apiKeys() { try? secrets.setSecret(key, for: account) }
-        UserDefaults.standard.set(true, forKey: flag)
+        // Tried again at the next launch until every key has moved.
+        if saveAPIKeys(apiKeys()) { UserDefaults.standard.set(true, forKey: flag) }
+    }
+
+    /// Saves each key again with the current secret store. A key that cannot
+    /// be saved stays where it was; the first failure is shown in Settings.
+    @discardableResult
+    private func saveAPIKeys(_ keys: [String: String]) -> Bool {
+        var failure: String?
+        for (account, key) in keys {
+            do {
+                try secrets.setSecret(key, for: account)
+            } catch {
+                failure = failure ?? String(describing: error)
+            }
+        }
+        if let failure {
+            lastError = String(localized: "An API key could not be saved again, so it stays where it was: \(failure)", bundle: #bundle)
+        }
+        return failure == nil
     }
 
     /// Whether the person is signed in to iCloud on this device.
@@ -169,10 +187,8 @@ public final class ProviderSettingsStore {
             persist()
         }
         // Each key is saved again in the new place: iCloud Keychain when on,
-        // this device's own copy when off.
-        for (account, key) in keys {
-            try? secrets.setSecret(key, for: account)
-        }
+        // this device's own copy when off. Its old copy goes only once it is.
+        saveAPIKeys(keys)
     }
 
     /// The iCloud store and the explorer mirror, made the first time sync
