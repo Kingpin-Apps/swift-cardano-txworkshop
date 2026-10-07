@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Cardano TxWorkshop</string>
+	<string>TxWorkshop</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -54,7 +54,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.developer-tools</string>
+	<string>public.app-category.utilities</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Cardano TxWorkshop connects to your Ledger over Bluetooth to sign transactions.</string>
 	<key>SUEnableAutomaticChecks</key>

@@ -40,8 +40,8 @@ settings:
     ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
     STRING_CATALOG_GENERATE_SYMBOLS: YES
     # No team by default: the simulators sign ad hoc, and macOS signs "to run
-    # locally". TxWorkshop sets its team below; TxWorkshopDirect still signs
-    # ad hoc until notarisation is set up.
+    # locally". TxWorkshop and TxWorkshopDirect set their team below, so their
+    # Mac builds can use iCloud and the Keychain.
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: ""
     "CODE_SIGN_STYLE[sdk=macosx*]": Manual
@@ -108,9 +108,9 @@ targets:
       path: App/Info.plist
       properties:
         <<: *documentTypes
-        # Short on home screens, full on the Mac: see APP_DISPLAY_NAME below.
+        # The name under the icon: see APP_DISPLAY_NAME below.
         CFBundleDisplayName: $(APP_DISPLAY_NAME)
-        LSApplicationCategoryType: public.app-category.developer-tools
+        LSApplicationCategoryType: public.app-category.utilities
         UISupportsDocumentBrowser: true
         LSSupportsOpeningDocumentsInPlace: true
         UILaunchScreen: {}
@@ -140,14 +140,12 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.cardano-txworkshop
         PRODUCT_NAME: Cardano TxWorkshop
-        # The name under the icon. Home screens cut "Cardano TxWorkshop" short,
-        # so iPhone, iPad and Vision Pro show "TxWorkshop"; the App Store name
-        # stays "Cardano TxWorkshop" (fastlane/metadata).
-        APP_DISPLAY_NAME: Cardano TxWorkshop
-        "APP_DISPLAY_NAME[sdk=iphoneos*]": TxWorkshop
-        "APP_DISPLAY_NAME[sdk=iphonesimulator*]": TxWorkshop
-        "APP_DISPLAY_NAME[sdk=xros*]": TxWorkshop
-        "APP_DISPLAY_NAME[sdk=xrsimulator*]": TxWorkshop
+        # The name under the icon: "TxWorkshop" on every platform, since home
+        # screens cut "Cardano TxWorkshop" short. The App Store name stays
+        # "Cardano TxWorkshop" (fastlane/metadata). Set here, not in Xcode's
+        # General tab: this target keeps its own Info.plist, so the
+        # INFOPLIST_KEY_ settings Xcode writes there are not read.
+        APP_DISPLAY_NAME: TxWorkshop
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         "ASSETCATALOG_COMPILER_APPICON_NAME[sdk=xros*]": AppIconVision
@@ -181,8 +179,8 @@ targets:
       path: AppDirect/Info.plist
       properties:
         <<: *documentTypes
-        CFBundleDisplayName: Cardano TxWorkshop
-        LSApplicationCategoryType: public.app-category.developer-tools
+        CFBundleDisplayName: TxWorkshop
+        LSApplicationCategoryType: public.app-category.utilities
         ITSAppUsesNonExemptEncryption: false
         NSBluetoothAlwaysUsageDescription: Cardano TxWorkshop connects to your Ledger over Bluetooth to sign transactions.
         # Sparkle: the appcast lives on this repo's latest
@@ -218,9 +216,20 @@ targets:
         ENABLE_HARDWARE_CHECKED_POINTER_ARITHMETIC_SLICE: NO
         CODE_SIGN_ENTITLEMENTS: AppDirect/TxWorkshopDirect.entitlements
       configs:
+        # Debug signs with the team and carries iCloud key-value storage, as
+        # the released build does, so a build run from Xcode can sync and can
+        # read the API keys the downloaded app keeps in the Keychain. Signed
+        # ad hoc, it could do neither, and Settings would hide the iCloud
+        # switch. Xcode makes the development profile itself.
+        Debug:
+          DEVELOPMENT_TEAM: G88W6X4TCA
+          CODE_SIGN_STYLE: Automatic
+          CODE_SIGN_IDENTITY: Apple Development
+          CODE_SIGN_ENTITLEMENTS: AppDirect/TxWorkshopDirect-Release.entitlements
+          PROVISIONING_PROFILE_SPECIFIER: ""
         # Release is what scripts/release-direct.sh archives: signed with the
         # Developer ID certificate and a secure timestamp, as notarisation
-        # needs. Debug keeps the local ad hoc signing.
+        # needs.
         # The published app is plain "Cardano TxWorkshop.app"; only local
         # Debug builds keep the Direct name, so the two never collide.
         # Its provisioning profile carries iCloud key-value storage, for
