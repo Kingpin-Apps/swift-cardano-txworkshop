@@ -138,6 +138,12 @@ struct BuildView: View {
                         Text("Use the provider for address UTxOs and the tip", bundle: #bundle)
                     }
                 }
+                // Beside Build, so a transaction for a hardware wallet is built
+                // for it the first time, with its fee sized for those bytes.
+                Toggle(isOn: $recipe.cip21Compatible) {
+                    Text("For hardware wallets (CIP-21)", bundle: #bundle)
+                }
+                .accessibilityIdentifier("buildCIP21")
                 Button(action: build) {
                     Text("Build", bundle: #bundle)
                         .opacity(composition.isLoading ? 0 : 1)
@@ -149,7 +155,10 @@ struct BuildView: View {
                 if document.content.network == nil {
                     Text("Set the network in Overview first.", bundle: #bundle)
                 } else {
-                    Text("Protocol parameters come from the document's chain data, or the provider. Without a provider, only pasted UTxOs are spent.", bundle: #bundle)
+                    VStack(alignment: .leading, spacing: TWSpacing.xs) {
+                        Text("Protocol parameters come from the document's chain data, or the provider. Without a provider, only pasted UTxOs are spent.", bundle: #bundle)
+                        Text("For hardware wallets, the transaction is written the way Ledger, Trezor and Keystone ask, and the fee is worked out from those bytes.", bundle: #bundle)
+                    }
                 }
             }
             if !problems.isEmpty {
