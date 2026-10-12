@@ -13,10 +13,22 @@ public struct ProviderSettings: Codable, Sendable, Equatable {
     public var providers: [ProviderConfiguration]
     /// The provider chosen for each network, by network id.
     public var selection: [String: UUID]
+    /// Providers removed on purpose, so syncing removes them everywhere
+    /// rather than another device adding them back.
+    public var removed: [UUID]
 
-    public init(providers: [ProviderConfiguration] = [], selection: [String: UUID] = [:]) {
+    public init(providers: [ProviderConfiguration] = [], selection: [String: UUID] = [:], removed: [UUID] = []) {
         self.providers = providers
         self.selection = selection
+        self.removed = removed
+    }
+
+    /// Reads settings saved before ``removed`` existed.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        providers = try c.decodeIfPresent([ProviderConfiguration].self, forKey: .providers) ?? []
+        selection = try c.decodeIfPresent([String: UUID].self, forKey: .selection) ?? [:]
+        removed = try c.decodeIfPresent([UUID].self, forKey: .removed) ?? []
     }
 }
 
@@ -273,6 +285,7 @@ public final class ProviderSettingsStore {
 
     public func remove(_ provider: ProviderConfiguration) {
         settings.providers.removeAll { $0.id == provider.id }
+        if !settings.removed.contains(provider.id) { settings.removed.append(provider.id) }
         if settings.selection[provider.network.id] == provider.id {
             settings.selection[provider.network.id] = providers(for: provider.network).first?.id
         }
@@ -292,6 +305,8 @@ public final class ProviderSettingsStore {
     private func persist() {
         do {
             try persistence.save(settings)
+            // Saving through iCloud joins what other devices added meanwhile.
+            if let saved = try persistence.load(), saved != settings { settings = saved }
             lastError = nil
         } catch {
             lastError = String(describing: error)
