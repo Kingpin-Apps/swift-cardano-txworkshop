@@ -237,6 +237,9 @@ public struct TransactionComposer: Sendable {
             }
             output.datumOption = DatumOption(datum: .data(data))
         }
+        if let text = draft.referenceScript, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            output.script = try referenceScript(text)
+        }
         let least = Int64(try await Utils.minLovelacePostAlonzo(output, context))
         if draft.lovelace == nil {
             output.amount.coin = least
@@ -246,6 +249,33 @@ public struct TransactionComposer: Sendable {
             throw ComposeError.belowMinimum(address: draft.address, minimum: least)
         }
         return output
+    }
+
+    /// A reference script as an output carries it: `[language, script]` in
+    /// CBOR, 0 for a native script and 1–3 for Plutus.
+    static func referenceScriptHex(_ script: ScriptType) throws -> String {
+        let primitive: Primitive = switch script {
+        case .nativeScript(let native): .list([.uint(0), try native.toPrimitive()])
+        case .plutusV1Script(let plutus): .list([.uint(1), .bytes(plutus.data)])
+        case .plutusV2Script(let plutus): .list([.uint(2), .bytes(plutus.data)])
+        case .plutusV3Script(let plutus): .list([.uint(3), .bytes(plutus.data)])
+        }
+        return TxDocumentCodec.hex(try primitive.toCBORData())
+    }
+
+    static func referenceScript(_ text: String) throws -> ScriptType {
+        let hex = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let bytes = try? TxDocumentCodec.bytes(fromHex: hex), case .list(let parts)? = try? Primitive.fromCBOR(data: bytes),
+            parts.count == 2, case .uint(let language) = parts[0]
+        else { throw ComposeError.badScript("A reference script is [language, script] in CBOR hex.") }
+        switch (language, parts[1]) {
+        case (0, let native):
+            do { return .nativeScript(try NativeScript(from: native)) } catch { throw ComposeError.badScript("The reference native script does not decode.") }
+        case (1...3, .bytes(let data)):
+            return try plutusScript(version: Int(language), hex: TxDocumentCodec.hex(data))
+        default:
+            throw ComposeError.badScript("A reference script's language is 0 (native) or 1–3 (Plutus).")
+        }
     }
 
     /// Assets from policy ids and asset names in hex. Built from bytes: the
