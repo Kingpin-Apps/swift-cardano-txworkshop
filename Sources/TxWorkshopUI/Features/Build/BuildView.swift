@@ -39,6 +39,26 @@ struct BuildView: View {
 
     var body: some View {
         Form {
+            if !session.importNotes.isEmpty {
+                Section {
+                    ForEach(session.importNotes) { note in
+                        Label {
+                            Text(verbatim: note.message)
+                        } icon: {
+                            Image(systemName: note.kind == .dropped ? "minus.circle" : "arrow.triangle.2.circlepath")
+                        }
+                    }
+                    Button {
+                        session.importNotes = []
+                    } label: {
+                        Text("Dismiss", bundle: #bundle)
+                    }
+                } header: {
+                    Text("Read from the transaction", bundle: #bundle)
+                } footer: {
+                    Text("Change what you need, then Build: it is built again from this form, and replaces the transaction when you use it.", bundle: #bundle)
+                }
+            }
             // The network is chosen in the toolbar; here it only speaks up
             // when the addresses point elsewhere.
             if let hint = recipeHint, !hint.fits(document.content.network) {
@@ -262,6 +282,7 @@ struct BuildView: View {
         problems = []
         checksRecipe = false
         certificateFileProblems = []
+        session.importNotes = []
         document.update({ $0.recipe = nil }, actionName: LocalizedStringResource("Start Over", bundle: #bundle), undoManager: undoManager)
     }
 

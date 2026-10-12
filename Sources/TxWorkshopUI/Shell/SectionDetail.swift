@@ -10,8 +10,14 @@ struct SectionDetail: View {
     let document: TxWorkshopDocument
     let inspection: LoadState<TransactionInspection>
     @Environment(\.undoManager) private var undoManager
+    @Environment(WorkshopSession.self) private var session
     @State private var isComparing = false
     @State private var isReplacing = false
+    /// The form read from the transaction, waiting to replace the one there.
+    @State private var pendingEdit: RecipeImporter.Result?
+    @State private var editProblem: String?
+    /// Whether the problem is UTxOs the chain data lacks.
+    @State private var editNeedsChainData = false
 
     var body: some View {
         content
@@ -44,6 +50,17 @@ struct SectionDetail: View {
                             .help(Text("Compare this transaction with another", bundle: #bundle))
                         }
                     }
+                    ToolbarItem {
+                        Button(action: editInBuild) {
+                            Label {
+                                Text("Edit in Build…", bundle: #bundle)
+                            } icon: {
+                                Image(systemName: "slider.horizontal.3")
+                            }
+                        }
+                        .help(Text("Change this transaction in Build, where it is built again: the fee, change and script budgets are worked out anew", bundle: #bundle))
+                        .accessibilityIdentifier("editInBuild")
+                    }
                     // Replacing the transaction sits apart from the actions
                     // that work on it.
                     ToolbarItem(placement: .navigation) {
@@ -61,6 +78,33 @@ struct SectionDetail: View {
                     }
                 }
             }
+            .confirmationDialog(
+                String(localized: "Replace the Build form?", bundle: #bundle),
+                isPresented: Binding { pendingEdit != nil } set: { if !$0 { pendingEdit = nil } }
+            ) {
+                Button(role: .destructive) {
+                    if let pendingEdit { open(pendingEdit) }
+                } label: {
+                    Text("Replace", bundle: #bundle)
+                }
+            } message: {
+                Text("Build already has a form. It is replaced by this transaction's; Undo brings it back.", bundle: #bundle)
+            }
+            .alert(
+                String(localized: "This transaction cannot be edited in Build", bundle: #bundle),
+                isPresented: Binding { editProblem != nil } set: { if !$0 { editProblem = nil } }
+            ) {
+                if editNeedsChainData {
+                    Button {
+                        session.selection = .chainData
+                    } label: {
+                        Text("Open Chain Data", bundle: #bundle)
+                    }
+                }
+                Button(role: .cancel) {} label: { Text("OK", bundle: #bundle) }
+            } message: {
+                Text(verbatim: editProblem ?? "")
+            }
             .sheet(isPresented: $isReplacing) {
                 ReplaceTransactionSheet(document: document, undoManager: undoManager)
             }
@@ -69,6 +113,35 @@ struct SectionDetail: View {
                     CompareSheet(document: document, current: current)
                 }
             }
+    }
+
+    /// Reads the transaction into the Build form, asking first when that
+    /// would replace a different form.
+    private func editInBuild() {
+        guard let bytes = document.content.transaction else { return }
+        do {
+            let result = try RecipeImporter.recipe(
+                from: bytes, snapshot: document.content.chainContext, network: document.content.network,
+                keeping: document.content.recipe?.blueprints ?? []
+            )
+            if let current = document.content.recipe, current != BuildRecipe(), current != result.recipe {
+                pendingEdit = result
+            } else {
+                open(result)
+            }
+        } catch {
+            if case .missingInputs? = error as? ImportError { editNeedsChainData = true } else { editNeedsChainData = false }
+            editProblem = String(describing: error)
+        }
+    }
+
+    private func open(_ result: RecipeImporter.Result) {
+        document.update(
+            { $0.recipe = result.recipe }, actionName: LocalizedStringResource("Edit in Build", bundle: #bundle), undoManager: undoManager
+        )
+        session.importNotes = result.notes
+        session.selection = .build
+        pendingEdit = nil
     }
 
     @ViewBuilder private var content: some View {

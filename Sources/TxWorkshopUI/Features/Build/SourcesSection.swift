@@ -71,6 +71,10 @@ struct SourcesSection: View {
             utxos = recipe.utxos.joined(separator: "\n")
         }
         .onChange(of: utxos) { _, text in recipe.utxos = Self.lines(text) }
+        // A form replaced from elsewhere, by Edit in Build or Undo.
+        .onChange(of: recipe.utxos) { _, listed in
+            if Self.lines(utxos) != listed { utxos = listed.joined(separator: "\n") }
+        }
     }
 
     private var spentIDs: Set<String> { Set(spent.map(\.id)) }

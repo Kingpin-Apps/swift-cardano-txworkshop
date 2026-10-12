@@ -9,6 +9,9 @@ import TxWorkshopEngine
 @Observable
 final class WorkshopSession {
     var selection: WorkshopSection? = .overview
+    /// What reading the transaction into the Build form did not carry over
+    /// as it was, shown on Build until dismissed.
+    var importNotes: [RecipeImporter.ImportNote] = []
     /// A tree path the CBOR explorer should select next.
     var cborFocus: [Int]?
     /// A field path the CBOR explorer should select next, as validation
