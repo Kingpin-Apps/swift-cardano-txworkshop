@@ -31,7 +31,7 @@ struct SourcesSection: View {
         } header: {
             Text("Source addresses", bundle: #bundle)
         } footer: {
-            Text("One per line: bech32, hex, or read from .addr or payment key files. Fetching saves their UTxOs in the recipe, so it builds offline later.", bundle: #bundle)
+            Text("One per line: bech32, hex, or read from .addr or payment key files. Fetching replaces the UTxOs listed with theirs, and saves them in the recipe, so it builds offline later.", bundle: #bundle)
         }
         Section {
             TextEditor(text: $utxos)
@@ -93,6 +93,18 @@ struct SourcesSection: View {
         text.split(whereSeparator: \.isNewline).map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
     }
 
+    /// Puts the fetched UTxOs in place of those listed: a listed UTxO the
+    /// addresses no longer hold is spent, and building with it would make a
+    /// transaction the chain rejects. Choices for UTxOs that were listed and
+    /// are gone go with them.
+    static func replaceUTxOs(in recipe: inout BuildRecipe, with found: [String]) {
+        let ids = { (hexes: [String]) in Set(hexes.compactMap { TransactionComposer.describe(utxoHex: $0)?.id }) }
+        let gone = ids(recipe.utxos).subtracting(ids(found))
+        recipe.utxos = found
+        recipe.fixedInputs.removeAll { gone.contains($0) }
+        recipe.excludedInputs.removeAll { gone.contains($0) }
+    }
+
     private func fetch() {
         guard let provider else { return }
         let addresses = recipe.sourceAddresses
@@ -103,9 +115,8 @@ struct SourcesSection: View {
             defer { isFetching = false }
             do {
                 let found = try await TransactionComposer().utxos(at: addresses, provider: provider, apiKey: apiKey)
-                var merged = recipe.utxos
-                for hex in found where !merged.contains(hex) { merged.append(hex) }
-                utxos = merged.joined(separator: "\n")
+                Self.replaceUTxOs(in: &recipe, with: found)
+                utxos = recipe.utxos.joined(separator: "\n")
             } catch {
                 problem = String(describing: error)
             }
