@@ -44,6 +44,28 @@ struct ExplorerLinkButton: View {
     }
 }
 
+/// An item's page in the chosen block explorer, shown as its URL. Shows
+/// nothing when no explorer has a page for it on `network`.
+struct ExplorerURLLink: View {
+    let item: ExplorerItem?
+    let network: CardanoNetwork
+    @AppStorage(BlockchainExplorer.storageKey) private var chosen = BlockchainExplorer.cexplorer
+
+    var body: some View {
+        if let item, case let (explorer, url)? = BlockchainExplorer.opening(item, on: network.cardanoCoreNetwork, preferring: chosen) {
+            Link(destination: url) {
+                Text(verbatim: url.absoluteString)
+                    .font(.caption)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+            .buttonStyle(.borderless)
+            .help(Text("Open in \(explorer.name)", bundle: #bundle))
+            .textSelection(.enabled)
+        }
+    }
+}
+
 /// Explorer items from the text the inspection shows.
 extension ExplorerItem {
     /// A transaction by its id, or by an input's `id#index`.

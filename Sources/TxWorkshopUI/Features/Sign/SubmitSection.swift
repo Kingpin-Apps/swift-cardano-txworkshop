@@ -1,3 +1,4 @@
+import SwiftCardanoExplorers
 import SwiftUI
 import TxWorkshopCore
 import TxWorkshopEngine
@@ -39,6 +40,7 @@ struct SubmitSection: View {
                         CopyableBytes(submission.transactionID)
                         if let confirmed {
                             Text("On chain since \(confirmed, format: .dateTime)", bundle: #bundle).font(.caption)
+                            ExplorerURLLink(item: ExplorerItem.transaction(submission.transactionID), network: submission.network)
                         } else {
                             Text("Submitted \(submission.submittedAt, format: .relative(presentation: .named)) through \(submission.provider); waiting", bundle: #bundle)
                                 .font(.caption)
