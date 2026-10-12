@@ -24,6 +24,7 @@ struct BuildView: View {
     @State private var isImportingCertificates = false
     /// Certificate files that could not be read, by name, with why.
     @State private var certificateFileProblems: [String] = []
+    @State private var isConfirmingReset = false
 
     init(document: TxWorkshopDocument) {
         self.document = document
@@ -165,6 +166,17 @@ struct BuildView: View {
                 }
                 .disabled(composition.isLoading || document.content.network == nil)
                 .accessibilityIdentifier("buildRecipe")
+                Button(role: .destructive) {
+                    isConfirmingReset = true
+                } label: {
+                    Label {
+                        Text("Start Over…", bundle: #bundle)
+                    } icon: {
+                        Image(systemName: "arrow.counterclockwise")
+                    }
+                }
+                .disabled(composition.isLoading || (recipe == BuildRecipe() && document.content.recipe == nil))
+                .accessibilityIdentifier("resetRecipe")
             } footer: {
                 if document.content.network == nil {
                     Text("Set the network in Overview first.", bundle: #bundle)
@@ -218,6 +230,10 @@ struct BuildView: View {
                 document.setNetwork(network, undoManager: undoManager)
             }
         }
+        // Undoing Start Over, or a build, brings its recipe back to the form.
+        .onChange(of: document.content.recipe) { _, saved in
+            if let saved, saved != recipe { recipe = saved }
+        }
         .onChange(of: recipe) {
             if checksRecipe { problems = RecipeCheck.problems(recipe, network: document.content.network) }
         }
@@ -229,7 +245,24 @@ struct BuildView: View {
             case .idle, .loading: break
             }
         }
+        .confirmationDialog(String(localized: "Start over?", bundle: #bundle), isPresented: $isConfirmingReset) {
+            Button(role: .destructive, action: reset) { Text("Start Over", bundle: #bundle) }
+        } message: {
+            Text("Everything in this form is cleared. The document's transaction stays as it is.", bundle: #bundle)
+        }
         .navigationTitle(Text("Build", bundle: #bundle))
+    }
+
+    /// Clears the form and what the last build made, for a new recipe. Undo
+    /// brings the saved recipe back.
+    private func reset() {
+        recipe = BuildRecipe()
+        composition = .idle
+        lastSpent = []
+        problems = []
+        checksRecipe = false
+        certificateFileProblems = []
+        document.update({ $0.recipe = nil }, actionName: LocalizedStringResource("Start Over", bundle: #bundle), undoManager: undoManager)
     }
 
     /// What the recipe's addresses say about its network.
