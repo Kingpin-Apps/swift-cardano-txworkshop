@@ -192,8 +192,11 @@ public struct SystemKeychain: KeychainBackend {
             query[kSecUseDataProtectionKeychain as String] = true
             query[kSecAttrSynchronizable as String] = kCFBooleanTrue
         case .login:
-            // The file-based keychain: no data-protection flag, and it never syncs.
-            break
+            // The file-based keychain, which never syncs. The flag is set to
+            // false, not left out: left out, macOS matches the data-protection
+            // keychain too, so removing a stale login copy removed the secret
+            // just saved there.
+            query[kSecUseDataProtectionKeychain as String] = false
         }
         return query
     }
