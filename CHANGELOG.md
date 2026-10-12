@@ -1,3 +1,19 @@
+## v0.2.0 (2026-10-12)
+
+### Feat
+
+- **build**: reference inputs, and datums included by hash
+- **build**: edit a transaction in Build, built again from its form
+- **build**: start over from an empty recipe
+- **submit**: explorer link under a confirmed transaction
+- **sign**: choose a signing key file
+
+### Fix
+
+- **build**: an output's reference script is built into it
+- **build**: fetched UTxOs replace those listed
+- **keychain**: keep a new secret when clearing its login-keychain copy
+
 ## v0.1.9 (2026-10-07)
 
 ### Feat
@@ -87,11 +103,6 @@
 ### Fix
 
 - the apps carry their real version and build number, not 1.0 (1)
-
-## v0.1.1 (2026-09-30)
-
-### Fix
-
 - **release**: publish the Mac app as Cardano TxWorkshop.app; the cask depends on macOS
 
 ## v0.1.0 (2026-09-30)
