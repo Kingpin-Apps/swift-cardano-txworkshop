@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 import TxWorkshopCore
 import TxWorkshopEngine
 
@@ -69,6 +70,10 @@ struct AddKeySheet: View {
     @State private var passphrase = ""
     @State private var accounts = 1
     @State private var problem: String?
+    @State private var isImporting = false
+    /// The name the last chosen file gave the key, so the next file replaces
+    /// it; a name typed in is kept.
+    @State private var nameFromFile: String?
 
     var body: some View {
         NavigationStack {
@@ -86,6 +91,18 @@ struct AddKeySheet: View {
                         .frame(minHeight: 80, maxHeight: 180)
                         .autocorrectionDisabled()
                         .accessibilityLabel(kind == .mnemonic ? Text("Recovery phrase", bundle: #bundle) : Text("Key file contents", bundle: #bundle))
+                    if kind == .keyFile {
+                        Button {
+                            isImporting = true
+                        } label: {
+                            Label {
+                                Text("Choose File…", bundle: #bundle)
+                            } icon: {
+                                Image(systemName: "doc.badge.plus")
+                            }
+                        }
+                        .accessibilityIdentifier("signingKeyFromFile")
+                    }
                     if kind == .mnemonic {
                         TWLabeledField(Text("Passphrase (optional)", bundle: #bundle), secret: $passphrase)
                         Stepper(value: $accounts, in: 1...5) {
@@ -100,6 +117,9 @@ struct AddKeySheet: View {
                 }
             }
             .formStyle(.grouped)
+            .fileImporter(isPresented: $isImporting, allowedContentTypes: [.data, .json, .plainText]) { result in
+                if case .success(let url) = result { load(url) }
+            }
             .navigationTitle(Text("Add Signing Key", bundle: #bundle))
             .twSheetRoot()
             .toolbar {
@@ -117,6 +137,36 @@ struct AddKeySheet: View {
         #endif
     }
 
+    /// Puts a key file's contents in the field, and names the key after the
+    /// file unless a name was typed.
+    private func load(_ url: URL) {
+        let accessing = url.startAccessingSecurityScopedResource()
+        defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+        guard let data = try? Data(contentsOf: url) else {
+            problem = String(localized: "\(url.lastPathComponent) could not be read.", bundle: #bundle)
+            return
+        }
+        let file = Self.read(data, named: url.lastPathComponent, name: name, nameFromFile: nameFromFile)
+        secret = file.text
+        name = file.name
+        nameFromFile = file.name
+        problem = file.isSigningKey
+            ? nil
+            : String(localized: "\(url.lastPathComponent) is not a signing key: choose a cardano-cli .skey file.", bundle: #bundle)
+    }
+
+    /// What a chosen key file puts in the sheet: its text, as written; and
+    /// the key's name, the file's without its extension, when the name is
+    /// empty or came from an earlier file.
+    static func read(_ data: Data, named fileName: String, name: String, nameFromFile: String?)
+        -> (text: String, name: String, isSigningKey: Bool)
+    {
+        let text = String(decoding: data, as: UTF8.self)
+        let typed = name.trimmingCharacters(in: .whitespaces)
+        let newName = typed.isEmpty || typed == nameFromFile ? URL(fileURLWithPath: fileName).deletingPathExtension().lastPathComponent : name
+        return (text, newName, (try? KeyRing(.envelope(json: text))) != nil)
+    }
+
     private func add() {
         let material: SigningKeyMaterial = kind == .mnemonic
             ? .mnemonic(words: secret.trimmingCharacters(in: .whitespacesAndNewlines), passphrase: passphrase)
@@ -127,6 +177,7 @@ struct AddKeySheet: View {
             try keys.add(key, secret: try StoredKeyMaterial.encode(material))
             secret = ""
             passphrase = ""
+            nameFromFile = nil
             dismiss()
         } catch {
             problem = String(describing: error)
