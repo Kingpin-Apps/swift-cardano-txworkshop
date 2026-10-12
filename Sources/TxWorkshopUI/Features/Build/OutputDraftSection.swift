@@ -12,7 +12,7 @@ struct OutputDraftSection: View {
     @State private var datumKind = DatumKind.none
     @State private var datumHex = ""
 
-    enum DatumKind: Hashable { case none, hash, inline }
+    enum DatumKind: Hashable { case none, hash, hashed, inline }
 
     var body: some View {
         Section {
@@ -39,6 +39,7 @@ struct OutputDraftSection: View {
                 Text("No datum", bundle: #bundle).tag(DatumKind.none)
                 Text("Datum hash", bundle: #bundle).tag(DatumKind.hash)
                 Text("Inline datum", bundle: #bundle).tag(DatumKind.inline)
+                Text("Datum by hash, included", bundle: #bundle).tag(DatumKind.hashed)
             } label: {
                 Text("Datum", bundle: #bundle)
             }
@@ -46,12 +47,18 @@ struct OutputDraftSection: View {
                 TWLabeledField(Text("Hash (hex)", bundle: #bundle), text: $datumHex)
                 .font(TWFont.bytesSmall)
                 .autocorrectionDisabled()
-            } else if datumKind == .inline {
+            } else if datumKind == .inline || datumKind == .hashed {
                 BlueprintDataField(
                     role: .datum, text: $datumHex, form: $output.datumForm, blueprints: $blueprints,
                     scriptHash: BlueprintCatalog.scriptHash(address: output.address, network: network), purpose: "spend", applied: applied,
-                    label: Text("Inline datum", bundle: #bundle), prompt: Text("Plutus data (CBOR hex, JSON or a file)", bundle: #bundle)
+                    label: datumKind == .inline ? Text("Inline datum", bundle: #bundle) : Text("Datum", bundle: #bundle),
+                    prompt: Text("Plutus data (CBOR hex, JSON or a file)", bundle: #bundle)
                 )
+                if datumKind == .hashed {
+                    Text("The output carries the datum's hash, and the datum goes in the transaction, where scripts read it.", bundle: #bundle)
+                        .font(.caption)
+                        .foregroundStyle(TWColor.secondaryText)
+                }
             }
         } header: {
             RemovableHeader(title: Text("Output", bundle: #bundle), onRemove: onRemove)
@@ -61,6 +68,7 @@ struct OutputDraftSection: View {
             case .none: datumKind = .none
             case .hash(let hex): datumKind = .hash; datumHex = hex
             case .inline(let hex): datumKind = .inline; datumHex = hex
+            case .hashed(let hex): datumKind = .hashed; datumHex = hex
             }
         }
         .onChange(of: datumKind) { syncDatum() }
@@ -68,12 +76,13 @@ struct OutputDraftSection: View {
     }
 
     private func syncDatum() {
-        if datumKind != .inline { output.datumForm = nil }
+        if datumKind != .inline && datumKind != .hashed { output.datumForm = nil }
         output.datum = switch datumKind {
         case .none: .none
         case .hash: .hash(datumHex.filter { !$0.isWhitespace })
         // Read in any form when built: CBOR hex, JSON or an integer.
         case .inline: .inline(datumHex.trimmingCharacters(in: .whitespacesAndNewlines))
+        case .hashed: .hashed(datumHex.trimmingCharacters(in: .whitespacesAndNewlines))
         }
     }
 }

@@ -72,6 +72,7 @@ private struct Checker {
         for input in lines(r.fixedInputs) { value(.transactionInput, input, "Sources", "Inputs to spend") }
         for input in lines(r.excludedInputs) { value(.transactionInput, input, "Sources", "Inputs not to spend") }
         for input in lines(r.collateral) { value(.transactionInput, input, "Options", "Collateral") }
+        for input in lines(r.referenceInputs) { value(.transactionInput, input, "Options", "Reference inputs") }
         for signer in lines(r.requiredSigners) { value(.keyHash, signer, "Options", "Required signers") }
         value(.address, r.changeAddress, required: false, "Sources", "Change address")
         if sources.isEmpty && blank(r.changeAddress) {
@@ -103,6 +104,12 @@ private struct Checker {
                     blueprint(form, .datum, place, "Inline datum", output.id)
                 } else {
                     value(.plutusData, data, place, "Inline datum", output.id)
+                }
+            case .hashed(let data):
+                if let form = output.datumForm {
+                    blueprint(form, .datum, place, "Datum", output.id)
+                } else {
+                    value(.plutusData, data, place, "Datum", output.id)
                 }
             }
             if let reference = output.referenceScript, !blank(reference) {

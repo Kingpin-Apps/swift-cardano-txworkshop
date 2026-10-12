@@ -38,6 +38,10 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
     /// Inputs (`<transaction id>#<index>`) to put up as collateral; the
     /// builder picks from the source addresses when empty.
     public var collateral: [String]
+    /// UTxOs (`<transaction id>#<index>`) the transaction reads without
+    /// spending, such as one holding an oracle's datum. Those carrying a
+    /// script a mint or script input names are added without being listed.
+    public var referenceInputs: [String]
     public var certificates: [CertificateItem]
     public var withdrawals: [WithdrawalDraft]
     public var votes: [VoteDraft]
@@ -91,6 +95,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         changeAddress: String = "", coinSelection: CoinSelection = .randomImprove, validFrom: UInt64? = nil,
         validUntil: UInt64? = nil, message: String = "", requiredSigners: [String] = [], feeBuffer: UInt64? = nil,
         cip21Compatible: Bool = false, mints: [MintDraft] = [], scriptInputs: [ScriptInputDraft] = [], collateral: [String] = [],
+        referenceInputs: [String] = [],
         certificates: [CertificateItem] = [], withdrawals: [WithdrawalDraft] = [], votes: [VoteDraft] = [],
         proposals: [ProposalDraft] = [], donation: UInt64? = nil, blueprints: [StoredBlueprint] = []
     ) {
@@ -110,6 +115,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         self.mints = mints
         self.scriptInputs = scriptInputs
         self.collateral = collateral
+        self.referenceInputs = referenceInputs
         self.certificates = certificates
         self.withdrawals = withdrawals
         self.votes = votes
@@ -137,6 +143,7 @@ public struct BuildRecipe: Codable, Sendable, Equatable {
         mints = try c.decodeIfPresent([MintDraft].self, forKey: .mints) ?? []
         scriptInputs = try c.decodeIfPresent([ScriptInputDraft].self, forKey: .scriptInputs) ?? []
         collateral = try c.decodeIfPresent([String].self, forKey: .collateral) ?? []
+        referenceInputs = try c.decodeIfPresent([String].self, forKey: .referenceInputs) ?? []
         certificates = try c.decodeIfPresent([CertificateItem].self, forKey: .certificates) ?? []
         withdrawals = try c.decodeIfPresent([WithdrawalDraft].self, forKey: .withdrawals) ?? []
         votes = try c.decodeIfPresent([VoteDraft].self, forKey: .votes) ?? []
@@ -195,6 +202,9 @@ public enum DatumDraft: Codable, Sendable, Equatable {
     case hash(String)
     /// Plutus data, as CBOR hex, inline in the output.
     case inline(String)
+    /// Plutus data, as CBOR hex: the output carries its hash, and the datum
+    /// goes in the transaction's witnesses, where scripts can read it.
+    case hashed(String)
 }
 
 /// A script, as the recipe gives it.

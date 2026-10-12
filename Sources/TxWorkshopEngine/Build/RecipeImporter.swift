@@ -156,7 +156,7 @@ public enum RecipeImporter {
             ))
         }
         for (index, output) in body.outputs.enumerated() where index != changeIndex {
-            recipe.outputs.append(try draft(output))
+            recipe.outputs.append(try draft(output, datums: witnesses.plutusData?.asList ?? []))
         }
 
         // Mints, by policy.
@@ -246,11 +246,12 @@ public enum RecipeImporter {
             ))
         }
 
-        // Reference inputs are kept only for the scripts they carry.
-        let unusedReferences = referenceInputs.map(InputResolver.id).filter { !usedReferences.contains($0) }
-        if !unusedReferences.isEmpty {
-            unsupported.append("it reads reference inputs the form cannot hold: \(unusedReferences.joined(separator: ", "))")
-        }
+        // Reference inputs not added for a script they carry are listed;
+        // building needs their UTxOs too.
+        let readReferences = referenceInputs.map(InputResolver.id).filter { !usedReferences.contains($0) }
+        let unknownReferences = readReferences.filter { known[$0] == nil }
+        guard unknownReferences.isEmpty else { throw ImportError.missingInputs(unknownReferences) }
+        recipe.referenceInputs = readReferences
         if body.update != nil { unsupported.append("it carries a pre-Conway protocol update") }
         guard unsupported.isEmpty else { throw ImportError.unsupported(unsupported) }
 
@@ -292,7 +293,9 @@ public enum RecipeImporter {
 
     // MARK: Ledger values to drafts
 
-    static func draft(_ output: TransactionOutput) throws -> OutputDraft {
+    /// An output as the form gives it. A datum hash whose datum is among
+    /// `datums`, the transaction's witnesses, keeps the datum with it.
+    static func draft(_ output: TransactionOutput, datums: [PlutusData] = []) throws -> OutputDraft {
         var draft = OutputDraft(address: try output.address.toBech32(), lovelace: UInt64(output.amount.coin))
         for (policy, assets) in output.amount.multiAsset.data.sorted(by: { $0.key.payload.hex < $1.key.payload.hex }) {
             for (name, quantity) in assets.data {
@@ -302,7 +305,10 @@ public enum RecipeImporter {
         if case .data(let data)? = output.datumOption?.datum {
             draft.datum = .inline(TxDocumentCodec.hex(try data.toCBORData()))
         } else if let hash = datumHash(of: output) {
-            draft.datum = .hash(hash.payload.hex)
+            let datum = datums.first { data in
+                (try? data.toCBORData()).map { InspectionBuilder.blake2b256($0) == hash.payload } ?? false
+            }
+            draft.datum = try datum.map { .hashed(TxDocumentCodec.hex(try $0.toCBORData())) } ?? .hash(hash.payload.hex)
         }
         if let script = output.script {
             draft.referenceScript = try TransactionComposer.referenceScriptHex(script)
@@ -368,7 +374,7 @@ public enum ImportError: Error, Sendable, Equatable, CustomStringConvertible {
         case .malformed(let message):
             message
         case .missingInputs(let inputs):
-            "Editing needs the UTxOs the transaction spends: fetch chain data first. Missing: \(inputs.joined(separator: ", "))."
+            "Editing needs the UTxOs the transaction spends and reads: fetch chain data first. Missing: \(inputs.joined(separator: ", "))."
         case .unsupported(let reasons):
             "The Build form cannot hold this transaction as it is: \(reasons.joined(separator: "; "))."
         }

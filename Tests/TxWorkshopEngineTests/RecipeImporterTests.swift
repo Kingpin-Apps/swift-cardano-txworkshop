@@ -160,15 +160,20 @@ struct RecipeImporterTests {
         #expect(Set(outcome.errors.map(\.kind)).isSubset(of: TransactionComposerTests.unsigned), "\(outcome.errors.map(\.message))")
     }
 
-    @Test("A transaction reading a reference input for its data is refused, naming it")
-    func referenceInput() throws {
+    @Test("A transaction from the chain, reading a reference input, is read into the form and builds again")
+    func fromTheChain() async throws {
         let snapshot = try TransactionValidationTests.snapshot()
         let bytes = try TransactionInspectionTests.bytes("conway-tx")
-        #expect {
-            _ = try RecipeImporter.recipe(from: bytes, snapshot: snapshot, network: .preprod)
-        } throws: { error in
-            "\(error)".contains("16647d6365020555d905d6e0edcf08b90a567886f875b40b3d7cec1c70482624#0")
-        }
+        let old = try TransactionValidation.decode(bytes).transactionBody
+        let imported = try RecipeImporter.recipe(from: bytes, snapshot: snapshot, network: .preprod)
+        #expect(imported.recipe.referenceInputs == ["16647d6365020555d905d6e0edcf08b90a567886f875b40b3d7cec1c70482624#0"])
+        let rebuilt = try await TransactionComposer().compose(imported.recipe, snapshot: snapshot, network: .preprod)
+        let new = try TransactionValidation.decode(rebuilt.transaction).transactionBody
+        #expect(Set(new.inputs.asArray) == Set(old.inputs.asArray))
+        #expect(Set(new.referenceInputs?.asList ?? []) == Set(old.referenceInputs?.asList ?? []))
+        #expect(new.outputs.count == old.outputs.count)
+        let outcome = try await TransactionValidation().validate(rebuilt.transaction, snapshot: snapshot, network: .preprod, mode: .asWritten)
+        #expect(Set(outcome.errors.map(\.kind)).isSubset(of: TransactionComposerTests.unsigned), "\(outcome.errors.map(\.message))")
     }
 
     @Test("Inputs the chain data does not have are named")

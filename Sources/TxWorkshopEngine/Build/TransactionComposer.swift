@@ -132,7 +132,14 @@ public struct TransactionComposer: Sendable {
             builder.addInput(utxo)
         }
         for draft in recipe.outputs {
-            try builder.addOutput(try await Self.output(draft, context: context))
+            let output = try await Self.output(draft, context: context)
+            if case .hashed(let text) = draft.datum {
+                // The datum goes in the witnesses, where scripts read it.
+                let datum = Datum.plutusData(try Self.plutusData(text, what: "the datum for \(draft.address)"))
+                try builder.addOutput(output, datum: datum, addDatumToWitness: true)
+            } else {
+                try builder.addOutput(output)
+            }
         }
         if !recipe.requiredSigners.isEmpty {
             builder.requiredSigners = try recipe.requiredSigners.map { text in
@@ -236,6 +243,8 @@ public struct TransactionComposer: Sendable {
                 throw ComposeError.badDatum
             }
             output.datumOption = DatumOption(datum: .data(data))
+        case .hashed(let text):
+            output.datumHash = try datumHash(datum: .plutusData(try plutusData(text, what: "the datum for \(draft.address)")))
         }
         if let text = draft.referenceScript, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             output.script = try referenceScript(text)

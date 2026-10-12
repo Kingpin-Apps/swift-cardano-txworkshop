@@ -44,5 +44,12 @@ struct BuildOptionsSection: View {
         } footer: {
             Text("Inputs (transaction id#index), one per line. Left empty, the builder picks collateral from the source addresses when scripts run.", bundle: #bundle)
         }
+        Section {
+            ValueLinesEditor(kind: .transactionInput, lines: $recipe.referenceInputs, label: Text("Reference inputs, one per line", bundle: #bundle))
+        } header: {
+            Text("Reference inputs", bundle: #bundle)
+        } footer: {
+            Text("UTxOs (transaction id#index) the transaction reads without spending, such as an oracle's. A reference script a mint or script input names is added without being listed here.", bundle: #bundle)
+        }
     }
 }

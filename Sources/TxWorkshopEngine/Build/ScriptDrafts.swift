@@ -64,7 +64,8 @@ extension TransactionComposer {
         return true
     }
 
-    /// Adds the recipe's mints, script inputs and collateral to `builder`.
+    /// Adds the recipe's mints, script inputs, reference inputs and
+    /// collateral to `builder`.
     static func addScripts(_ recipe: BuildRecipe, to builder: TxBuilder, context: WorkshopChainContext) async throws {
         var minted: [(policy: String, nameHex: String, quantity: Int64)] = []
         for draft in recipe.mints {
@@ -98,6 +99,14 @@ extension TransactionComposer {
             } catch {
                 throw ComposeError.builder(String(describing: error))
             }
+        }
+
+        for id in recipe.referenceInputs {
+            let reference = try ValueReader.value(.transactionInput, id) { _ in ComposeError.unknownInput(id) }
+            guard let input = TransactionValidation.input(reference), let (utxo, _) = try await context.utxo(input: input) else {
+                throw ComposeError.unknownInput(id)
+            }
+            builder.addReferenceInput(utxo)
         }
 
         for id in recipe.collateral {

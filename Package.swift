@@ -37,7 +37,7 @@ let package = Package(
         .package(url: "https://github.com/Kingpin-Apps/swift-cddl.git", from: "0.2.3"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-uplc.git", from: "0.8.0"),
         .package(url: "https://github.com/attaswift/BigInt.git", from: "6.0.0"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txbuilder.git", from: "1.2.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txbuilder.git", from: "1.3.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-cips.git", from: "0.4.0"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-token-registry.git", from: "0.2.1"),
         // swift-cardano-hw-wallet's Keystone SDK brings a target named `SortedCollections`, as
