@@ -110,7 +110,11 @@ struct AddKeySheet: View {
                         }
                     }
                 } footer: {
-                    Text("Keys are derived for the first 20 external and change addresses of each account, and its stake and DRep keys.", bundle: #bundle)
+                    if kind == .mnemonic {
+                        Text("Keys are derived for the first 20 external and change addresses of each account, and its stake and DRep keys.", bundle: #bundle)
+                    } else {
+                        Text("A cardano-cli signing key file: paste it, or choose the file.", bundle: #bundle)
+                    }
                 }
                 if let problem {
                     Section { TWErrorText(problem) }
