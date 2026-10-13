@@ -1,3 +1,10 @@
+## v0.2.1 (2026-10-13)
+
+### Fix
+
+- **sign**: key-file footer in Add Signing Key
+- **settings**: iCloud sync joins devices' providers, never replaces them
+
 ## v0.2.0 (2026-10-12)
 
 ### Feat
