@@ -92,7 +92,7 @@ final class TransactionEditorUITests: XCTestCase {
         XCTAssertFalse(reset.isEnabled, "Start Over is still on with nothing to clear.")
         save("start-over")
         // At the top of the form: no notes, and no input left.
-        for _ in 0..<20 { app.swipeDown(); usleep(300_000) }
+        for _ in 0..<20 { drag(app, down: true); usleep(300_000) }
         sleep(1)
         XCTAssertTrue(app.staticTexts["Source addresses"].firstMatch.waitForExistence(timeout: 5), "Not at the top of the form.")
         XCTAssertFalse(notes.exists, "The import notes outlived Start Over.")
@@ -157,11 +157,13 @@ final class TransactionEditorUITests: XCTestCase {
 
         // Removed again, so the next run starts without it: the row's button,
         // then the dialog's, which comes after it.
+        // On iPhone the dialog's button joins the row's; on visionOS the
+        // dialog covers the row, so its button is the only one left.
         let removeButtons = app.buttons.matching(NSPredicate(format: "label == 'Remove payment'"))
         removeButtons.firstMatch.tap()
-        let confirm = removeButtons.element(boundBy: 1)
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5), "Removing did not ask first.")
-        confirm.tap()
+        let message = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'is deleted from the Keychain'")).firstMatch
+        XCTAssertTrue(message.waitForExistence(timeout: 5), "Removing did not ask first.")
+        removeButtons.element(boundBy: removeButtons.count - 1).tap()
         let gone = expectation(for: NSPredicate(format: "count == 0"), evaluatedWith: removeButtons)
         wait(for: [gone], timeout: 10)
     }
@@ -180,13 +182,35 @@ final class TransactionEditorUITests: XCTestCase {
     @MainActor
     private func open(_ name: String, in app: XCUIApplication) {
         let document = app.staticTexts[name].firstMatch
-        // The document browser takes a while to come up after launch.
-        XCTAssertTrue(app.buttons["Browse"].firstMatch.waitForExistence(timeout: 30), "The document browser never showed.")
-        browse(to: document, through: ["Browse", "On My iPhone", "On My iPad", "TxWorkshop"], in: app)
+        // The document browser takes a while to come up after launch; on
+        // visionOS it has no Browse tab, and may open on the folder itself.
+        let browser = NSPredicate(format: "exists == true")
+        _ = XCTWaiter.wait(for: [
+            expectation(for: browser, evaluatedWith: app.buttons["Browse"].firstMatch),
+        ], timeout: 30)
+        browse(to: document, through: ["Browse", "On My Apple Vision Pro", "On My iPhone", "On My iPad", "TxWorkshop"], in: app)
         XCTAssertTrue(document.waitForExistence(timeout: 10), "\(name) is not in the app's Documents.")
-        // The name renames; the icon above it opens.
-        document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: -60)).tap()
-        sleep(3)
+        // The name renames; the icon above it opens. How far above depends
+        // on the platform, so each try waits for the document to show.
+        // The sidebar's Overview row, or the Overview's own first heading,
+        // which is what an iPhone opens on.
+        let opened = app.staticTexts.matching(NSPredicate(format: "label == 'Overview' OR label == 'In short'")).firstMatch
+        for offset in [-60.0, -35.0, -20.0] where !opened.waitForExistence(timeout: offset == -60 ? 0 : 10) {
+            guard document.exists else { break }
+            document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: offset)).tap()
+        }
+        XCTAssertTrue(opened.waitForExistence(timeout: 10), "\(name) did not open.")
+        sleep(2)
+    }
+
+    /// Scrolls the detail pane, the widest list, by a swipe on it: visionOS
+    /// rejects app-wide swipes ("invalid scene ID") but takes one on an
+    /// element. `down` moves the content down, toward its top.
+    @MainActor
+    private func drag(_ app: XCUIApplication, down: Bool) {
+        let lists = app.collectionViews.allElementsBoundByIndex.filter(\.exists)
+        guard let pane = lists.max(by: { $0.frame.width < $1.frame.width }) else { return }
+        down ? pane.swipeDown() : pane.swipeUp()
     }
 
     /// Taps `field` until it has the keyboard, as it may not while a sheet
@@ -234,6 +258,14 @@ final class TransactionEditorUITests: XCTestCase {
         if !row().exists, UIDevice.current.userInterfaceIdiom == .phone {
             app.navigationBars.buttons.firstMatch.tap()
         }
+        // A short window lays out only the sidebar rows near the top: drag
+        // the sidebar up from its last laid-out row until the section shows.
+        for _ in 0..<4 where !row().waitForExistence(timeout: 2) {
+            let lists = app.collectionViews.allElementsBoundByIndex.filter(\.exists)
+            guard lists.count > 1, let sidebar = lists.min(by: { $0.frame.width < $1.frame.width }) else { break }
+            sidebar.swipeUp()
+            sleep(1)
+        }
         XCTAssertTrue(row().waitForExistence(timeout: 5), "No \(section) in the sidebar.")
         row().tap()
         sleep(1)
@@ -251,11 +283,11 @@ final class TransactionEditorUITests: XCTestCase {
         // A second after each swipe, so the list has stopped moving.
         for _ in 0..<15 where !clear() {
             let above = element.exists && element.frame.maxY < app.frame.height * 0.12
-            above || upwards ? app.swipeDown() : app.swipeUp()
+            drag(app, down: above || upwards)
             sleep(1)
         }
         for _ in 0..<30 where !clear() {
-            upwards ? app.swipeUp() : app.swipeDown()
+            drag(app, down: !upwards)
             sleep(1)
         }
     }
