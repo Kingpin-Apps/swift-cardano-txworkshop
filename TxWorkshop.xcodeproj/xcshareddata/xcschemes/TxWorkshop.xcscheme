@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E7FD08AAD82FAA6D2C8EB31C"
-               BuildableName = "Cardano TxWorkshop.app"
+               BuildableName = "TxWorkshop.app"
                BlueprintName = "TxWorkshop"
                ReferencedContainer = "container:TxWorkshop.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E7FD08AAD82FAA6D2C8EB31C"
-            BuildableName = "Cardano TxWorkshop.app"
+            BuildableName = "TxWorkshop.app"
             BlueprintName = "TxWorkshop"
             ReferencedContainer = "container:TxWorkshop.xcodeproj">
          </BuildableReference>
@@ -91,7 +91,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E7FD08AAD82FAA6D2C8EB31C"
-            BuildableName = "Cardano TxWorkshop.app"
+            BuildableName = "TxWorkshop.app"
             BlueprintName = "TxWorkshop"
             ReferencedContainer = "container:TxWorkshop.xcodeproj">
          </BuildableReference>
@@ -108,7 +108,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E7FD08AAD82FAA6D2C8EB31C"
-            BuildableName = "Cardano TxWorkshop.app"
+            BuildableName = "TxWorkshop.app"
             BlueprintName = "TxWorkshop"
             ReferencedContainer = "container:TxWorkshop.xcodeproj">
          </BuildableReference>

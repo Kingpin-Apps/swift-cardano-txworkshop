@@ -38,7 +38,7 @@ case "$DEVICE_NAME" in
   *Vision*) products="Debug-xrsimulator" ;;
   *) products="Debug-iphonesimulator" ;;
 esac
-app="$WORK/derived/Build/Products/$products/Cardano TxWorkshop.app"
+app="$WORK/derived/Build/Products/$products/TxWorkshop.app"
 [ -d "$app" ] || { echo "No build at $app" >&2; exit 1; }
 
 failed=0

@@ -10,7 +10,7 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>Cardano TxWorkshop Document</string>
+			<string>TxWorkshop Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
@@ -56,7 +56,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Cardano TxWorkshop connects to your Ledger over Bluetooth to sign transactions.</string>
+	<string>TxWorkshop connects to your Ledger over Bluetooth to sign transactions.</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
@@ -72,7 +72,7 @@
 				<string>public.content</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Cardano TxWorkshop Document</string>
+			<string>TxWorkshop Document</string>
 			<key>UTTypeIdentifier</key>
 			<string>com.kingpinapps.cardano-txworkshop.document</string>
 			<key>UTTypeTagSpecification</key>

@@ -22,7 +22,7 @@ struct WorkshopChainContext: ChainContext {
     /// or collateral.
     var excluded: Set<String> = []
 
-    var name: String { "Cardano TxWorkshop" }
+    var name: String { "TxWorkshop" }
     var type: ContextType { live == nil ? .offline : .online }
     var networkId: NetworkId { network == .mainnet ? .mainnet : .testnet }
 

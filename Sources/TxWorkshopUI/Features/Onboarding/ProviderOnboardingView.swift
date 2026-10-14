@@ -16,7 +16,7 @@ public struct ProviderOnboardingView: View {
         NavigationStack {
             Form {
                 Section {
-                    Text("Cardano TxWorkshop reads the chain through a provider: to look up the outputs a transaction spends, fetch the protocol parameters and ledger state for validating, and submit. Without one you can still open, inspect and edit transactions offline.", bundle: #bundle)
+                    Text("TxWorkshop reads the chain through a provider: to look up the outputs a transaction spends, fetch the protocol parameters and ledger state for validating, and submit. Without one you can still open, inspect and edit transactions offline.", bundle: #bundle)
                 }
 
                 // Asked first, so providers already set up on another device

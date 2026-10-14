@@ -1,4 +1,4 @@
-# XcodeGen spec for Cardano TxWorkshop.
+# XcodeGen spec for TxWorkshop.
 #
 # Generates TxWorkshop.xcodeproj, which is committed so Xcode Cloud can build it.
 # Regenerate after editing with `just generate`.
@@ -57,7 +57,7 @@ documentTypes: &documentTypes
   CFBundleShortVersionString: $(MARKETING_VERSION)
   CFBundleVersion: $(CURRENT_PROJECT_VERSION)
   CFBundleDocumentTypes:
-    - CFBundleTypeName: Cardano TxWorkshop Document
+    - CFBundleTypeName: TxWorkshop Document
       CFBundleTypeRole: Editor
       LSHandlerRank: Owner
       LSTypeIsPackage: true
@@ -71,7 +71,7 @@ documentTypes: &documentTypes
         - com.kingpinapps.cardano-txworkshop.transaction-hex
   UTExportedTypeDeclarations:
     - UTTypeIdentifier: com.kingpinapps.cardano-txworkshop.document
-      UTTypeDescription: Cardano TxWorkshop Document
+      UTTypeDescription: TxWorkshop Document
       UTTypeConformsTo: [com.apple.package, public.content]
       UTTypeTagSpecification:
         public.filename-extension: [txworkshop]
@@ -95,7 +95,7 @@ targets:
   TxWorkshop:
     type: application
     supportedDestinations: [iOS, macOS, visionOS]
-    productName: Cardano TxWorkshop
+    productName: TxWorkshop
     sources:
       - App
       # Icon Composer icon for iPhone, iPad and Mac. visionOS cannot read a
@@ -125,9 +125,9 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        NSCameraUsageDescription: Cardano TxWorkshop scans the animated QR codes a Keystone hardware wallet shows.
-        NSBluetoothAlwaysUsageDescription: Cardano TxWorkshop connects to your Ledger over Bluetooth to sign transactions.
-        NSFaceIDUsageDescription: Cardano TxWorkshop asks for Face ID or Optic ID before signing with a key it keeps.
+        NSCameraUsageDescription: TxWorkshop scans the animated QR codes a Keystone hardware wallet shows.
+        NSBluetoothAlwaysUsageDescription: TxWorkshop connects to your Ledger over Bluetooth to sign transactions.
+        NSFaceIDUsageDescription: TxWorkshop asks for Face ID or Optic ID before signing with a key it keeps.
         ITSAppUsesNonExemptEncryption: false
     dependencies:
       - package: TxWorkshop
@@ -139,10 +139,10 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.cardano-txworkshop
-        PRODUCT_NAME: Cardano TxWorkshop
-        # The name under the icon: "TxWorkshop" on every platform, since home
-        # screens cut "Cardano TxWorkshop" short. The App Store name stays
-        # "Cardano TxWorkshop" (fastlane/metadata). Set here, not in Xcode's
+        PRODUCT_NAME: TxWorkshop
+        # The name under the icon: "TxWorkshop" on every platform, matching
+        # the App Store name (fastlane/metadata), which can't use "Cardano"
+        # (App Review, guideline 4.1(c)). Set here, not in Xcode's
         # General tab: this target keeps its own Info.plist, so the
         # INFOPLIST_KEY_ settings Xcode writes there are not read.
         APP_DISPLAY_NAME: TxWorkshop
@@ -168,7 +168,7 @@ targets:
   TxWorkshopDirect:
     type: application
     platform: macOS
-    productName: Cardano TxWorkshop Direct
+    productName: TxWorkshop Direct
     sources:
       - AppDirect
       # The accent colour and icon are shared with the App Store build.
@@ -182,7 +182,7 @@ targets:
         CFBundleDisplayName: TxWorkshop
         LSApplicationCategoryType: public.app-category.utilities
         ITSAppUsesNonExemptEncryption: false
-        NSBluetoothAlwaysUsageDescription: Cardano TxWorkshop connects to your Ledger over Bluetooth to sign transactions.
+        NSBluetoothAlwaysUsageDescription: TxWorkshop connects to your Ledger over Bluetooth to sign transactions.
         # Sparkle: the appcast lives on this repo's latest
         # release. SUPublicEDKey is the public half of the Sparkle signing
         # key; the private half stays in the login Keychain (generate_keys).
@@ -204,8 +204,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingpinapps.cardano-txworkshop
         # Its own product name in Debug, so it never overwrites the App Store
-        # build; it still shows as "Cardano TxWorkshop".
-        PRODUCT_NAME: Cardano TxWorkshop Direct
+        # build; it still shows as "TxWorkshop".
+        PRODUCT_NAME: TxWorkshop Direct
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) DIRECT_DISTRIBUTION
@@ -230,12 +230,12 @@ targets:
         # Release is what scripts/release-direct.sh archives: signed with the
         # Developer ID certificate and a secure timestamp, as notarisation
         # needs.
-        # The published app is plain "Cardano TxWorkshop.app"; only local
+        # The published app is plain "TxWorkshop.app"; only local
         # Debug builds keep the Direct name, so the two never collide.
         # Its provisioning profile carries iCloud key-value storage, for
         # settings sync; make or renew it with `fastlane direct_profile`.
         Release:
-          PRODUCT_NAME: Cardano TxWorkshop
+          PRODUCT_NAME: TxWorkshop
           DEVELOPMENT_TEAM: G88W6X4TCA
           CODE_SIGN_STYLE: Manual
           CODE_SIGN_IDENTITY: Developer ID Application

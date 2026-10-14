@@ -178,7 +178,7 @@ open class Snapshot: NSObject {
                 return
             }
 
-            // Cardano TxWorkshop: when scripts/capture-screenshots.sh sets
+            // TxWorkshop: when scripts/capture-screenshots.sh sets
             // SCREENSHOT_OUTPUT_DIR, every simulator hands the capture to it, so iPhone,
             // iPad and Vision Pro screenshots all come from `simctl io` at full resolution.
             if ProcessInfo().environment["SCREENSHOT_OUTPUT_DIR"] != nil {

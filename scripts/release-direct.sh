@@ -43,7 +43,7 @@ if [[ -z "$PUBLIC_KEY" ]]; then
     echo "⚠ No SUPublicEDKey yet: building without an appcast, and not publishing."
 fi
 
-echo "▶ Cardano TxWorkshop $VERSION (Developer ID)"
+echo "▶ TxWorkshop $VERSION (Developer ID)"
 rm -rf "$OUT/export" "$ARCHIVE"
 mkdir -p "$OUT"
 
@@ -79,13 +79,13 @@ cat > "$OUT/ExportOptions.plist" <<EOF
 EOF
 xcodebuild -exportArchive -archivePath "$ARCHIVE" \
     -exportOptionsPlist "$OUT/ExportOptions.plist" -exportPath "$OUT/export"
-APP="$OUT/export/Cardano TxWorkshop.app"
+APP="$OUT/export/TxWorkshop.app"
 [[ -d "$APP" ]] || { echo "No app in $OUT/export" >&2; exit 1; }
 
 echo "▶ Packaging"
 DMG="$OUT/CardanoTxWorkshop-$VERSION.dmg"
 rm -f "$DMG"
-create-dmg --volname "Cardano TxWorkshop $VERSION" --app-drop-link 480 170 \
+create-dmg --volname "TxWorkshop $VERSION" --app-drop-link 480 170 \
     --window-size 640 360 --icon "$(basename "$APP")" 160 170 "$DMG" "$APP"
 
 # Gatekeeper checks the disk image's own signature as well as the app's.
@@ -135,8 +135,8 @@ fi
 
 echo "▶ Publishing the GitHub release"
 gh release create "v$VERSION" "$DMG" "$OUT/updates/appcast.xml" \
-    --repo "$RELEASES_REPO" --title "Cardano TxWorkshop $VERSION" \
-    --notes "Cardano TxWorkshop $VERSION for Mac. The App Store version is on the App Store."
+    --repo "$RELEASES_REPO" --title "TxWorkshop $VERSION" \
+    --notes "TxWorkshop $VERSION for Mac. The App Store version is on the App Store."
 
 echo "▶ Updating the Homebrew cask"
 mkdir -p "$TAP_DIR/Casks"
@@ -146,7 +146,7 @@ cask "cardano-txworkshop" do
   sha256 "$SHA"
 
   url "https://github.com/$RELEASES_REPO/releases/download/v#{version}/CardanoTxWorkshop-#{version}.dmg"
-  name "Cardano TxWorkshop"
+  name "TxWorkshop"
   desc "Inspect, validate, build and sign Cardano transactions"
   homepage "https://github.com/$RELEASES_REPO"
 

@@ -3,7 +3,7 @@ import SwiftCardanoCore
 import UniformTypeIdentifiers
 
 extension UTType {
-    /// A Cardano TxWorkshop document: a package holding a transaction and the work
+    /// A TxWorkshop document: a package holding a transaction and the work
     /// around it.
     public static let txWorkshopDocument = UTType(exportedAs: "com.kingpinapps.cardano-txworkshop.document")
     /// A cardano-cli text envelope holding a transaction (`.tx`, `.signed`).
@@ -196,7 +196,7 @@ public enum TxDocumentCodec {
     }
 
     /// The description of a text envelope this app writes.
-    public static let generatedDescription = "Generated with Cardano TxWorkshop"
+    public static let generatedDescription = "Generated with TxWorkshop"
 
     /// `transaction` as a cardano-cli text envelope, written by
     /// swift-cardano-core: its type is `Unwitnessed Tx <era>` until a witness

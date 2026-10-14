@@ -46,7 +46,7 @@ xcodebuild build-for-testing -project "$ROOT/TxWorkshop.xcodeproj" -scheme TxWor
   > "$WORK.build.log" 2>&1 || { tail -20 "$WORK.build.log" >&2; exit 1; }
 
 # Install the app and put the sample document in its Documents folder.
-app=$(find "$WORK/derived/Build/Products" -maxdepth 2 -name "Cardano TxWorkshop.app" -path "*simulator*" | head -1)
+app=$(find "$WORK/derived/Build/Products" -maxdepth 2 -name "TxWorkshop.app" -path "*simulator*" | head -1)
 xcrun simctl install "$udid" "$app"
 docs="$(xcrun simctl get_app_container "$udid" "$BUNDLE_ID" data)/Documents"
 mkdir -p "$docs"

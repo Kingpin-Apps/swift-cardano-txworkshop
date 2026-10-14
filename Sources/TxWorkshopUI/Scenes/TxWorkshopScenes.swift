@@ -42,7 +42,7 @@ public struct TxWorkshopScenes: Scene {
 
     public var body: some Scene {
         #if os(iOS) || os(visionOS)
-        DocumentGroupLaunchScene(LocalizedStringResource("Cardano TxWorkshop", bundle: #bundle)) {
+        DocumentGroupLaunchScene(LocalizedStringResource("TxWorkshop", bundle: #bundle)) {
             NewDocumentButton(LocalizedStringResource("New Transaction", bundle: #bundle))
         } background: {
             // Also applies the chosen appearance before any document opens.
