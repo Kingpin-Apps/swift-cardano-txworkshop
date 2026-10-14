@@ -9,9 +9,9 @@ chain data needed to validate it again offline, notes, the witnesses collected f
 validation history. The app also opens bare transactions: cardano-cli text envelopes (`.tx`,
 `.signed`), raw CBOR (`.cbor`) and hex (`.hex`), and anything pasted as hex, base64 or an envelope.
 
-**Website and guide:** <https://kingpin-apps.github.io/swift-cardano-txworkshop/> ·
-[Privacy policy](https://kingpin-apps.github.io/swift-cardano-txworkshop/privacy/) ·
-[Support](https://kingpin-apps.github.io/swift-cardano-txworkshop/support/)
+**Website and guide:** <https://txworkshop.app/> ·
+[Privacy policy](https://txworkshop.app/privacy/) ·
+[Support](https://txworkshop.app/support/)
 
 ## Install
 

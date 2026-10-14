@@ -1,1 +1,1 @@
-https://kingpin-apps.github.io/swift-cardano-txworkshop/
+https://txworkshop.app/
