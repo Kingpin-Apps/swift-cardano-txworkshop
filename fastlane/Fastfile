@@ -110,7 +110,9 @@ platform :ios do
         # Kept out of the repo: set APP_REVIEW_PHONE in ~/.secrets.zsh.
         phone_number: ENV.fetch("APP_REVIEW_PHONE"),
         email_address: "hadderley@kingpinapps.com",
-        notes: "TxWorkshop is a developer tool for Cardano transactions. It holds no funds and " \
+        notes: "First open Settings › Providers, add a Mainnet provider and choose Koios " \
+               "(no key needed)\n\n" \
+               "TxWorkshop is a developer tool for Cardano transactions. It holds no funds and " \
                "moves none on its own: it reads, validates and builds transactions, and signs one " \
                "only when the person adds a key or connects a hardware wallet and confirms. Paste any " \
                "transaction hex into a new document to try it offline; no account is needed. " \

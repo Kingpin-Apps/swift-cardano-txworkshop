@@ -1,1 +1,1 @@
-ada,utxo,cbor,cddl,plutus,ledger,trezor,keystone,governance,drep,blockchain,developer
+ada,cardano,utxo,cbor,cddl,plutus,ledger,trezor,keystone,governance,drep,blockchain,developer
