@@ -11,6 +11,8 @@
 #
 # Usage: scripts/capture-screenshots.sh <simulator name> <file prefix>
 #   e.g. scripts/capture-screenshots.sh "Apple Vision Pro" Vision
+# SCREENSHOT_DIR=<folder> saves them there instead of fastlane's folders, for
+# example for the website, without changing what the App Store gets.
 set -euo pipefail
 
 DEVICE_NAME="${1:?simulator name required, e.g. \"Apple Vision Pro\"}"
@@ -21,6 +23,7 @@ case "$DEVICE_NAME" in
   *Vision*) OUT="$ROOT/fastlane/screenshots_visionos/en-US" ;;
   *) OUT="$ROOT/fastlane/screenshots/en-US" ;;
 esac
+OUT="${SCREENSHOT_DIR:-$OUT}"
 mkdir -p "$OUT"
 WORK="$ROOT/build/screenshots"
 BUNDLE_ID=com.kingpinapps.cardano-txworkshop
@@ -28,7 +31,7 @@ SAMPLE="$ROOT/scripts/screenshot-sample/Minswap Batch.txworkshop"
 
 # A booted simulator of that name first, else the one on the newest runtime.
 find_udid() {
-  xcrun simctl list devices available $1 \
+  xcrun simctl list devices available ${1:-} \
     | awk -v n="$DEVICE_NAME (" 'index($0,n){ if (match($0,/[0-9A-F-]{36}/)) id=substr($0,RSTART,RLENGTH) } END { print id }'
 }
 udid=$(find_udid booted)
@@ -46,7 +49,12 @@ xcodebuild build-for-testing -project "$ROOT/TxWorkshop.xcodeproj" -scheme TxWor
   > "$WORK.build.log" 2>&1 || { tail -20 "$WORK.build.log" >&2; exit 1; }
 
 # Install the app and put the sample document in its Documents folder.
-app=$(find "$WORK/derived/Build/Products" -maxdepth 2 -name "TxWorkshop.app" -path "*simulator*" | head -1)
+# Both platforms' builds share the folder: take this device's.
+case "$DEVICE_NAME" in
+  *Vision*) products="*xrsimulator*" ;;
+  *) products="*iphonesimulator*" ;;
+esac
+app=$(find "$WORK/derived/Build/Products" -maxdepth 2 -name "TxWorkshop.app" -path "$products" | head -1)
 xcrun simctl install "$udid" "$app"
 docs="$(xcrun simctl get_app_container "$udid" "$BUNDLE_ID" data)/Documents"
 mkdir -p "$docs"
@@ -58,8 +66,10 @@ rm -f "$WORK/requests"/.request-* "$WORK/requests"/.done-*
 
 echo "▶ Running"
 TEST_RUNNER_SCREENSHOT_OUTPUT_DIR="$WORK/requests" \
+TEST_RUNNER_SAMPLE_DOCUMENT="$docs/Minswap Batch.txworkshop" \
 xcodebuild test-without-building -project "$ROOT/TxWorkshop.xcodeproj" -scheme TxWorkshopScreenshots \
   -destination "id=$udid" -derivedDataPath "$WORK/derived" \
+  -only-testing:TxWorkshopScreenshots/ScreenshotTests \
   > "$WORK.test.log" 2>&1 &
 test_pid=$!
 

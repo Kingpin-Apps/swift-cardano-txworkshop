@@ -9,6 +9,7 @@
   <meta name="description" content="A workbench for Cardano transactions: inspect, validate, build, sign and submit, on Mac, iPhone, iPad and Apple Vision Pro.">
   <link rel="icon" href="icon.png">
   <link rel="stylesheet" href="style.css">
+  <meta name="apple-itunes-app" content="app-id=6817778951">
 </head>
 <body>
   <header class="site">
@@ -32,12 +33,57 @@
         </div>
       </div>
       <div class="buttons">
-        <a class="button primary" href="https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases/latest">Download for Mac</a>
-        <a class="button secondary" aria-disabled="true">App Store — coming soon</a>
+        <a class="app-store-badge" href="https://apps.apple.com/app/txworkshop/id6817778951">
+          <picture>
+            <source srcset="badges/app-store-white.svg" media="(prefers-color-scheme: dark)">
+            <img src="badges/app-store-black.svg" width="150" height="50" alt="Download on the App Store">
+          </picture>
+        </a>
+        <a class="button secondary" href="https://github.com/Kingpin-Apps/swift-cardano-txworkshop/releases/latest">Download for Mac</a>
         <a class="button secondary" href="guide/">Read the guide</a>
       </div>
-      <p>On Mac, iPhone, iPad and Apple Vision Pro. The Mac download adds a local cardano-node and cardano-cli, which the App Store doesn't allow. It needs macOS 27, and keeps itself up to date. Or install it with Homebrew:</p>
+      <p>Free on the App Store, for Mac, iPhone, iPad and Apple Vision Pro. The Mac download, from outside the App Store, adds a local cardano-node and cardano-cli, which the App Store doesn't allow. It needs macOS 27, and keeps itself up to date. Or install it with Homebrew:</p>
       <pre><code>brew install --cask kingpin-apps/tap/cardano-txworkshop</code></pre>
+
+      <h2 id="screenshots">On every device</h2>
+      <div class="shots-tabs">
+        <input type="radio" name="device" id="device-mac" checked>
+        <label for="device-mac">Mac</label>
+        <input type="radio" name="device" id="device-ipad">
+        <label for="device-ipad">iPad</label>
+        <input type="radio" name="device" id="device-iphone">
+        <label for="device-iphone">iPhone</label>
+        <input type="radio" name="device" id="device-vision">
+        <label for="device-vision">Apple Vision Pro</label>
+        <div class="shots-panel panel-mac">
+          <figure><a href="screenshots/mac-01-overview.webp"><img src="screenshots/mac-01-overview.webp" width="1600" height="1001" loading="lazy" alt="TxWorkshop on the Mac: Overview"></a><figcaption>Overview</figcaption></figure>
+          <figure><a href="screenshots/mac-02-inputs.webp"><img src="screenshots/mac-02-inputs.webp" width="1600" height="1001" loading="lazy" alt="TxWorkshop on the Mac: Inputs and Outputs"></a><figcaption>Inputs &amp; Outputs</figcaption></figure>
+          <figure><a href="screenshots/mac-03-validate.webp"><img src="screenshots/mac-03-validate.webp" width="1600" height="1001" loading="lazy" alt="TxWorkshop on the Mac: Validate"></a><figcaption>Validate</figcaption></figure>
+          <figure><a href="screenshots/mac-04-debugger.webp"><img src="screenshots/mac-04-debugger.webp" width="1600" height="1001" loading="lazy" alt="TxWorkshop on the Mac: Script debugger"></a><figcaption>Script debugger</figcaption></figure>
+          <figure><a href="screenshots/mac-05-cbor.webp"><img src="screenshots/mac-05-cbor.webp" width="1600" height="1001" loading="lazy" alt="TxWorkshop on the Mac: CBOR"></a><figcaption>CBOR</figcaption></figure>
+        </div>
+        <div class="shots-panel panel-ipad">
+          <figure><a href="screenshots/ipad-01-overview.webp"><img src="screenshots/ipad-01-overview.webp" width="900" height="1200" loading="lazy" alt="TxWorkshop on iPad: Overview"></a><figcaption>Overview</figcaption></figure>
+          <figure><a href="screenshots/ipad-02-inputs.webp"><img src="screenshots/ipad-02-inputs.webp" width="900" height="1200" loading="lazy" alt="TxWorkshop on iPad: Inputs and Outputs"></a><figcaption>Inputs &amp; Outputs</figcaption></figure>
+          <figure><a href="screenshots/ipad-03-validate.webp"><img src="screenshots/ipad-03-validate.webp" width="900" height="1200" loading="lazy" alt="TxWorkshop on iPad: Validate"></a><figcaption>Validate</figcaption></figure>
+          <figure><a href="screenshots/ipad-04-trace.webp"><img src="screenshots/ipad-04-trace.webp" width="900" height="1200" loading="lazy" alt="TxWorkshop on iPad: Script trace"></a><figcaption>Script trace</figcaption></figure>
+          <figure><a href="screenshots/ipad-05-cbor.webp"><img src="screenshots/ipad-05-cbor.webp" width="900" height="1200" loading="lazy" alt="TxWorkshop on iPad: CBOR"></a><figcaption>CBOR</figcaption></figure>
+        </div>
+        <div class="shots-panel panel-iphone">
+          <figure><a href="screenshots/iphone-01-overview.webp"><img src="screenshots/iphone-01-overview.webp" width="600" height="1304" loading="lazy" alt="TxWorkshop on iPhone: Overview"></a><figcaption>Overview</figcaption></figure>
+          <figure><a href="screenshots/iphone-02-inputs.webp"><img src="screenshots/iphone-02-inputs.webp" width="600" height="1304" loading="lazy" alt="TxWorkshop on iPhone: Inputs and Outputs"></a><figcaption>Inputs &amp; Outputs</figcaption></figure>
+          <figure><a href="screenshots/iphone-03-validate.webp"><img src="screenshots/iphone-03-validate.webp" width="600" height="1304" loading="lazy" alt="TxWorkshop on iPhone: Validate"></a><figcaption>Validate</figcaption></figure>
+          <figure><a href="screenshots/iphone-04-trace.webp"><img src="screenshots/iphone-04-trace.webp" width="600" height="1304" loading="lazy" alt="TxWorkshop on iPhone: Script trace"></a><figcaption>Script trace</figcaption></figure>
+          <figure><a href="screenshots/iphone-05-cbor.webp"><img src="screenshots/iphone-05-cbor.webp" width="600" height="1304" loading="lazy" alt="TxWorkshop on iPhone: CBOR"></a><figcaption>CBOR</figcaption></figure>
+        </div>
+        <div class="shots-panel panel-vision">
+          <figure><a href="screenshots/vision-01-overview.webp"><img src="screenshots/vision-01-overview.webp" width="1600" height="900" loading="lazy" alt="TxWorkshop on Apple Vision Pro: Overview"></a><figcaption>Overview</figcaption></figure>
+          <figure><a href="screenshots/vision-02-inputs.webp"><img src="screenshots/vision-02-inputs.webp" width="1600" height="900" loading="lazy" alt="TxWorkshop on Apple Vision Pro: Inputs and Outputs"></a><figcaption>Inputs &amp; Outputs</figcaption></figure>
+          <figure><a href="screenshots/vision-03-validate.webp"><img src="screenshots/vision-03-validate.webp" width="1600" height="900" loading="lazy" alt="TxWorkshop on Apple Vision Pro: Validate"></a><figcaption>Validate</figcaption></figure>
+          <figure><a href="screenshots/vision-04-trace.webp"><img src="screenshots/vision-04-trace.webp" width="1600" height="900" loading="lazy" alt="TxWorkshop on Apple Vision Pro: Script trace"></a><figcaption>Script trace</figcaption></figure>
+          <figure><a href="screenshots/vision-05-cbor.webp"><img src="screenshots/vision-05-cbor.webp" width="1600" height="900" loading="lazy" alt="TxWorkshop on Apple Vision Pro: CBOR"></a><figcaption>CBOR</figcaption></figure>
+        </div>
+      </div>
 
       <h2>What it does</h2>
       <div class="grid">

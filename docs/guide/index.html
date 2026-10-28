@@ -9,10 +9,12 @@
   <meta name="description" content="How to use TxWorkshop: open, inspect, validate, build, sign and submit Cardano transactions.">
   <link rel="icon" href="../icon.png">
   <link rel="stylesheet" href="../style.css">
+  <meta name="apple-itunes-app" content="app-id=6817778951">
+  <script src="guide.js" defer></script>
 </head>
 <body>
   <header class="site">
-    <div class="wrap">
+    <div class="wrap wide">
       <a class="brand" href="../"><img src="../icon.png" alt=""> TxWorkshop</a>
       <nav aria-label="Site">
         <a href="../">Home</a>
@@ -22,135 +24,239 @@
       </nav>
     </div>
   </header>
-  <main>
-    <div class="wrap">
-      <h1>Guide</h1>
-      <p class="lead">How to get from a transaction to a confirmed one.</p>
-      <ul class="toc">
-        <li><a href="#documents">Documents</a></li>
-        <li><a href="#opening">Opening a transaction</a></li>
-        <li><a href="#network">The network</a></li>
-        <li><a href="#providers">Chain providers</a></li>
-        <li><a href="#inspecting">Inspecting</a></li>
-        <li><a href="#chain-data">Chain data</a></li>
-        <li><a href="#exporting">Exporting and sharing</a></li>
-        <li><a href="#explorers">Block explorers</a></li>
-        <li><a href="#validating">Validating</a></li>
-        <li><a href="#debugger">The script debugger</a></li>
-        <li><a href="#hardware-check">Hardware wallet check (CIP-21)</a></li>
-        <li><a href="#building">Building</a></li>
-        <li><a href="#blueprints">Blueprints (CIP-57)</a></li>
-        <li><a href="#signing">Signing</a></li>
-        <li><a href="#submitting">Submitting</a></li>
-      </ul>
+  <main class="docs">
+    <div class="wrap wide docs-layout">
+      <aside class="sidebar">
+        <details class="toc-panel" id="toc-panel">
+          <summary>Contents</summary>
+          <nav aria-label="Guide" class="toc-nav">
+            <details class="toc-group">
+              <summary><a href="#getting-started">Getting started</a></summary>
+              <ul>
+                <li><a href="#documents">Documents</a></li>
+                <li><a href="#opening">Opening a transaction</a></li>
+                <li><a href="#network">The network</a></li>
+                <li><a href="#providers">Chain providers</a></li>
+                <li><a href="#icloud">Sync with iCloud</a></li>
+                <li><a href="#chain-data">Chain data</a></li>
+              </ul>
+            </details>
+            <details class="toc-group">
+              <summary><a href="#inspecting">Inspecting</a></summary>
+              <ul>
+                <li><a href="#inputs-outputs">Inputs and outputs</a></li>
+                <li><a href="#certificates">Certificates and governance</a></li>
+                <li><a href="#cbor">CBOR and CDDL</a></li>
+                <li><a href="#comparing">Comparing transactions</a></li>
+                <li><a href="#explorers">Block explorers</a></li>
+                <li><a href="#exporting">Exporting and sharing</a></li>
+              </ul>
+            </details>
+            <details class="toc-group">
+              <summary><a href="#validating">Validating</a></summary>
+              <ul>
+                <li><a href="#debugger">The script debugger</a></li>
+                <li><a href="#hardware-check">Hardware wallet check (CIP-21)</a></li>
+              </ul>
+            </details>
+            <details class="toc-group">
+              <summary><a href="#building">Building</a></summary>
+              <ul>
+                <li><a href="#choosing-utxos">Choosing UTxOs</a></li>
+                <li><a href="#building-certificates">Certificates</a></li>
+                <li><a href="#reference-inputs">Reference inputs and datums</a></li>
+                <li><a href="#blueprints">Blueprints (CIP-57)</a></li>
+                <li><a href="#editing">Editing a transaction</a></li>
+              </ul>
+            </details>
+            <details class="toc-group">
+              <summary><a href="#signing">Signing</a></summary>
+              <ul>
+                <li><a href="#keys">Signing keys</a></li>
+                <li><a href="#hardware-wallets">Hardware wallets</a></li>
+                <li><a href="#witnesses">Witnesses and co-signers</a></li>
+              </ul>
+            </details>
+            <a class="toc-single" href="#submitting">Submitting</a>
+          </nav>
+        </details>
+      </aside>
 
-      <h2 id="documents">Documents</h2>
-      <p>Each piece of work is a <code>.txworkshop</code> document. It holds the transaction exactly as written, the chain data looked up for it, your notes, and the recipe it was built from. Save it anywhere, including iCloud Drive, and reopen it offline later.</p>
+      <article class="doc">
+        <h1>Guide</h1>
+        <p class="lead">How to get from a transaction to a confirmed one.</p>
 
-      <h2 id="opening">Opening a transaction</h2>
-      <p>On a new document's Overview:</p>
-      <ul>
-        <li><strong>Paste</strong> hex, base64 or a cardano-cli text envelope.</li>
-        <li><strong>Open from File…</strong> or drop a file: <code>.tx</code>, <code>.signed</code>, <code>.json</code>, <code>.cbor</code> or <code>.hex</code>.</li>
-        <li><strong>Fetch by ID…</strong> with a transaction id or an explorer link. It searches mainnet, preprod and preview, through your providers and Koios's public API.</li>
-      </ul>
-      <p>To load another transaction into the same document, choose <strong>Replace Transaction…</strong> in the toolbar, on any section: it offers the same three ways. Replacing can be undone, and signatures recorded for the old transaction that the new one doesn't carry are dropped.</p>
+        <h2 id="getting-started">Getting started</h2>
 
-      <h2 id="network">The network</h2>
-      <p>The network menu in the toolbar says which network the document is on: mainnet, preprod or preview. It picks the provider and places the validity window in time. When you open a transaction, or type addresses to build one, the app sets it from the addresses when they make it clear, and says so when they disagree.</p>
+        <h3 id="documents">Documents</h3>
+        <p>Each piece of work is a <code>.txworkshop</code> document. It holds the transaction exactly as written, the chain data looked up for it, your notes, and the recipe it was built from. Save it anywhere, including iCloud Drive, and reopen it offline later.</p>
 
-      <h2 id="providers">Chain providers</h2>
-      <p>Looking up inputs, validating with chain data, building and submitting need a provider. Add one in <strong>Settings › Providers</strong>, one per network.</p>
-      <table>
-        <thead><tr><th>Provider</th><th>What you need</th></tr></thead>
-        <tbody>
-          <tr><td>Koios</td><td>Nothing; an API key is optional</td></tr>
-          <tr><td>Blockfrost</td><td>A project id for that network</td></tr>
-          <tr><td>Ogmios, with Kupo</td><td>Your server's URL, and Kupo's for faster address lookups</td></tr>
-          <tr><td>Yaci DevKit</td><td>Its store URL, for a local devnet</td></tr>
-          <tr><td>Local node (Mac download)</td><td>The node's socket path, for example <code>~/cardano/mainnet/node.socket</code></td></tr>
-          <tr><td>cardano-cli (Mac download)</td><td>The socket path; the app finds cardano-cli in Homebrew, <code>/usr/local/bin</code>, <code>~/.local/bin</code> or <code>~/cardano</code>, or you give its path</td></tr>
-        </tbody>
-      </table>
-      <p>The first time there is no provider, <strong>Connect to Cardano</strong> offers Koios in one tap, and says how to start with the others. API keys go in the Keychain. The node needs to be running and in sync.</p>
-      <p><strong>Sync with iCloud</strong>, in Settings, keeps your providers, their API keys and your block explorer the same on your iPhone, iPad, Mac and Apple Vision Pro. It is off until you turn it on. API keys then go in iCloud Keychain, end-to-end encrypted; signing keys never leave the device. The App Store versions and the Mac download sync with each other. A local node or cardano-cli stays on its Mac.</p>
+        <h3 id="opening">Opening a transaction</h3>
+        <p>On a new document's Overview:</p>
+        <ul>
+          <li><strong>Paste</strong> hex, base64 or a cardano-cli text envelope.</li>
+          <li><strong>Open from File…</strong> or drop a file: <code>.tx</code>, <code>.signed</code>, <code>.json</code>, <code>.cbor</code> or <code>.hex</code>.</li>
+          <li><strong>Fetch by ID…</strong> with a transaction id or an explorer link. It searches mainnet, preprod and preview, through your providers and Koios's public API.</li>
+        </ul>
+        <p>To load another transaction into the same document, choose <strong>Replace Transaction…</strong> in the toolbar, on any section: it offers the same three ways. Replacing can be undone, and signatures recorded for the old transaction that the new one doesn't carry are dropped.</p>
+        <figure class="shot">
+          <a href="../screenshots/mac-01-overview.webp"><img src="../screenshots/mac-01-overview.webp" width="1600" height="1001" loading="lazy" alt="A transaction's Overview on the Mac: what it does in short, its id, fee, inputs, outputs, era and validity window"></a>
+          <figcaption>Overview, on the Mac.</figcaption>
+        </figure>
 
-      <h2 id="inspecting">Inspecting</h2>
-      <p>The sidebar splits the transaction into Overview, Inputs &amp; Outputs, Certificates &amp; Governance, Scripts &amp; Datums, Metadata, CBOR and CDDL. <strong>Look Up Inputs &amp; Names</strong> on Inputs &amp; Outputs fetches what each input spends, and saves it in the document so it works offline later.</p>
-      <p>Certificates &amp; Governance shows every field of each certificate, as Build asks for them: a pool registration's id, cold and VRF key hashes, pledge, cost, margin, reward account, owners, relays and metadata; a delegation's stake address, pool and DRep; deposits, refunds and anchors.</p>
-      <p>Addresses, transaction ids, key hashes and other hashes each have a copy button beside them, next to the button that opens them in your block explorer.</p>
+        <h3 id="network">The network</h3>
+        <p>The network menu in the toolbar says which network the document is on: mainnet, preprod or preview. It picks the provider and places the validity window in time. When you open a transaction, or type addresses to build one, the app sets it from the addresses when they make it clear, and says so when they disagree.</p>
 
-      <h2 id="exporting">Exporting and sharing</h2>
-      <p><strong>Export &amp; Share</strong>, in the toolbar of every section, keeps every way out of the app in one place:</p>
-      <ul>
-        <li><strong>Share Transaction…</strong> sends a <code>.tx</code> file, a cardano-cli text envelope, to Messages, Mail, AirDrop or any app.</li>
-        <li><strong>Copy CBOR Hex</strong> puts the transaction's CBOR on the clipboard.</li>
-        <li><strong>Text Envelope (.tx)</strong>, <strong>CBOR (.cbor)</strong> and <strong>CBOR Hex (.hex)</strong> save the transaction for cardano-cli and other tools. The envelope's type says whether it is signed yet: <code>Unwitnessed Tx ConwayEra</code> before any witness, <code>Tx ConwayEra</code> after.</li>
-        <li><strong>JSON</strong>, <strong>Markdown</strong> and <strong>PDF Report</strong> save a report of the whole transaction.</li>
-      </ul>
+        <h3 id="providers">Chain providers</h3>
+        <p>Looking up inputs, validating with chain data, building and submitting need a provider. Add one in <strong>Settings › Providers</strong>, one per network.</p>
+        <table>
+          <thead><tr><th>Provider</th><th>What you need</th></tr></thead>
+          <tbody>
+            <tr><td>Koios</td><td>Nothing; an API key is optional</td></tr>
+            <tr><td>Blockfrost</td><td>A project id for that network</td></tr>
+            <tr><td>Ogmios, with Kupo</td><td>Your server's URL, and Kupo's for faster address lookups</td></tr>
+            <tr><td>Yaci DevKit</td><td>Its store URL, for a local devnet</td></tr>
+            <tr><td>Local node (Mac download)</td><td>The node's socket path, for example <code>~/cardano/mainnet/node.socket</code></td></tr>
+            <tr><td>cardano-cli (Mac download)</td><td>The socket path; the app finds cardano-cli in Homebrew, <code>/usr/local/bin</code>, <code>~/.local/bin</code> or <code>~/cardano</code>, or you give its path</td></tr>
+          </tbody>
+        </table>
+        <p>The first time there is no provider, <strong>Connect to Cardano</strong> offers Koios in one tap, and says how to start with the others. API keys go in the Keychain. The node needs to be running and in sync.</p>
 
-      <h2 id="chain-data">Chain data</h2>
-      <p>Validating, debugging and building need the protocol parameters and the UTxOs a transaction spends. <strong>Chain Data</strong>, at the top of the work sections, fetches them from the document's provider: the tip slot, epoch, era and protocol version; the fees, size and execution limits, prices, deposits and cost models; and whether each input's UTxO is there. Without a transaction it fetches the chain alone. <strong>Enter by Hand…</strong> takes the parameters and UTxOs as JSON or CBOR, for a network no provider reaches. What is fetched is saved in the document, so the work stays repeatable offline. When the debugger or a trace can't run for want of it, <strong>Fetch Chain Data</strong> is offered there, and they try again.</p>
+        <h3 id="icloud">Sync with iCloud</h3>
+        <p><strong>Sync with iCloud</strong>, in Settings, keeps your providers, their API keys and your block explorer the same on your iPhone, iPad, Mac and Apple Vision Pro. It is off until you turn it on. Turning it on joins each device's providers with the others'; it never replaces them. API keys then go in iCloud Keychain, end-to-end encrypted; signing keys never leave the device. The App Store versions and the Mac download sync with each other. A local node or cardano-cli stays on its Mac.</p>
 
-      <h2 id="explorers">Block explorers</h2>
-      <p>The small arrow next to a transaction id, address, stake account, pool, DRep, governance action or asset opens it in your block explorer. Choose it in <strong>Settings</strong>: Cardanoscan, Cexplorer, AdaStat, DRepTalk, eUTxO, Pool PM or PoolTool. Where yours has no page for something, or no site for the network, another explorer that has one is used, and the link says which.</p>
+        <h3 id="chain-data">Chain data</h3>
+        <p>Validating, debugging and building need the protocol parameters and the UTxOs a transaction spends. <strong>Chain Data</strong>, at the top of the work sections, fetches them from the document's provider: the tip slot, epoch, era and protocol version; the fees, size and execution limits, prices, deposits and cost models; and whether each input's UTxO is there. Without a transaction it fetches the chain alone. <strong>Enter by Hand…</strong> takes the parameters and UTxOs as JSON or CBOR, for a network no provider reaches. What is fetched is saved in the document, so the work stays repeatable offline. When the debugger or a trace can't run for want of it, <strong>Fetch Chain Data</strong> is offered there, and they try again.</p>
 
-      <h2 id="validating">Validating</h2>
-      <p><strong>Validate</strong> runs the ledger's Phase 1 rules and evaluates Plutus scripts, offline, from the document's chain data. You get each problem with its cause, the budget each redeemer used, a step-by-step script trace, and what-if runs with changed data. The ledger charges for the signed transaction, signatures included, so an unsigned one is also checked as it will be once every key it needs has signed: a fee that covers the unsigned bytes but not the signed ones is reported before you sign, since signing cannot fix it.</p>
+        <h2 id="inspecting">Inspecting</h2>
+        <p>The sidebar splits the transaction into Overview, Inputs &amp; Outputs, Certificates &amp; Governance, Scripts &amp; Datums, Metadata, CBOR and CDDL. Each field's label sits above its value. Addresses, transaction ids, key hashes and other hashes each have a copy button beside them, next to the button that opens them in your block explorer.</p>
 
-      <h2 id="debugger">The script debugger</h2>
-      <p><strong>Debug Script</strong>, on a redeemer in Validate or in Scripts &amp; Datums, steps through that script's run with its real datum, redeemer and script context. <strong>Debug Failure</strong> opens at the step a failing run stops. You see the term being computed or the value being returned, the variables in scope, the work still on the stack, the budget used so far, and the traces.</p>
-      <ul>
-        <li><strong>Step</strong>, <strong>Step Back</strong>, <strong>Step Over</strong> and <strong>Step Out</strong>, also as ⌘→, ⌘←, ⌘↓ and ⌘↑ with a keyboard.</li>
-        <li><strong>Continue</strong> runs to the next breakpoint: on failure, on a builtin the run calls, or on a trace message it emits.</li>
-        <li>The <strong>timeline</strong> goes to any step.</li>
-        <li>Open a variable to see it in full. The script context, the redeemer and the datum are named, and read by field when a blueprint knows them.</li>
-        <li><strong>Edit Redeemer</strong> runs the script again with a different redeemer, as a what-if. The transaction is not changed.</li>
-      </ul>
+        <h3 id="inputs-outputs">Inputs and outputs</h3>
+        <p><strong>Look Up Inputs &amp; Names</strong> on Inputs &amp; Outputs fetches what each input spends, with token names, and saves it in the document so it works offline later.</p>
+        <figure class="shot">
+          <a href="../screenshots/mac-02-inputs.webp"><img src="../screenshots/mac-02-inputs.webp" width="1600" height="1001" loading="lazy" alt="Inputs and Outputs on the Mac: the looked-up inputs, reference inputs and collateral, each with its value"></a>
+          <figcaption>Inputs &amp; Outputs.</figcaption>
+        </figure>
 
-      <h2 id="hardware-check">Hardware wallet check (CIP-21)</h2>
-      <p>Ledger, Trezor and Keystone sign only transactions written the way <a href="https://cips.cardano.org/cip/CIP-0021">CIP-21</a> sets out. <strong>Hardware Wallets (CIP-21)</strong>, in Validate, says which signing mode the transaction needs and what stands in the way: encoding that isn't canonical, empty lists, mixed set tags, fields and certificates hardware wallets refuse, and a pool registration that isn't alone. <strong>Rebuild for Hardware Wallets…</strong> builds the transaction again so they can sign it. Writing a body the CIP-21 way changes its bytes: sets gain a tag, lengths and keys are written differently. The transaction id is the hash of those bytes and the fee is charged on them, so the transaction is built again rather than its bytes rewritten, and the fee is worked out from the bytes that will be signed. With a build form, the form is built again with <strong>For hardware wallets (CIP-21)</strong> on, spending the same inputs, and the form keeps the option. Without one, the transaction itself is built again: the same inputs and outputs, certificates, withdrawals, mint, native scripts, metadata and validity, with the change worked out again. That needs the document's chain data, and an output that is plainly the change; a transaction that runs Plutus scripts, votes, proposes or uses reference inputs is rebuilt from its build form. Either way it is a new transaction id, so any signatures are dropped and it must be signed again. What hardware wallets refuse outright, such as some certificates, a rebuild cannot change, and it says so.</p>
+        <h3 id="certificates">Certificates and governance</h3>
+        <p>Certificates &amp; Governance shows every field of each certificate, as Build asks for them: a pool registration's id, cold and VRF key hashes, pledge, cost, margin, reward account, owners, relays and metadata; a delegation's stake address, pool and DRep; deposits, refunds and anchors. The transaction's votes and proposals are listed there too.</p>
 
-      <h2 id="building">Building</h2>
-      <p><strong>Build</strong> starts from source addresses or UTxOs, then outputs, mints, script inputs, certificates, withdrawals, votes and proposals. A new form has no output: add one with <strong>Add Output</strong>, or leave it out for a transaction that only registers or delegates, with what is left going back to the change address. Every field takes a value in any form: an address as bech32 or hex, or from an <code>.addr</code> or key file; a pool as <code>pool1…</code>, hex, a cold key or <code>pool.json</code>. The line under each field says what it read. Fees, collateral and script budgets are worked out for you. <strong>Add Staking or Governance › Certificate from File…</strong> reads certificates made elsewhere, such as cardano-cli <code>.cert</code> files (text envelopes) or their CBOR, each into a certificate you can check and edit. Turn on <strong>For hardware wallets (CIP-21)</strong>, beside <strong>Build</strong>, to build a transaction Ledger, Trezor and Keystone can sign: it is written the way they ask, its fee is worked out from those bytes, and what they refuse stops the build with the reason.</p>
-      <p>Coin selection picks from the source addresses' UTxOs on its own. To decide yourself, fetch them with <strong>Fetch Their UTxOs</strong> and set each one to <strong>Always Use</strong> or <strong>Don't Use</strong>; for example, leave out a UTxO that a transaction still being signed spends. Changing a choice builds again at once, and each UTxO says whether the last build spent it.</p>
-      <p>Certificates cover the whole Conway era:</p>
-      <ul>
-        <li>stake registration, deregistration and delegation, to a pool, a DRep or both, alone or with registration;</li>
-        <li>pool registration, update and retirement;</li>
-        <li>DRep registration, update and retirement;</li>
-        <li>committee hot key authorization and resignation.</li>
-      </ul>
-      <p>A pool registration fills in from <strong>Import pool.json…</strong>, or from the pool's registration on chain with <strong>Fetch Registration</strong>, ready to edit and register again. A pool field takes a <code>pool.json</code> that names its pool id, or its cold key by path; the pool's metadata JSON doesn't say which pool it is, so it isn't accepted.</p>
-      <p>Anything added can be taken out again: outputs, mints, script inputs, certificates and the rest each have <strong>Remove</strong>, and a blueprint the document keeps can be removed under <strong>Blueprints in this document</strong> once no form uses it.</p>
-      <p><strong>Build</strong> checks the form before it builds and names each problem by place and field.</p>
+        <h3 id="cbor">CBOR and CDDL</h3>
+        <p><strong>CBOR</strong> ties every item of the transaction to its bytes and names each field. Encoding that isn't canonical is flagged. <strong>CDDL</strong> checks any item against the ledger's schema for its era.</p>
+        <p>To change the bytes themselves, choose <strong>Edit All Bytes…</strong>, or select an item and choose <strong>Edit Selected Bytes…</strong>, and type hex. It says before you apply whether the bytes still decode, and where decoding would stop. Bytes in the transaction body are part of its id: changing them makes a new id, and the signatures already there no longer match. Undo takes the change back.</p>
+        <figure class="shot">
+          <a href="../screenshots/mac-05-cbor.webp"><img src="../screenshots/mac-05-cbor.webp" width="1600" height="1001" loading="lazy" alt="The CBOR section on the Mac: the decoded tree beside the hex bytes, each item named"></a>
+          <figcaption>CBOR, each item tied to its bytes.</figcaption>
+        </figure>
 
-      <h2 id="blueprints">Blueprints (CIP-57)</h2>
-      <p>A blueprint (<code>plutus.json</code>, from Aiken and other compilers) describes a contract's validators and their datum, redeemer and parameter types. With one, datums and redeemers are typed forms rather than raw CBOR.</p>
-      <ul>
-        <li><strong>Settings › Blueprints › Import plutus.json…</strong> keeps a blueprint for every document. A document keeps a copy of each one it uses, so it opens the same anywhere.</li>
-        <li>In Build, <strong>From Blueprint</strong> on a script input or a mint chooses a validator. When the validator takes parameters, fill them in and the script and its hash are made for you.</li>
-        <li>On an output's datum, or a redeemer, <strong>Fill In with a Blueprint</strong> gives its form; <strong>Enter as Raw Data</strong> goes back to CBOR hex or JSON.</li>
-        <li>In Scripts &amp; Datums, and in the debugger, datums and redeemers a blueprint knows show by their type and field names.</li>
-      </ul>
+        <h3 id="comparing">Comparing transactions</h3>
+        <p><strong>Compare With…</strong>, in the toolbar, sets the document's transaction beside another: paste hex, base64 or a text envelope, or open a transaction file. The changes are grouped by section and read from this document to the other, each as what it was and what it is now. Two copies of one transaction, one unsigned and one signed, show as the same body and id with only the witnesses different.</p>
 
-      <h2 id="signing">Signing</h2>
-      <ul>
-        <li><strong>Keys:</strong> add a recovery phrase or a key file (<code>.skey</code>) under <strong>Add a Signing Key…</strong>. They are kept in the Keychain on that device, and used only after Face ID, Touch ID, Optic ID or your passcode. Use test keys: this is a developer tool.</li>
-        <li><strong>Ledger:</strong> over Bluetooth, or USB on the Mac.</li>
-        <li><strong>Trezor:</strong> over USB on the Mac.</li>
-        <li><strong>Keystone:</strong> by QR code, on iPhone and iPad.</li>
-      </ul>
-      <p>Import a hardware account under <strong>Import a Hardware Account…</strong>. Hardware wallets sign payments, stake registration and delegation, vote delegation and withdrawals.</p>
-      <p>Witnesses list every signature collected so far. <strong>Add a Co-signer's Witness…</strong> adds one a co-signer sends back, pasted or chosen as a file such as a cardano-cli <code>.witness</code>; the trash button takes one out again, leaving the transaction's id and its other signatures as they were.</p>
-      <p class="note">The app never moves funds on its own. It signs only what you confirm, and never asks for a recovery phrase except when you choose to add one.</p>
+        <h3 id="explorers">Block explorers</h3>
+        <p>The small arrow next to a transaction id, address, stake account, pool, DRep, governance action or asset opens it in your block explorer. Choose it in <strong>Settings</strong>: Cardanoscan, Cexplorer, AdaStat, DRepTalk, eUTxO, Pool PM or PoolTool. Where yours has no page for something, or no site for the network, another explorer that has one is used, and the link says which.</p>
 
-      <h2 id="submitting">Submitting</h2>
-      <p><strong>Sign &amp; Submit</strong> sends the signed transaction through the document's provider and tracks it until it is confirmed on chain.</p>
+        <h3 id="exporting">Exporting and sharing</h3>
+        <p><strong>Export &amp; Share</strong>, in the toolbar of every section, keeps every way out of the app in one place:</p>
+        <ul>
+          <li><strong>Share Transaction…</strong> sends a <code>.tx</code> file, a cardano-cli text envelope, to Messages, Mail, AirDrop or any app.</li>
+          <li><strong>Copy CBOR Hex</strong> puts the transaction's CBOR on the clipboard.</li>
+          <li><strong>Text Envelope (.tx)</strong>, <strong>CBOR (.cbor)</strong> and <strong>CBOR Hex (.hex)</strong> save the transaction for cardano-cli and other tools. The envelope's type says whether it is signed yet: <code>Unwitnessed Tx ConwayEra</code> before any witness, <code>Tx ConwayEra</code> after.</li>
+          <li><strong>JSON</strong>, <strong>Markdown</strong> and <strong>PDF Report</strong> save a report of the whole transaction.</li>
+        </ul>
+
+        <h2 id="validating">Validating</h2>
+        <p><strong>Validate</strong> runs the ledger's Phase 1 rules and evaluates Plutus scripts, offline, from the document's chain data. You get each problem with its cause, the budget each redeemer used, a step-by-step script trace, and what-if runs with changed data. The ledger charges for the signed transaction, signatures included, so an unsigned one is also checked as it will be once every key it needs has signed: a fee that covers the unsigned bytes but not the signed ones is reported before you sign, since signing cannot fix it.</p>
+        <figure class="shot">
+          <a href="../screenshots/mac-03-validate.webp"><img src="../screenshots/mac-03-validate.webp" width="1600" height="1001" loading="lazy" alt="Validate on the Mac: the result, and the memory and steps each redeemer's script used"></a>
+          <figcaption>Validate, with each script's budget.</figcaption>
+        </figure>
+        <p>After a run, <strong>Export Report</strong> saves it as Markdown or JSON. On the Mac, <strong>Batch Validate a Folder…</strong>, in Validate's toolbar, checks every transaction file in a folder against the document's network, each with its count of errors and warnings, and <strong>Export Summary…</strong> saves the lot as Markdown.</p>
+
+        <h3 id="debugger">The script debugger</h3>
+        <p><strong>Debug Script</strong>, on a redeemer in Validate or in Scripts &amp; Datums, steps through that script's run with its real datum, redeemer and script context. <strong>Debug Failure</strong> opens at the step a failing run stops. You see the term being computed or the value being returned, the variables in scope, the work still on the stack, the budget used so far, and the traces.</p>
+        <ul>
+          <li><strong>Step</strong>, <strong>Step Back</strong>, <strong>Step Over</strong> and <strong>Step Out</strong>, also as ⌘→, ⌘←, ⌘↓ and ⌘↑ with a keyboard.</li>
+          <li><strong>Continue</strong> runs to the next breakpoint: on failure, on a builtin the run calls, or on a trace message it emits.</li>
+          <li>The <strong>timeline</strong> goes to any step.</li>
+          <li>Open a variable to see it in full. The script context, the redeemer and the datum are named, and read by field when a blueprint knows them.</li>
+          <li><strong>Edit Redeemer</strong> runs the script again with a different redeemer, as a what-if. The transaction is not changed.</li>
+        </ul>
+        <figure class="shot">
+          <a href="../screenshots/mac-04-debugger.webp"><img src="../screenshots/mac-04-debugger.webp" width="1600" height="1001" loading="lazy" alt="The script debugger on the Mac: the term being computed, the variables in scope, the stack, and the timeline of steps"></a>
+          <figcaption>The script debugger, twenty steps into a run.</figcaption>
+        </figure>
+
+        <h3 id="hardware-check">Hardware wallet check (CIP-21)</h3>
+        <p>Ledger, Trezor and Keystone sign only transactions written the way <a href="https://cips.cardano.org/cip/CIP-0021">CIP-21</a> sets out. <strong>Hardware Wallets (CIP-21)</strong>, in Validate, says which signing mode the transaction needs and what stands in the way: encoding that isn't canonical, empty lists, mixed set tags, fields and certificates hardware wallets refuse, and a pool registration that isn't alone.</p>
+        <p><strong>Rebuild for Hardware Wallets…</strong> builds the transaction again so they can sign it. Writing a body the CIP-21 way changes its bytes: sets gain a tag, lengths and keys are written differently. The transaction id is the hash of those bytes and the fee is charged on them, so the transaction is built again rather than its bytes rewritten, and the fee is worked out from the bytes that will be signed.</p>
+        <ul>
+          <li>With a build form, the form is built again with <strong>For hardware wallets (CIP-21)</strong> on, spending the same inputs, and the form keeps the option.</li>
+          <li>Without one, the transaction itself is built again: the same inputs and outputs, certificates, withdrawals, mint, native scripts, metadata and validity, with the change worked out again. That needs the document's chain data, and an output that is plainly the change; a transaction that runs Plutus scripts, votes, proposes or uses reference inputs is rebuilt from its build form.</li>
+        </ul>
+        <p>Either way it is a new transaction id, so any signatures are dropped and it must be signed again. What hardware wallets refuse outright, such as some certificates, a rebuild cannot change, and it says so.</p>
+
+        <h2 id="building">Building</h2>
+        <p><strong>Build</strong> starts from source addresses or UTxOs, then outputs, mints, script inputs, certificates, withdrawals, votes and proposals. A new form has no output: add one with <strong>Add Output</strong>, or leave it out for a transaction that only registers or delegates, with what is left going back to the change address. Every field takes a value in any form: an address as bech32 or hex, or from an <code>.addr</code> or key file; a pool as <code>pool1…</code>, hex, a cold key or <code>pool.json</code>. The line under each field says what it read. Fees, collateral and script budgets are worked out for you.</p>
+        <p>Turn on <strong>For hardware wallets (CIP-21)</strong>, beside <strong>Build</strong>, to build a transaction Ledger, Trezor and Keystone can sign: it is written the way they ask, its fee is worked out from those bytes, and what they refuse stops the build with the reason.</p>
+        <p>Anything added can be taken out again: outputs, mints, script inputs, certificates and the rest each have <strong>Remove</strong>. <strong>Start Over…</strong>, beside <strong>Build</strong>, clears the whole form; the document's transaction stays as it is. <strong>Build</strong> checks the form before it builds and names each problem by place and field.</p>
+
+        <h3 id="choosing-utxos">Choosing UTxOs</h3>
+        <p>Coin selection picks from the source addresses' UTxOs on its own. To decide yourself, fetch them with <strong>Fetch Their UTxOs</strong> and set each one to <strong>Always Use</strong> or <strong>Don't Use</strong>; for example, leave out a UTxO that a transaction still being signed spends. Fetching again replaces the list. Changing a choice builds again at once, and each UTxO says whether the last build spent it.</p>
+
+        <h3 id="building-certificates">Certificates</h3>
+        <p>Certificates cover the whole Conway era:</p>
+        <ul>
+          <li>stake registration, deregistration and delegation, to a pool, a DRep or both, alone or with registration;</li>
+          <li>pool registration, update and retirement;</li>
+          <li>DRep registration, update and retirement;</li>
+          <li>committee hot key authorization and resignation.</li>
+        </ul>
+        <p>A pool registration fills in from <strong>Import pool.json…</strong>, or from the pool's registration on chain with <strong>Fetch Registration</strong>, ready to edit and register again. A pool field takes a <code>pool.json</code> that names its pool id, or its cold key by path; the pool's metadata JSON doesn't say which pool it is, so it isn't accepted.</p>
+        <p><strong>Add Staking or Governance › Certificate from File…</strong> reads certificates made elsewhere, such as cardano-cli <code>.cert</code> files (text envelopes) or their CBOR, each into a certificate you can check and edit.</p>
+
+        <h3 id="reference-inputs">Reference inputs and datums</h3>
+        <p><strong>Reference inputs</strong>, in the build options, are UTxOs the transaction reads without spending, such as an oracle's: one <code>transaction id#index</code> per line. A reference script that a mint or script input names is added on its own, without being listed here.</p>
+        <p>An output's datum can be inline, or <strong>Datum by hash, included</strong>: the output carries the datum's hash, and the datum itself goes in the transaction, where scripts read it. Either takes Plutus data as CBOR hex, JSON or a file, or a blueprint form. An output's reference script is built into the output.</p>
+
+        <h3 id="blueprints">Blueprints (CIP-57)</h3>
+        <p>A blueprint (<code>plutus.json</code>, from Aiken and other compilers) describes a contract's validators and their datum, redeemer and parameter types. With one, datums and redeemers are typed forms rather than raw CBOR.</p>
+        <ul>
+          <li><strong>Settings › Blueprints › Import plutus.json…</strong> keeps a blueprint for every document. A document keeps a copy of each one it uses, so it opens the same anywhere.</li>
+          <li>In Build, <strong>From Blueprint</strong> on a script input or a mint chooses a validator. When the validator takes parameters, fill them in and the script and its hash are made for you.</li>
+          <li>On an output's datum, or a redeemer, <strong>Fill In with a Blueprint</strong> gives its form; <strong>Enter as Raw Data</strong> goes back to CBOR hex or JSON.</li>
+          <li>In Scripts &amp; Datums, and in the debugger, datums and redeemers a blueprint knows show by their type and field names.</li>
+          <li>A blueprint the document keeps can be removed under <strong>Blueprints in this document</strong> once no form uses it.</li>
+        </ul>
+
+        <h3 id="editing">Editing a transaction</h3>
+        <p>A transaction you opened, rather than built, can be changed too. <strong>Edit in Build…</strong>, in the toolbar, reads it into the Build form. Change what you need, then <strong>Build</strong>: it is built again from the form, and replaces the transaction when you use it.</p>
+        <p>Above the form, <strong>Read from the transaction</strong> lists what will be worked out again, such as the fee, min-ADA, change and script budgets, and anything the form can't hold, which is left out. It needs the UTxOs the transaction spends and reads, so fetch <a href="#chain-data">chain data</a> first. If Build already has a form, it asks before replacing it, and Undo brings the old form back. Building again makes a new transaction id, so it must be signed again.</p>
+
+        <h2 id="signing">Signing</h2>
+        <p><strong>Sign &amp; Submit</strong> collects the signatures the transaction needs, from keys on the device, hardware wallets and co-signers.</p>
+
+        <h3 id="keys">Signing keys</h3>
+        <p>Add a recovery phrase, or a key file (<code>.skey</code>) with <strong>Choose File…</strong>, under <strong>Add a Signing Key…</strong>. They are kept in the Keychain on that device, and used only after Face ID, Touch ID, Optic ID or your passcode. Use test keys: this is a developer tool.</p>
+
+        <h3 id="hardware-wallets">Hardware wallets</h3>
+        <ul>
+          <li><strong>Ledger:</strong> over Bluetooth, or USB on the Mac.</li>
+          <li><strong>Trezor:</strong> over USB on the Mac.</li>
+          <li><strong>Keystone:</strong> by QR code, on iPhone and iPad.</li>
+        </ul>
+        <p>Import a hardware account under <strong>Import a Hardware Account…</strong>. Hardware wallets sign payments, stake registration and delegation, vote delegation and withdrawals. If one refuses the transaction, see the <a href="#hardware-check">hardware wallet check</a>.</p>
+
+        <h3 id="witnesses">Witnesses and co-signers</h3>
+        <p>Witnesses list every signature collected so far. <strong>Add a Co-signer's Witness…</strong> adds one a co-signer sends back, pasted or chosen as a file such as a cardano-cli <code>.witness</code>; the trash button takes one out again, leaving the transaction's id and its other signatures as they were.</p>
+        <p class="note">The app never moves funds on its own. It signs only what you confirm, and never asks for a recovery phrase except when you choose to add one.</p>
+
+        <h2 id="submitting">Submitting</h2>
+        <p><strong>Sign &amp; Submit</strong> sends the signed transaction through the document's provider and tracks it until it is confirmed on chain. Once it is, a link under it opens it in your <a href="#explorers">block explorer</a>.</p>
+      </article>
     </div>
   </main>
   <footer class="site">
-    <div class="wrap">
+    <div class="wrap wide">
       <span>© 2026 <a href="https://kingpinapps.com">Kingpin Apps</a>.</span>
       <a href="../privacy/">Privacy</a>
       <a href="../terms/">Terms</a>

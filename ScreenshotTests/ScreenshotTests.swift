@@ -19,6 +19,9 @@ final class ScreenshotTests: XCTestCase {
     func testCaptureScreenshots() throws {
         let app = XCUIApplication()
         setupSnapshot(app)
+        // The sample needs no provider; skip the offer to set one up, which
+        // on visionOS covers the document.
+        app.launchArguments += ["-providerOnboardingShown", "YES"]
         if let dir = ProcessInfo.processInfo.environment["SCREENSHOT_OUTPUT_DIR"] {
             app.launchEnvironment["SCREENSHOT_OUTPUT_DIR"] = dir
         }
@@ -38,6 +41,8 @@ final class ScreenshotTests: XCTestCase {
 
         go(to: "Validate", in: app)
         let run = app.buttons["runValidation"]
+        // Below the chain data, out of sight in a short window.
+        reveal(run, in: app)
         XCTAssertTrue(run.waitForExistence(timeout: 10))
         run.tap()
         let verdict = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Valid'")).firstMatch
@@ -79,20 +84,38 @@ final class ScreenshotTests: XCTestCase {
     @MainActor
     private func openDocument(_ app: XCUIApplication) throws {
         let document = app.staticTexts[Self.document]
-        // The name renames; the icon above it opens.
+        // On visionOS the browser is a window of its own, where a tap at an
+        // offset misses: tap the document's cell. Elsewhere the name renames
+        // and the icon above it opens; how far above depends on the platform,
+        // so each try waits for the document to show.
         func open() {
-            document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: -60)).tap()
+            let opened = app.staticTexts["In short"].firstMatch
+            #if os(visionOS)
+            if let path = ProcessInfo.processInfo.environment["SAMPLE_DOCUMENT"] {
+                app.open(URL(fileURLWithPath: path))
+                if opened.waitForExistence(timeout: 20) { return }
+            }
+            #endif
+            for offset in [-60.0, -35.0, -20.0] where !opened.waitForExistence(timeout: offset == -60 ? 0 : 10) {
+                guard document.exists else { break }
+                document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: offset)).tap()
+            }
         }
         if document.waitForExistence(timeout: 10) {
             open()
             return
         }
         for place in ["Browse", "On My Apple Vision Pro", "On My iPhone", "On My iPad", "TxWorkshop"] {
-            let item = app.buttons[place].exists ? app.buttons[place] : app.staticTexts[place]
-            if item.exists { item.tap(); settle(1) }
+            // The app's own folder shares its name with other text on screen:
+            // tap the folder's cell, not the first label that matches.
+            let cell = app.cells.containing(.staticText, identifier: place).firstMatch
+            let item = app.buttons[place].exists ? app.buttons[place].firstMatch
+                : cell.exists ? cell : app.staticTexts[place].firstMatch
+            if item.exists { item.tap(); settle(2) }
             if document.exists { break }
         }
-        XCTAssertTrue(document.waitForExistence(timeout: 10), "\(Self.document) is not in the app's Documents.")
+        // The folder can take a while to list its contents.
+        XCTAssertTrue(document.waitForExistence(timeout: 30), "\(Self.document) is not in the app's Documents.")
         open()
     }
 
@@ -108,8 +131,38 @@ final class ScreenshotTests: XCTestCase {
             app.navigationBars.buttons.firstMatch.tap()
             settle(1)
         }
+        // A short window, as on visionOS, lays out only the sidebar rows near
+        // the top, and calls the rest hittable all the same: swipe the
+        // sidebar, the narrowest list, until the row sits inside it.
+        func sidebar() -> XCUIElement? {
+            let lists = app.collectionViews.allElementsBoundByIndex.filter(\.exists)
+            return lists.count > 1 ? lists.min(by: { $0.frame.width < $1.frame.width }) : nil
+        }
+        func shown() -> Bool {
+            guard row().waitForExistence(timeout: 2) else { return false }
+            guard let list = sidebar() else { return true }
+            return list.frame.insetBy(dx: 0, dy: 20).contains(CGPoint(x: list.frame.midX, y: row().frame.midY))
+        }
+        for _ in 0..<4 where !shown() {
+            guard let list = sidebar() else { break }
+            // Down to a row above the fold, back up for one scrolled past.
+            if row().exists, row().frame.midY < list.frame.minY + 20 { list.swipeDown() } else { list.swipeUp() }
+            settle(1)
+        }
         XCTAssertTrue(row().waitForExistence(timeout: 5), "No \(section) in the sidebar.")
         row().tap()
+    }
+
+    /// Swipes the detail pane, the widest list, up until `element` is laid
+    /// out. visionOS takes a swipe on an element, not on the app.
+    @MainActor
+    private func reveal(_ element: XCUIElement, in app: XCUIApplication) {
+        for _ in 0..<6 where !element.waitForExistence(timeout: 2) {
+            let lists = app.collectionViews.allElementsBoundByIndex.filter(\.exists)
+            guard let pane = lists.max(by: { $0.frame.width < $1.frame.width }) else { return }
+            pane.swipeUp()
+            settle(1)
+        }
     }
 
     /// Scrolls by dragging up from `element`. visionOS rejects app-wide swipes
