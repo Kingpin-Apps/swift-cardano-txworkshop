@@ -12,6 +12,9 @@ struct FetchByHashSection: View {
     /// The document window's, from a sheet: a sheet's own is not the
     /// document's on macOS.
     var documentUndoManager: UndoManager?
+    /// Whether an "or" divider sets it apart from the way to give a
+    /// transaction above it.
+    var isAlternative = false
     @Environment(ProviderSettingsStore.self) private var providers
     @Environment(\.undoManager) private var environmentUndoManager
     private var undoManager: UndoManager? { documentUndoManager ?? environmentUndoManager }
@@ -43,7 +46,14 @@ struct FetchByHashSection: View {
             }
             .disabled(isFetching || hash.trimmingCharacters(in: .whitespaces).isEmpty)
         } header: {
-            Text("Fetch by id", bundle: #bundle)
+            if isAlternative {
+                VStack(alignment: .leading, spacing: TWSpacing.m) {
+                    OrDivider()
+                    Text("Fetch by id", bundle: #bundle)
+                }
+            } else {
+                Text("Fetch by id", bundle: #bundle)
+            }
         } footer: {
             Text("Searches mainnet, preprod and preview, with your Blockfrost or Koios provider where you have one and Koios's public API elsewhere.", bundle: #bundle)
         }
