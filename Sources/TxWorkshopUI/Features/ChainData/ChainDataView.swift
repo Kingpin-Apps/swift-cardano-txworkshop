@@ -30,6 +30,7 @@ struct ChainDataView: View {
         .formStyle(.grouped)
         .twScreenBackground()
         .navigationTitle(Text("Chain Data", bundle: #bundle))
+        .networkChoiceAlert(for: document)
         .task(id: RequirementsKey(transaction: document.content.transaction, snapshot: document.content.chainContext)) {
             guard let bytes = document.content.transaction else { requirements = nil; return }
             requirements = try? TransactionValidation().requirements(for: bytes, snapshot: document.content.chainContext)
@@ -94,7 +95,7 @@ struct ChainDataView: View {
             } else if let network = document.content.network {
                 Text("Add a provider for \(Text(network.name)) in Settings to fetch chain data, or enter it by hand.", bundle: #bundle)
             } else {
-                Text("Set the network in Overview to fetch chain data, or enter it by hand.", bundle: #bundle)
+                Text("Choose the network in the toolbar to fetch chain data, or enter it by hand.", bundle: #bundle)
             }
         }
     }
