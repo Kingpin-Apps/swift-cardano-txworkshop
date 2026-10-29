@@ -66,6 +66,11 @@ public struct TxWorkshopScenes: Scene {
         } makeDocument: { _, _ in
             TxWorkshopDocument()
         }
+        #if os(macOS)
+        // Room for the sidebar and a whole Overview; macOS fits it to
+        // smaller screens, and a document reopens at the size it was left.
+        .defaultSize(width: 1180, height: 900)
+        #endif
 
         #if os(macOS)
         Settings {
