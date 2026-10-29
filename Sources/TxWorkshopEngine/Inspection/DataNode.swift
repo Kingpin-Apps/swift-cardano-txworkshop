@@ -56,7 +56,7 @@ extension DataNode {
                 id: path, label: label, kind: .constructor(tag), value: nil, text: nil,
                 children: constr.fields.enumerated().map { plutus($1, label: "\($0)", path: "\(path).\($0)") }
             )
-        case .map(let pairs):
+        case .map(let pairs), .indefiniteMap(let pairs):
             return DataNode(
                 id: path, label: label, kind: .map, value: nil, text: nil,
                 children: pairs.enumerated().map { index, pair in

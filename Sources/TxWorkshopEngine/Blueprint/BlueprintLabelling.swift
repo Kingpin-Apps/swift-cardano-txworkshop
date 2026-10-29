@@ -167,7 +167,7 @@ extension Blueprint {
                 dataNode(pair.1, as: pair.0, label: "\(index)", path: "\(path).\(index)")
             }, name: type)
         case .map(_, let values, _):
-            guard case .map(let pairs) = data, let keyed = plain.children, keyed.count == pairs.count else { return plain }
+            guard let pairs = data.mapEntries, let keyed = plain.children, keyed.count == pairs.count else { return plain }
             return node(kind: .map, children: zip(pairs, keyed).enumerated().map { index, pair in
                 dataNode(pair.0.value, as: values, label: pair.1.label, path: "\(path).\(index)")
             }, name: type)

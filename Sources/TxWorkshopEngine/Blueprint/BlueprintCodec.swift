@@ -55,7 +55,7 @@ extension Blueprint {
                 try decode(pair.1, as: pair.0, path: "\(path)[\(index)]")
             })
         case .map(let keys, let values, _):
-            guard case .map(let pairs) = data else { throw mismatch("A map") }
+            guard let pairs = data.mapEntries else { throw mismatch("A map") }
             return .map(try pairs.enumerated().map { index, pair in
                 BlueprintValue.Entry(
                     key: try decode(pair.key, as: keys, path: "\(path)[\(index)].key"),
@@ -288,7 +288,7 @@ extension Blueprint {
     static func shape(_ data: PlutusData) -> String {
         switch data {
         case .constructor(let constr): "constructor \(constr.tag.map(String.init) ?? "?")"
-        case .map: "a map"
+        case .map, .indefiniteMap: "a map"
         case .array, .indefiniteArray: "a list"
         case .bigInt: "a number"
         case .bytes: "bytes"

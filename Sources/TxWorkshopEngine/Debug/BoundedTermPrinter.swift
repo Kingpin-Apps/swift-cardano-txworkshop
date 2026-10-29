@@ -134,7 +134,7 @@ extension DataNode {
     static func shape(_ data: PlutusData) -> String {
         switch data {
         case .constructor(let constr): "constr \(constr.tag ?? 0) · \(constr.fields.count) fields"
-        case .map(let pairs): "map · \(pairs.count)"
+        case .map(let pairs), .indefiniteMap(let pairs): "map · \(pairs.count)"
         case .array(let items): "list · \(items.count)"
         case .indefiniteArray(let items): "list · \(items.getAll().count)"
         case .bigInt(let integer): "\(integer.value)"
