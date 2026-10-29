@@ -1,3 +1,16 @@
+## v0.3.0 (2026-10-28)
+
+### Feat
+
+- **mac**: open document windows large enough for the overview
+- **chain-data**: ask for a network when the document has none
+- **overview**: offer building a transaction from scratch
+- **build**: fill in epochs, rewards and governance actions from the chain
+
+### Fix
+
+- **app-store**: add Cardano to the keywords and guide review to Koios [ci skip]
+
 ## v0.2.2 (2026-10-13)
 
 ### Fix
