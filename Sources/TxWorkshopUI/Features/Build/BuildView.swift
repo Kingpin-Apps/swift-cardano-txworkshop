@@ -25,6 +25,8 @@ struct BuildView: View {
     /// Certificate files that could not be read, by name, with why.
     @State private var certificateFileProblems: [String] = []
     @State private var isConfirmingReset = false
+    /// The open governance actions, kept while the form is open.
+    @State private var openActions = OpenActionsCache()
 
     init(document: TxWorkshopDocument) {
         self.document = document
@@ -83,9 +85,9 @@ struct BuildView: View {
                 }
             }
             ForEach($recipe.certificates) { $item in
-                CertificateDraftSection(item: $item) {
+                CertificateDraftSection(item: $item, onRemove: {
                     recipe.certificates.removeAll { $0.id == item.id }
-                }
+                }, onWithdraw: withdraw)
             }
             ForEach($recipe.withdrawals) { $withdrawal in
                 WithdrawalDraftSection(withdrawal: $withdrawal) {
@@ -242,7 +244,9 @@ struct BuildView: View {
         }
         .formStyle(.grouped)
         .environment(\.documentNetwork, document.content.network)
+        .environment(\.buildChainSource, BuildChainSource(provider: usesProvider ? provider : nil, snapshot: document.content.chainContext))
         .environment(networkHints)
+        .environment(openActions)
         .onChange(of: recipeHint, initial: true) { _, hint in
             // An unknown network is taken from the addresses when they say
             // which one it is.
@@ -340,6 +344,18 @@ struct BuildView: View {
             } catch {
                 certificateFileProblems.append("\(url.lastPathComponent): \(error)")
             }
+        }
+    }
+
+    /// Withdraws `lovelace` from `stakeAddress`, updating the recipe's
+    /// withdrawal from it when there is one.
+    private func withdraw(_ stakeAddress: String, _ lovelace: UInt64) {
+        let network = document.content.network
+        let same = { (text: String) in (try? ChainLookup.stakeAddress(text, network: network)) == stakeAddress }
+        if let index = recipe.withdrawals.firstIndex(where: { same($0.stakeAddress) }) {
+            recipe.withdrawals[index].lovelace = lovelace
+        } else {
+            recipe.withdrawals.append(WithdrawalDraft(stakeAddress: stakeAddress, lovelace: lovelace))
         }
     }
 

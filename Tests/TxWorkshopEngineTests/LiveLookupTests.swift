@@ -21,6 +21,27 @@ struct LiveLookupTests {
         }
     }
 
+    @Test("Koios lists the open governance actions in one request", arguments: [CardanoNetwork.preprod, .mainnet])
+    func koiosOpenActions(_ network: CardanoNetwork) async throws {
+        let provider = ProviderConfiguration(name: "Koios", kind: .koios, network: network)
+        let window = try await ChainLookup().retirementWindow(provider: provider, apiKey: nil)
+        let actions = try await ChainLookup().openGovernanceActions(provider: provider, apiKey: nil)
+        print("\(network): epoch \(window.currentEpoch), \(actions.count) open")
+        for action in actions { print(" ", action.kind, action.id, action.expiresAfter.map(String.init) ?? "-") }
+        #expect(actions.allSatisfy { ($0.expiresAfter ?? .max) >= window.currentEpoch && $0.id.hasPrefix("gov_action1") })
+    }
+
+    @Test("Koios gives a stake address's rewards and delegation")
+    func koiosAccount() async throws {
+        let provider = ProviderConfiguration(name: "Koios", kind: .koios, network: .mainnet)
+        // A long-registered mainnet stake address.
+        let account = try await ChainLookup().account(
+            "stake1u9ylzsgxaa6xctf4juup682ar3juj85n8tx3hthnljg47zctvm3rc", network: .mainnet, provider: provider, apiKey: nil
+        )
+        print(account)
+        #expect(account.isRegistered)
+    }
+
     @Test("The testnet registry answers a batch query")
     func registry() async throws {
         let inspection = try await TransactionInspector().inspection(of: try TransactionInspectionTests.bytes("conway-tx"), network: .preprod)

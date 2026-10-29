@@ -1,11 +1,15 @@
 import SwiftUI
 import TxWorkshopCore
+import TxWorkshopEngine
 
 /// One certificate: its kind, then the fields that kind needs. Every
 /// certificate the Conway ledger accepts can be made here.
 struct CertificateDraftSection: View {
     @Binding var item: CertificateItem
     let onRemove: () -> Void
+    /// Adds a withdrawal of a stake address's rewards to the recipe, so it
+    /// can be deregistered.
+    var onWithdraw: (_ stakeAddress: String, _ lovelace: UInt64) -> Void = { _, _ in }
     @State private var kind = Kind.registerStake
     @State private var stakeAddress = ""
     @State private var pool = ""
@@ -17,6 +21,8 @@ struct CertificateDraftSection: View {
     @State private var anchorHash = ""
     @State private var epoch: UInt64?
     @State private var poolDraft = PoolRegistrationDraft()
+    /// The stake address's account, as last looked up.
+    @State private var account: ChainLookup.Account?
 
     enum Kind: Hashable, CaseIterable {
         case registerStake, deregisterStake, registerStakeLegacy, deregisterStakeLegacy
@@ -37,6 +43,21 @@ struct CertificateDraftSection: View {
         var needsPool: Bool {
             [.delegateStake, .delegateStakeAndVote, .registerAndDelegateStake, .registerAndDelegateStakeAndVote, .retirePool].contains(self)
         }
+
+        /// Whether the stake address must already be registered, or must not
+        /// be, for the ledger to take the certificate.
+        var stakeExpectation: StakeAccountStatus.Expectation {
+            switch self {
+            case .registerStake, .registerStakeLegacy, .registerAndDelegateStake, .registerAndDelegateVote, .registerAndDelegateStakeAndVote:
+                .unregistered
+            case .deregisterStake, .deregisterStakeLegacy, .delegateStake, .delegateVote, .delegateStakeAndVote:
+                .registered
+            default:
+                .none
+            }
+        }
+
+        var isDeregistration: Bool { self == .deregisterStake || self == .deregisterStakeLegacy }
 
         var needsDRep: Bool {
             [.delegateVote, .delegateStakeAndVote, .registerAndDelegateVote, .registerAndDelegateStakeAndVote].contains(self)
@@ -94,7 +115,10 @@ struct CertificateDraftSection: View {
         }
         .onAppear(perform: load)
         .onChange(of: kind) { sync() }
-        .onChange(of: stakeAddress) { sync() }
+        .onChange(of: stakeAddress) {
+            account = nil
+            sync()
+        }
         .onChange(of: pool) { sync() }
         .onChange(of: drep) { sync() }
         .onChange(of: keyHash) { sync() }
@@ -108,6 +132,24 @@ struct CertificateDraftSection: View {
     @ViewBuilder private var fields: some View {
         if kind.needsStakeAddress {
             ValueField(kind: .stakeAddress, text: $stakeAddress, prompt: Text("Stake address, key hash or stake key", bundle: #bundle))
+            StakeAccountStatus(stakeAddress: stakeAddress, expects: kind.stakeExpectation) { account = $0 }
+            if kind.isDeregistration, let account, account.isRegistered, account.rewards > 0 {
+                Label {
+                    VStack(alignment: .leading, spacing: TWSpacing.xs) {
+                        Text("It holds \(TWFormat.ada(account.rewards)) in rewards: the ledger refuses to deregister it until they are withdrawn, in this transaction or an earlier one.", bundle: #bundle)
+                        Button {
+                            onWithdraw(account.stakeAddress, account.rewards)
+                        } label: {
+                            Text("Add Withdrawal of the Rewards", bundle: #bundle)
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle")
+                }
+                .labelStyle(.status(TWColor.warning))
+                .font(.caption)
+            }
         }
         if kind.needsPool {
             ValueField(kind: .pool, text: $pool, prompt: Text("Pool id, hex, cold key or pool.json", bundle: #bundle))
@@ -119,6 +161,7 @@ struct CertificateDraftSection: View {
         case .retirePool:
             TWLabeledField(Text("Retirement epoch", bundle: #bundle), value: $epoch, format: .number.grouping(.never))
             .font(TWFont.figure)
+            RetirementEpochHint(epoch: $epoch)
         case .registerPool:
             PoolRegistrationFields(draft: $poolDraft)
         case .registerDRep, .unregisterDRep, .updateDRep:
