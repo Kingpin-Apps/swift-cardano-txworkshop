@@ -1,3 +1,13 @@
+## v0.4.0 (2026-10-31)
+
+### Feat
+
+- build against swift-cardano-core 0.10 with exact amounts and bounded data trees
+
+### Fix
+
+- **data**: show indefinite Plutus maps as maps
+
 ## v0.3.0 (2026-10-28)
 
 ### Feat
