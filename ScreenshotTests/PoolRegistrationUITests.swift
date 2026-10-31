@@ -22,7 +22,11 @@ final class PoolRegistrationUITests: XCTestCase {
         preprod.tap()
         go(to: "Build", in: app)
 
-        let add = app.buttons["Add Staking or Governance"].firstMatch
+        // A menu, which iOS 27 reports as a pop-up button.
+        let add = app.descendants(matching: .any).matching(NSPredicate(
+            format: "(elementType == %d OR elementType == %d) AND label == %@",
+            XCUIElement.ElementType.button.rawValue, XCUIElement.ElementType.popUpButton.rawValue, "Add Staking or Governance"
+        )).firstMatch
         scroll(app, toReveal: add)
         add.tap()
         let certificate = app.buttons["Certificate"].firstMatch
@@ -98,9 +102,21 @@ final class PoolRegistrationUITests: XCTestCase {
             let screen = app.frame.height
             return element.frame.minY > screen * 0.2 && element.frame.maxY < screen * 0.85
         }
-        for _ in 0..<10 where !clear() {
-            upwards ? app.swipeDown() : app.swipeUp()
-            // A tap while the form still coasts only stops it.
+        // A short drag toward the element when it is laid out, as a swipe
+        // coasts past it; else on, then back: a list lays out only the rows
+        // near the screen. A tap while the form still coasts only stops it.
+        for _ in 0..<15 where !clear() {
+            if element.exists {
+                let below = element.frame.midY > app.frame.height * 0.5
+                app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: below ? 0.7 : 0.3))
+                    .press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: below ? 0.4 : 0.6)))
+            } else {
+                upwards ? app.swipeDown() : app.swipeUp()
+            }
+            sleep(1)
+        }
+        for _ in 0..<30 where !clear() {
+            upwards ? app.swipeUp() : app.swipeDown()
             sleep(1)
         }
     }

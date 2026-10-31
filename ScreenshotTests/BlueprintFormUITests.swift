@@ -125,8 +125,9 @@ final class BlueprintFormUITests: XCTestCase {
     }
 
     /// An inspected inline datum reads as its blueprint type. Needs the
-    /// "Blueprint Order" document (an output to the market script holding an
-    /// Order) in the app's Documents, besides the fixture blueprint.
+    /// "Blueprint Order" document (scripts/screenshot-sample: an output to the
+    /// market script holding an Order) in the app's Documents, besides the
+    /// fixture blueprint.
     @MainActor
     func testInspectedDatumLabels() throws {
         let app = XCUIApplication()
@@ -149,8 +150,14 @@ final class BlueprintFormUITests: XCTestCase {
         scroll(app, toReveal: order)
         XCTAssertTrue(order.exists, "The inline datum was not read as an Order.")
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'market.market.spend'")).firstMatch.exists, "The validator is not named.")
+        // The price is the Order's second row: a short drag reaches it, where
+        // a swipe coasts past.
         let price = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'price' AND label CONTAINS '5000000'")).firstMatch
-        scroll(app, toReveal: price)
+        for _ in 0..<6 where !(price.exists && price.isHittable) {
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
+                .press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.45)))
+            sleep(1)
+        }
         XCTAssertTrue(price.exists, "The price field is not named.")
         save("blueprint-inspected")
     }

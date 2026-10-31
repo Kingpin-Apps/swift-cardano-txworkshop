@@ -45,9 +45,8 @@ final class ExportReplaceUITests: XCTestCase {
         }
         sleep(2)
 
-        let replace = app.buttons["replaceTransaction"].firstMatch
-        XCTAssertTrue(replace.waitForExistence(timeout: 10), "No Replace Transaction button.")
-        replace.tap()
+        // On iPhone, Replace Transaction is in the toolbar's More menu.
+        app.tapToolbar("replaceTransaction", label: "Replace Transaction…")
         XCTAssertTrue(app.staticTexts["Replace Transaction"].firstMatch.waitForExistence(timeout: 10), "The sheet never opened.")
         XCTAssertTrue(app.buttons["Open from File…"].firstMatch.exists, "No Open from File in the sheet.")
         XCTAssertTrue(app.staticTexts["PASTE A TRANSACTION"].firstMatch.exists || app.staticTexts["Paste a transaction"].firstMatch.exists, "No paste section.")
@@ -57,8 +56,10 @@ final class ExportReplaceUITests: XCTestCase {
         app.buttons["Close"].firstMatch.tap()
         go(to: "Validate", in: app)
         XCTAssertTrue(app.buttons["exportShare"].firstMatch.waitForExistence(timeout: 10), "No Export & Share on Validate.")
-        XCTAssertTrue(app.buttons["replaceTransaction"].firstMatch.exists, "No Replace Transaction on Validate.")
         save("validate-toolbar")
+        app.tapToolbar("replaceTransaction", label: "Replace Transaction…")
+        XCTAssertTrue(app.staticTexts["Replace Transaction"].firstMatch.waitForExistence(timeout: 10), "No Replace Transaction on Validate.")
+        app.buttons["Close"].firstMatch.tap()
     }
 
     @MainActor

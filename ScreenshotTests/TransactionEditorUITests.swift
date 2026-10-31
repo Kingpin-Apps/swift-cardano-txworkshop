@@ -20,7 +20,7 @@ final class TransactionEditorUITests: XCTestCase {
         let app = launch()
         open("Edit Me", in: app)
 
-        tapToolbar("editInBuild", label: "Edit in Build…", in: app)
+        app.tapToolbar("editInBuild", label: "Edit in Build…")
         let replace = app.buttons["Replace"].firstMatch
         if replace.waitForExistence(timeout: 3) { replace.tap() }
         // Build opens on the form read from the transaction, with what was
@@ -57,7 +57,7 @@ final class TransactionEditorUITests: XCTestCase {
     func testEditWithoutChainDataPointsToChainData() throws {
         let app = launch()
         open("Needs Chain Data", in: app)
-        tapToolbar("editInBuild", label: "Edit in Build…", in: app)
+        app.tapToolbar("editInBuild", label: "Edit in Build…")
         let alert = app.alerts.firstMatch
         XCTAssertTrue(alert.waitForExistence(timeout: 10), "No alert for the missing UTxOs.")
         XCTAssertTrue(
@@ -73,7 +73,7 @@ final class TransactionEditorUITests: XCTestCase {
     func testStartOverClearsTheForm() throws {
         let app = launch()
         open("Edit Me", in: app)
-        tapToolbar("editInBuild", label: "Edit in Build…", in: app)
+        app.tapToolbar("editInBuild", label: "Edit in Build…")
         // A form saved by an earlier edit is replaced, after asking.
         let replace = app.buttons["Replace"].firstMatch
         if replace.waitForExistence(timeout: 3) { replace.tap() }
@@ -156,14 +156,16 @@ final class TransactionEditorUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'missing from the Keychain'")).firstMatch.exists)
 
         // Removed again, so the next run starts without it: the row's button,
-        // then the dialog's, which comes after it.
-        // On iPhone the dialog's button joins the row's; on visionOS the
-        // dialog covers the row, so its button is the only one left.
+        // then the dialog's. On visionOS the dialog covers the row, so its
+        // button is the only one left.
         let removeButtons = app.buttons.matching(NSPredicate(format: "label == 'Remove payment'"))
         removeButtons.firstMatch.tap()
         let message = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'is deleted from the Keychain'")).firstMatch
         XCTAssertTrue(message.waitForExistence(timeout: 5), "Removing did not ask first.")
-        removeButtons.element(boundBy: removeButtons.count - 1).tap()
+        // iOS 27 shows the dialog as a sheet in a popover, listed before the
+        // row; elsewhere the dialog's button is the last one.
+        let confirm = app.sheets.buttons["Remove payment"].firstMatch
+        (confirm.exists ? confirm : removeButtons.element(boundBy: removeButtons.count - 1)).tap()
         let gone = expectation(for: NSPredicate(format: "count == 0"), evaluatedWith: removeButtons)
         wait(for: [gone], timeout: 10)
     }
@@ -181,6 +183,9 @@ final class TransactionEditorUITests: XCTestCase {
     /// Opens the document `name` from the app's Documents.
     @MainActor
     private func open(_ name: String, in app: XCUIApplication) {
+        // The sidebar's Overview row, or the Overview's own first heading,
+        // which is what an iPhone opens on.
+        let opened = app.staticTexts.matching(NSPredicate(format: "label == 'Overview' OR label == 'In short'")).firstMatch
         let document = app.staticTexts[name].firstMatch
         // The document browser takes a while to come up after launch; on
         // visionOS it has no Browse tab, and may open on the folder itself.
@@ -188,13 +193,22 @@ final class TransactionEditorUITests: XCTestCase {
         _ = XCTWaiter.wait(for: [
             expectation(for: browser, evaluatedWith: app.buttons["Browse"].firstMatch),
         ], timeout: 30)
-        browse(to: document, through: ["Browse", "On My Apple Vision Pro", "On My iPhone", "On My iPad", "TxWorkshop"], in: app)
+        // A tap on a folder in Files can be lost: go through again.
+        for _ in 0..<2 where !document.waitForExistence(timeout: 3) {
+            browse(to: document, through: ["Browse", "On My Apple Vision Pro", "On My iPhone", "On My iPad", "TxWorkshop"], in: app)
+        }
         XCTAssertTrue(document.waitForExistence(timeout: 10), "\(name) is not in the app's Documents.")
+        // On visionOS Files takes a tap on the document's cell, not one at an
+        // offset from its name.
+        let cell = app.cells.containing(.staticText, identifier: name).firstMatch
+        if UIDevice.current.userInterfaceIdiom == .vision, cell.exists {
+            cell.tap()
+            XCTAssertTrue(opened.waitForExistence(timeout: 20), "\(name) did not open.")
+            sleep(2)
+            return
+        }
         // The name renames; the icon above it opens. How far above depends
         // on the platform, so each try waits for the document to show.
-        // The sidebar's Overview row, or the Overview's own first heading,
-        // which is what an iPhone opens on.
-        let opened = app.staticTexts.matching(NSPredicate(format: "label == 'Overview' OR label == 'In short'")).firstMatch
         for offset in [-60.0, -35.0, -20.0] where !opened.waitForExistence(timeout: offset == -60 ? 0 : 10) {
             guard document.exists else { break }
             document.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0)).withOffset(CGVector(dx: 0, dy: offset)).tap()
@@ -227,26 +241,13 @@ final class TransactionEditorUITests: XCTestCase {
     @MainActor
     private func browse(to target: XCUIElement, through places: [String], in app: XCUIApplication) {
         for place in places where !target.waitForExistence(timeout: 2) {
-            let item = app.buttons[place].exists ? app.buttons[place].firstMatch : app.staticTexts[place].firstMatch
+            // The app's own folder shares its name with other text on screen:
+            // tap the folder's cell, not the first label that matches.
+            let cell = app.cells.containing(.staticText, identifier: place).firstMatch
+            let item = app.buttons[place].exists ? app.buttons[place].firstMatch
+                : cell.exists ? cell : app.staticTexts[place].firstMatch
             if item.waitForExistence(timeout: 3) { item.tap(); sleep(2) }
         }
-    }
-
-    /// Taps a toolbar button, from the overflow menu when it is there; a
-    /// menu item keeps its label, not its identifier.
-    @MainActor
-    private func tapToolbar(_ identifier: String, label: String, in app: XCUIApplication) {
-        let button = app.buttons[identifier].firstMatch
-        if button.waitForExistence(timeout: 3) && button.isHittable {
-            button.tap()
-            return
-        }
-        let more = app.navigationBars.buttons["More"].exists ? app.navigationBars.buttons["More"].firstMatch : app.buttons["More"].firstMatch
-        XCTAssertTrue(more.waitForExistence(timeout: 5), "No \(identifier), nor a More menu.")
-        more.tap()
-        let item = app.buttons[label].firstMatch
-        XCTAssertTrue(item.waitForExistence(timeout: 5), "No \(label) in the toolbar's menu.")
-        item.tap()
     }
 
     @MainActor
