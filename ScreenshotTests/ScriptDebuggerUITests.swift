@@ -83,7 +83,7 @@ final class ScriptDebuggerUITests: XCTestCase {
         XCTAssertTrue(field.waitForExistence(timeout: 10), "No redeemer field.")
         // At the end of the text, so the deletes clear it.
         field.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
-        field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 400) + "d88080")
+        field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 400) + "00")
         save("debugger-edit-sheet")
         app.buttons["debugRunEdited"].firstMatch.tap()
 
