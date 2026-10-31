@@ -2052,16 +2052,13 @@
     "Script budgets" : {
 
     },
+    "Script execution: %llu memory, %llu steps" : {
+
+    },
     "Script hash" : {
 
     },
     "Script input" : {
-
-    },
-    "Script memory: %llu" : {
-
-    },
-    "Script steps: %llu" : {
 
     },
     "Scripts" : {

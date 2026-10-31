@@ -132,7 +132,7 @@ struct SourcesSection: View {
 /// selection should treat it.
 private struct UTxOChoiceRow: View {
     let id: String
-    let lovelace: Int64
+    let lovelace: UInt64
     let assetCount: Int
     let isSpent: Bool
     @Binding var choice: BuildRecipe.InputChoice

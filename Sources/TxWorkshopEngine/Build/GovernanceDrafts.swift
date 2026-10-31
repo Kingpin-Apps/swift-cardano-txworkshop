@@ -7,8 +7,8 @@ import TxWorkshopCore
 extension TransactionComposer {
     /// What the recipe's certificates and proposals lock up and give back.
     struct Deposits {
-        var paid: Int64 = 0
-        var refunded: Int64 = 0
+        var paid: Coin = 0
+        var refunded: Coin = 0
     }
 
     /// Adds the recipe's certificates, withdrawals, votes, proposals and
@@ -22,53 +22,53 @@ extension TransactionComposer {
         for item in recipe.certificates {
             switch item.certificate {
             case .registerStake(let address):
-                certificates.append(.register(Register(stakeCredential: try stakeCredential(address), coin: Coin(stakeDeposit))))
+                certificates.append(.register(try Register(stakeCredential: try stakeCredential(address), coin: Coin(stakeDeposit))))
                 deposits.paid += stakeDeposit
             case .deregisterStake(let address):
-                certificates.append(.unregister(Unregister(stakeCredential: try stakeCredential(address), coin: Coin(stakeDeposit))))
+                certificates.append(.unregister(try Unregister(stakeCredential: try stakeCredential(address), coin: Coin(stakeDeposit))))
                 deposits.refunded += stakeDeposit
             case .delegateStake(let address, let pool):
-                certificates.append(.stakeDelegation(StakeDelegation(stakeCredential: try stakeCredential(address), poolKeyHash: try poolKeyHash(pool))))
+                certificates.append(.stakeDelegation(try StakeDelegation(stakeCredential: try stakeCredential(address), poolKeyHash: try poolKeyHash(pool))))
             case .delegateVote(let address, let drep):
-                certificates.append(.voteDelegate(VoteDelegate(stakeCredential: try stakeCredential(address), drep: try Self.drep(drep))))
+                certificates.append(.voteDelegate(try VoteDelegate(stakeCredential: try stakeCredential(address), drep: try Self.drep(drep))))
             case .registerDRep(let keyHash, let url, let hash):
-                certificates.append(.registerDRep(RegisterDRep(
+                certificates.append(.registerDRep(try RegisterDRep(
                     drepCredential: try drepCredential(keyHash), coin: Coin(drepDeposit), anchor: try anchor(url, hash)
                 )))
                 deposits.paid += drepDeposit
             case .unregisterDRep(let keyHash):
-                certificates.append(.unRegisterDRep(UnregisterDRep(drepCredential: try drepCredential(keyHash), coin: Coin(drepDeposit))))
+                certificates.append(.unRegisterDRep(try UnregisterDRep(drepCredential: try drepCredential(keyHash), coin: Coin(drepDeposit))))
                 deposits.refunded += drepDeposit
             case .updateDRep(let keyHash, let url, let hash):
-                certificates.append(.updateDRep(UpdateDRep(drepCredential: try drepCredential(keyHash), anchor: try anchor(url, hash))))
+                certificates.append(.updateDRep(try UpdateDRep(drepCredential: try drepCredential(keyHash), anchor: try anchor(url, hash))))
             case .registerStakeLegacy(let address):
-                certificates.append(.stakeRegistration(StakeRegistration(stakeCredential: try stakeCredential(address))))
+                certificates.append(.stakeRegistration(try StakeRegistration(stakeCredential: try stakeCredential(address))))
                 deposits.paid += stakeDeposit
             case .deregisterStakeLegacy(let address):
-                certificates.append(.stakeDeregistration(StakeDeregistration(stakeCredential: try stakeCredential(address))))
+                certificates.append(.stakeDeregistration(try StakeDeregistration(stakeCredential: try stakeCredential(address))))
                 deposits.refunded += stakeDeposit
             case .delegateStakeAndVote(let address, let pool, let drep):
-                certificates.append(.stakeVoteDelegate(StakeVoteDelegate(
+                certificates.append(.stakeVoteDelegate(try StakeVoteDelegate(
                     stakeCredential: try stakeCredential(address), poolKeyHash: try poolKeyHash(pool), drep: try Self.drep(drep)
                 )))
             case .registerAndDelegateStake(let address, let pool):
-                certificates.append(.stakeRegisterDelegate(StakeRegisterDelegate(
+                certificates.append(.stakeRegisterDelegate(try StakeRegisterDelegate(
                     stakeCredential: try stakeCredential(address), poolKeyHash: try poolKeyHash(pool), coin: Coin(stakeDeposit)
                 )))
                 deposits.paid += stakeDeposit
             case .registerAndDelegateVote(let address, let drep):
-                certificates.append(.voteRegisterDelegate(VoteRegisterDelegate(
+                certificates.append(.voteRegisterDelegate(try VoteRegisterDelegate(
                     stakeCredential: try stakeCredential(address), drep: try Self.drep(drep), coin: Coin(stakeDeposit)
                 )))
                 deposits.paid += stakeDeposit
             case .registerAndDelegateStakeAndVote(let address, let pool, let drep):
-                certificates.append(.stakeVoteRegisterDelegate(StakeVoteRegisterDelegate(
+                certificates.append(.stakeVoteRegisterDelegate(try StakeVoteRegisterDelegate(
                     stakeCredential: try stakeCredential(address), poolKeyHash: try poolKeyHash(pool),
                     drep: try Self.drep(drep), coin: Coin(stakeDeposit)
                 )))
                 deposits.paid += stakeDeposit
             case .registerPool(let pool):
-                certificates.append(.poolRegistration(PoolRegistration(poolParams: try poolParams(pool))))
+                certificates.append(.poolRegistration(try PoolRegistration(poolParams: try poolParams(pool))))
                 // Only a first registration pays; an update re-registers.
                 if !pool.isUpdate {
                     builder.initialStakePoolRegistration = true
@@ -78,13 +78,13 @@ extension TransactionComposer {
                 guard let epoch else { throw ComposeError.badGovernance("Give the epoch the pool retires at.") }
                 // The deposit comes back to the reward account at that epoch,
                 // not in this transaction.
-                certificates.append(.poolRetirement(PoolRetirement(poolKeyHash: try poolKeyHash(pool), epoch: EpochNumber(epoch))))
+                certificates.append(.poolRetirement(try PoolRetirement(poolKeyHash: try poolKeyHash(pool), epoch: EpochNumber(epoch))))
             case .authorizeCommitteeHot(let cold, let hot):
-                certificates.append(.authCommitteeHot(AuthCommitteeHot(
+                certificates.append(.authCommitteeHot(try AuthCommitteeHot(
                     committeeColdCredential: try committeeCold(cold), committeeHotCredential: try committeeHot(hot)
                 )))
             case .resignCommitteeCold(let cold, let url, let hash):
-                certificates.append(.resignCommitteeCold(ResignCommitteeCold(
+                certificates.append(.resignCommitteeCold(try ResignCommitteeCold(
                     committeeColdCredential: try committeeCold(cold), anchor: try anchor(url, hash)
                 )))
             }
@@ -133,7 +133,7 @@ extension TransactionComposer {
                 throw ComposeError.badGovernance("A proposal needs an anchor: its URL and the Blake2b-256 hash of its content.")
             }
             do {
-                builder.addProposal(
+                try builder.addProposal(
                     deposit: Int(parameters.govActionDeposit), rewardAccount: try rewardAccount(proposal.returnAddress),
                     govAction: action, anchor: proposalAnchor
                 )

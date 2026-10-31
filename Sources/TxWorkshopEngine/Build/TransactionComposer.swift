@@ -1,3 +1,4 @@
+import BigInt
 import Foundation
 import OrderedCollections
 import SwiftCardanoChain
@@ -19,22 +20,22 @@ public struct TransactionComposer: Sendable {
         public let inputs: [String]
         /// Those inputs with what they hold, so they can be chosen again.
         public let spent: [SpentInput]
-        public let totalIn: Int64
-        public let totalOut: Int64
+        public let totalIn: UInt64
+        public let totalOut: UInt64
         /// Lovelace the change output carries, when there is one.
-        public let change: Int64?
-        public let deposits: Int64
-        public let refunds: Int64
+        public let change: UInt64?
+        public let deposits: UInt64
+        public let refunds: UInt64
     }
 
     /// An input the transaction spends.
     public struct SpentInput: Sendable, Equatable, Identifiable {
         /// `<transaction id>#<index>`.
         public let id: String
-        public let lovelace: Int64
+        public let lovelace: UInt64
         public let assetCount: Int
 
-        public init(id: String, lovelace: Int64, assetCount: Int) {
+        public init(id: String, lovelace: UInt64, assetCount: Int) {
             self.id = id
             self.lovelace = lovelace
             self.assetCount = assetCount
@@ -51,6 +52,9 @@ public struct TransactionComposer: Sendable {
         public let memoryFee: UInt64
         public let steps: UInt64
         public let stepsFee: UInt64
+        /// What script execution costs, as the ledger charges it: memory and steps
+        /// rounded up together, which can be a lovelace less than the two apart.
+        public let executionFee: UInt64
         public let referenceScriptBytes: UInt64
         public let referenceScriptFee: UInt64
         public let referenceScriptTiers: [Tier]
@@ -172,14 +176,16 @@ public struct TransactionComposer: Sendable {
         let breakdown = try await builder.estimateFeeBreakdown()
 
         let inputs = body.inputs.asArray
-        var totalIn: Int64 = 0
+        var totalIn = BigInt(0)
         var spent: [SpentInput] = []
         for input in inputs {
             guard let (utxo, _) = try await context.utxo(input: input) else { continue }
             totalIn += utxo.output.amount.coin
-            spent.append(SpentInput(id: InputResolver.id(input), lovelace: utxo.output.amount.coin, assetCount: Self.assetCount(utxo)))
+            spent.append(SpentInput(
+                id: InputResolver.id(input), lovelace: try Self.lovelace(utxo.output.amount.coin), assetCount: Self.assetCount(utxo)
+            ))
         }
-        let totalOut = body.outputs.reduce(Int64(0)) { $0 + $1.amount.coin }
+        let totalOut = body.outputs.reduce(BigInt(0)) { $0 + $1.amount.coin }
         // The builder adds change after the outputs asked for.
         let changeOutput = body.outputs.count > recipe.outputs.count ? body.outputs.last : nil
         return Composition(
@@ -188,9 +194,9 @@ public struct TransactionComposer: Sendable {
             fee: Self.view(breakdown),
             inputs: inputs.map(InputResolver.id),
             spent: spent,
-            totalIn: totalIn,
-            totalOut: totalOut,
-            change: changeOutput?.amount.coin,
+            totalIn: try Self.lovelace(totalIn),
+            totalOut: try Self.lovelace(totalOut),
+            change: try changeOutput.map { try Self.lovelace($0.amount.coin) },
             deposits: deposits.paid,
             refunds: deposits.refunded
         )
@@ -200,6 +206,7 @@ public struct TransactionComposer: Sendable {
         FeeBreakdownView(
             total: breakdown.total, sizeBytes: breakdown.sizeBytes, sizeFee: breakdown.sizeFee, fixedFee: breakdown.fixedFee,
             memory: breakdown.memory, memoryFee: breakdown.memoryFee, steps: breakdown.steps, stepsFee: breakdown.stepsFee,
+            executionFee: breakdown.executionFee,
             referenceScriptBytes: breakdown.referenceScriptBytes, referenceScriptFee: breakdown.referenceScriptFee,
             referenceScriptTiers: breakdown.referenceScriptTiers.map { .init(bytes: $0.bytes, pricePerByte: $0.pricePerByte, fee: $0.fee) },
             buffer: breakdown.buffer
@@ -249,12 +256,12 @@ public struct TransactionComposer: Sendable {
         if let text = draft.referenceScript, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             output.script = try referenceScript(text)
         }
-        let least = Int64(try await Utils.minLovelacePostAlonzo(output, context))
+        let least = try await Utils.minLovelacePostAlonzo(output, context)
         if draft.lovelace == nil {
-            output.amount.coin = least
+            output.amount.coin = BigInt(least)
             // The coin's own size can raise the minimum.
-            output.amount.coin = Int64(try await Utils.minLovelacePostAlonzo(output, context))
-        } else if output.amount.coin < least {
+            output.amount.coin = BigInt(try await Utils.minLovelacePostAlonzo(output, context))
+        } else if output.amount.coin < BigInt(least) {
             throw ComposeError.belowMinimum(address: draft.address, minimum: least)
         }
         return output
@@ -339,7 +346,7 @@ public enum ComposeError: Error, Sendable, Equatable, CustomStringConvertible {
     case badPlutusData(String)
     case badGovernance(String)
     case unknownInput(String)
-    case belowMinimum(address: String, minimum: Int64)
+    case belowMinimum(address: String, minimum: UInt64)
     case scriptFails(String, String)
     case builder(String)
     /// The recipe has mistakes, each named where it is.
@@ -383,9 +390,17 @@ extension TransactionComposer {
     }
 
     /// A UTxO's reference and lovelace, for listing pasted UTxOs.
-    public static func describe(utxoHex: String) -> (id: String, lovelace: Int64, assetCount: Int)? {
+    public static func describe(utxoHex: String) -> (id: String, lovelace: UInt64, assetCount: Int)? {
         guard let utxo = try? utxo(utxoHex) else { return nil }
-        return (InputResolver.id(utxo.input), utxo.output.amount.coin, assetCount(utxo))
+        return (InputResolver.id(utxo.input), UInt64(clamping: utxo.output.amount.coin), assetCount(utxo))
+    }
+
+    /// `value` as lovelace, which the ledger holds in a `Word64`.
+    static func lovelace(_ value: BigInt) throws -> UInt64 {
+        guard let lovelace = UInt64(exactly: value) else {
+            throw ComposeError.builder("\(value) lovelace does not fit a ledger Word64")
+        }
+        return lovelace
     }
 
     static func assetCount(_ utxo: UTxO) -> Int {

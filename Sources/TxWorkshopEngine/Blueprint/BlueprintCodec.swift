@@ -178,7 +178,7 @@ extension Blueprint {
                 }
                 pairs[key] = item
             }
-            return complete ? .map(pairs) : nil
+            return complete ? .map(MapPairs(pairs)) : nil
 
         case .constructor(let index, let fields):
             guard case .constructor(let chosen, let elements) = value, chosen == index else {
@@ -222,7 +222,7 @@ extension Blueprint {
 
     private static func elements(_ data: PlutusData) -> [PlutusData]? {
         switch data {
-        case .array(let items): items
+        case .array(let items): items.array
         case .indefiniteArray(let items): Array(items)
         default: nil
         }

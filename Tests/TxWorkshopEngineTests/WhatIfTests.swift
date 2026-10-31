@@ -21,8 +21,8 @@ struct WhatIfTests {
         #expect(same.count == 1)
         #expect(same[0].delta == .init(memory: 0, steps: 0))
 
-        // Constr 7 [] instead of what the minting policy expects.
-        let changed = try await WhatIf().compare(bytes, edits: ["redeemer-0": "d88080"], snapshot: snapshot, network: .preprod)
+        // The integer 0, not the constructor the minting policy unpacks.
+        let changed = try await WhatIf().compare(bytes, edits: ["redeemer-0": "00"], snapshot: snapshot, network: .preprod)
         let run = try #require(changed.first)
         #expect(run.before.passed)
         #expect(run.after != nil)
@@ -62,7 +62,7 @@ struct ScriptTraceTests {
     @Test("A failing run ends with the machine's error")
     func failing() async throws {
         let bytes = try TransactionInspectionTests.bytes("conway-tx")
-        let transaction = try WhatIf.apply(["redeemer-0": "d88080"], to: try TransactionValidation.decode(bytes))
+        let transaction = try WhatIf.apply(["redeemer-0": "00"], to: try TransactionValidation.decode(bytes))
         let trace = try await ScriptTrace.record(try transaction.toCBORData(), position: 0, snapshot: try TransactionValidationTests.snapshot(), network: .preprod)
         #expect(trace.failure?.contains("unConstrData") == true)
     }

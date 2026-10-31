@@ -29,7 +29,7 @@ struct AssetRow: View {
             ExplorerLinkButton(item: ExplorerItem.asset(policy: asset.policyID, name: asset.assetNameHex))
             quantity
                 .font(TWFont.figure)
-                .foregroundStyle(asset.quantity < 0 ? TWColor.failure : Color.primary)
+                .foregroundStyle(asset.quantityValue < 0 ? TWColor.failure : Color.primary)
         }
         .accessibilityElement(children: .contain)
     }
@@ -53,10 +53,11 @@ struct AssetRow: View {
     @ViewBuilder private var quantity: some View {
         let ticker = asset.ticker.map { " \($0)" } ?? ""
         if let decimals = asset.decimals, decimals > 0 {
-            let value = Decimal(sign: asset.quantity < 0 ? .minus : .plus, exponent: -decimals, significand: Decimal(asset.quantity.magnitude))
+            let quantity = asset.quantityValue
+            let value = Decimal(sign: quantity < 0 ? .minus : .plus, exponent: -decimals, significand: quantity.magnitude)
             Text("\(value, format: .number.precision(.fractionLength(decimals)))\(ticker)", bundle: #bundle)
         } else {
-            Text("\(asset.quantity, format: .number)\(ticker)", bundle: #bundle)
+            Text("\(asset.quantityValue, format: .number)\(ticker)", bundle: #bundle)
         }
     }
 

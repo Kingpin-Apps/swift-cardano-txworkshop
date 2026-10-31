@@ -62,8 +62,8 @@ struct FeeBreakdownSection: View {
             row(LocalizedStringResource("Size: \(fee.sizeBytes) bytes", bundle: #bundle), fee.sizeFee)
             row(LocalizedStringResource("Fixed", bundle: #bundle), fee.fixedFee)
             if fee.memory > 0 || fee.steps > 0 {
-                row(LocalizedStringResource("Script memory: \(fee.memory)", bundle: #bundle), fee.memoryFee)
-                row(LocalizedStringResource("Script steps: \(fee.steps)", bundle: #bundle), fee.stepsFee)
+                // One row, as the ledger rounds memory and steps up together.
+                row(LocalizedStringResource("Script execution: \(fee.memory) memory, \(fee.steps) steps", bundle: #bundle), fee.executionFee)
             }
             if fee.referenceScriptBytes > 0 {
                 row(LocalizedStringResource("Reference scripts: \(fee.referenceScriptBytes) bytes", bundle: #bundle), fee.referenceScriptFee)

@@ -24,8 +24,8 @@ extension TransactionComposer {
         return PoolParams(
             poolOperator: try poolKeyHash(draft.pool),
             vrfKeyHash: VrfKeyHash(payload: vrfBytes),
-            pledge: Int(pledge),
-            cost: Int(cost),
+            pledge: pledge,
+            cost: cost,
             margin: margin,
             rewardAccount: RewardAccountHash(payload: reward),
             poolOwners: .list(owners),
@@ -46,10 +46,10 @@ extension TransactionComposer {
             return .singleHostAddr(SingleHostAddr(port: port, ipv4: nil, ipv6: address))
         case .dnsName:
             guard !host.isEmpty, host.utf8.count <= 64 else { throw ComposeError.badGovernance("A relay's DNS name is 1 to 64 bytes.") }
-            return .singleHostName(SingleHostName(port: port, dnsName: host))
+            return .singleHostName(try SingleHostName(port: port, dnsName: host))
         case .srvName:
             guard !host.isEmpty, host.utf8.count <= 64 else { throw ComposeError.badGovernance("A relay's DNS name is 1 to 64 bytes.") }
-            return .multiHostName(MultiHostName(dnsName: host))
+            return .multiHostName(try MultiHostName(dnsName: host))
         }
     }
 

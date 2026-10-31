@@ -42,14 +42,14 @@ public struct ChainSummary: Sendable, Equatable {
             return
         }
         protocolVersion = "\(p.protocolVersion.major).\(p.protocolVersion.minor)"
-        func ada(_ lovelace: Int64) -> String { Self.ada(lovelace) }
-        func number(_ value: Int64) -> String { value.formatted() }
+        func ada(_ lovelace: UInt64) -> String { Self.ada(lovelace) }
+        func number<T: BinaryInteger>(_ value: T) -> String { value.formatted() }
         var rows: [Row] = [
             Row(name: "Fee per byte", value: "\(number(p.txFeePerByte)) lovelace"),
             Row(name: "Fixed fee", value: "\(number(p.txFeeFixed)) lovelace"),
             Row(name: "Max transaction size", value: "\(number(p.maxTxSize)) bytes"),
             Row(name: "Max execution units per transaction", value: "\(number(p.maxTxExecutionUnits.memory)) memory · \(number(p.maxTxExecutionUnits.steps)) steps"),
-            Row(name: "Execution prices", value: "\(p.executionUnitPrices.priceMemory) per memory · \(p.executionUnitPrices.priceSteps) per step"),
+            Row(name: "Execution prices", value: "\(Self.rational(p.executionUnitPrices.priceMemory)) per memory · \(Self.rational(p.executionUnitPrices.priceSteps)) per step"),
             Row(name: "Max value size", value: "\(number(p.maxValueSize)) bytes"),
             Row(name: "Coins per UTxO byte", value: "\(number(p.utxoCostPerByte)) lovelace"),
             Row(name: "Collateral", value: "\(p.collateralPercentage)% · at most \(p.maxCollateralInputs) inputs"),
@@ -61,7 +61,7 @@ public struct ChainSummary: Sendable, Equatable {
             Row(name: "Pool retirement", value: "at most \(p.poolRetireMaxEpoch) epochs ahead"),
         ]
         if let perByte = p.minFeeRefScriptCostPerByte {
-            rows.insert(Row(name: "Reference script fee", value: "\(number(perByte)) lovelace per byte"), at: 2)
+            rows.insert(Row(name: "Reference script fee", value: "\(Self.rational(perByte)) lovelace per byte"), at: 2)
         }
         parameters = rows
         costModels = [
@@ -69,8 +69,18 @@ public struct ChainSummary: Sendable, Equatable {
         ].filter { !$0.1.isEmpty }.map { Row(name: $0.0, value: "\($0.1.count) entries") }
     }
 
-    static func ada(_ lovelace: Int64) -> String {
+    static func ada(_ lovelace: UInt64) -> String {
         let value = Decimal(lovelace) / 1_000_000
         return "₳ \(value.formatted())"
+    }
+
+    /// A ledger rational as a decimal, which it is exactly when its denominator
+    /// is made of 2s and 5s — as every price the ledger uses is — else as `n/d`.
+    static func rational(_ value: NonNegativeInterval) -> String {
+        guard value.denominator > 0 else { return "\(value.numerator)/0" }
+        var denominator = value.denominator
+        for factor: UInt64 in [2, 5] { while denominator % factor == 0 { denominator /= factor } }
+        guard denominator == 1 else { return "\(value.numerator)/\(value.denominator)" }
+        return (Decimal(value.numerator) / Decimal(value.denominator)).formatted()
     }
 }

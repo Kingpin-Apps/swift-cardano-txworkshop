@@ -132,10 +132,10 @@ struct ScriptDebuggerTests {
         let original = try await debugger(bytes)
         #expect(!original.redeemerHex.isEmpty)
         let edited = try await ScriptDebugger.open(
-            bytes, position: 0, snapshot: try TransactionValidationTests.snapshot(), network: .preprod, redeemer: "d88080"
+            bytes, position: 0, snapshot: try TransactionValidationTests.snapshot(), network: .preprod, redeemer: "00"
         )
         // The same data, however it is written back.
-        #expect(try PlutusData.fromCBOR(data: TxDocumentCodec.bytes(fromHex: edited.redeemerHex)) == PlutusData.fromCBOR(data: TxDocumentCodec.bytes(fromHex: "d88080")))
+        #expect(try PlutusData.fromCBOR(data: TxDocumentCodec.bytes(fromHex: edited.redeemerHex)) == PlutusData.fromCBOR(data: TxDocumentCodec.bytes(fromHex: "00")))
         #expect(edited.end.failure?.contains("unConstrData") == true)
         #expect(original.end.failure == nil)
     }
@@ -143,7 +143,7 @@ struct ScriptDebuggerTests {
     @Test("A failing run goes to its failure, and stops at a failure breakpoint")
     func failing() async throws {
         let bytes = try TransactionInspectionTests.bytes("conway-tx")
-        let transaction = try WhatIf.apply(["redeemer-0": "d88080"], to: try TransactionValidation.decode(bytes))
+        let transaction = try WhatIf.apply(["redeemer-0": "00"], to: try TransactionValidation.decode(bytes))
         let debugger = try await debugger(try transaction.toCBORData())
         let failure = try #require(debugger.end.failure)
         #expect(failure.contains("unConstrData"))

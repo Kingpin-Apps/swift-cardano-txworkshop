@@ -154,8 +154,9 @@ struct RecipeImporterTests {
         var form = try RecipeImporter.recipe(from: original.transaction, snapshot: snapshot, network: .preprod).recipe
         form.outputs[0].lovelace = 20_000_000
         let edited = try await TransactionComposer().compose(form, snapshot: snapshot, network: .preprod)
-        #expect(edited.totalIn == edited.totalOut + Int64(edited.fee.total))
-        #expect(edited.change == original.change.map { $0 - 10_000_000 + Int64(original.fee.total) - Int64(edited.fee.total) })
+        #expect(edited.totalIn == edited.totalOut + edited.fee.total)
+        // The 10 ada more to the output and the change in fee come out of the change.
+        #expect(edited.change.map { $0 + edited.fee.total + 10_000_000 } == original.change.map { $0 + original.fee.total })
         let outcome = try await TransactionValidation().validate(edited.transaction, snapshot: snapshot, network: .preprod, mode: .asWritten)
         #expect(Set(outcome.errors.map(\.kind)).isSubset(of: TransactionComposerTests.unsigned), "\(outcome.errors.map(\.message))")
     }
@@ -206,7 +207,7 @@ struct RecipeImporterTests {
         let account = try TransactionComposer.rewardAccount(try GovernanceBuildingTests.stakeAddress())
         let anchor = try #require(try TransactionComposer.anchor("https://example.com/a.json", String(repeating: "00", count: 32)))
         transaction.transactionBody.proposalProcedures = ProposalProcedures([
-            ProposalProcedure(deposit: 1, rewardAccount: account, govAction: .noConfidence(NoConfidence(id: nil)), anchor: anchor)
+            try ProposalProcedure(deposit: 1, rewardAccount: account, govAction: .noConfidence(NoConfidence(id: nil)), anchor: anchor)
         ])
         #expect(throws: ImportError.self) {
             _ = try RecipeImporter.recipe(from: try transaction.toCBORData(), snapshot: snapshot, network: .preprod)

@@ -15,8 +15,8 @@ enum TransactionDescription {
         var parts: [String] = []
         parts.append(inflected("Spends ^[\(inspection.inputs.count) input](inflect: true)"))
         parts.append(inflected("creates ^[\(inspection.outputs.count) output](inflect: true)"))
-        let minted = inspection.mint.filter { $0.quantity > 0 }.count
-        let burned = inspection.mint.filter { $0.quantity < 0 }.count
+        let minted = inspection.mint.filter { $0.quantityValue > 0 }.count
+        let burned = inspection.mint.filter { $0.quantityValue < 0 }.count
         if minted > 0 { parts.append(inflected("mints ^[\(minted) asset](inflect: true)")) }
         if burned > 0 { parts.append(inflected("burns ^[\(burned) asset](inflect: true)")) }
         if !inspection.redeemers.isEmpty {

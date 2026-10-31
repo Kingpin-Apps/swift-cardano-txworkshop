@@ -20,7 +20,7 @@ struct CertificateBuildingTests {
             certificates: certificates.map { CertificateItem(certificate: $0) }
         )
         let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
-        #expect(built.totalIn == built.totalOut + Int64(built.fee.total) + built.deposits - built.refunds)
+        #expect(built.totalIn + built.refunds == built.totalOut + built.fee.total + built.deposits)
         let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
         #expect(inspection.view.certificates.count == certificates.count)
         return (built, try #require(TransactionValidation.protocolParameters(snapshot)), snapshot)

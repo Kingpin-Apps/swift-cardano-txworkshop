@@ -45,10 +45,24 @@ struct TransactionInspectorTests {
         _ = try await TransactionInspector().inspection(of: bytes)
     }
 
-    @Test("A datum nested past the depth cap is reported, not crashed on")
-    func rejectsTooDeeplyNestedDatum() async {
-        await #expect(throws: InspectionError.self) {
-            _ = try await TransactionInspector().inspect(self.transaction(datumDepth: 200))
+    @Test("A datum nested thousands deep is inspected, its tree cut off at the depth the outline shows")
+    func inspectsVeryDeeplyNestedDatum() async throws {
+        // The ledger reads data of any depth, so the inspector does too; the
+        // tree stops at DataNode.maxDepth so it can be shown and freed.
+        let bytes = transaction(datumDepth: 5_000)
+        let summary = try await TransactionInspector().inspect(bytes)
+        #expect(summary.byteCount == bytes.count)
+        do {
+            let inspection = try await TransactionInspector().inspection(of: bytes)
+            var node = try #require(inspection.datums.first?.tree)
+            var depth = 0
+            while let child = node.children?.first {
+                node = child
+                depth += 1
+            }
+            #expect(depth == DataNode.maxDepth)
+            #expect(node.childrenOmitted)
+            #expect(node.summary.contains("nested deeper than"))
         }
     }
 

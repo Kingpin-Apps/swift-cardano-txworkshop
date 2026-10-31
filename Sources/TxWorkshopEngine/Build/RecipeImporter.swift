@@ -1,3 +1,4 @@
+import BigInt
 import Foundation
 import SwiftCardanoCore
 import SwiftCardanoTxValidator
@@ -164,7 +165,7 @@ public enum RecipeImporter {
             for (policy, assets) in mint.data.sorted(by: { $0.key.payload.hex < $1.key.payload.hex }) {
                 let policyHex = policy.payload.hex
                 var draft = MintDraft(
-                    assets: assets.data.map { AssetDraft(assetNameHex: $0.key.payload.hex, quantity: $0.value) },
+                    assets: try assets.data.map { AssetDraft(assetNameHex: $0.key.payload.hex, quantity: try Self.quantity($0.value)) },
                     redeemer: mintRedeemers[policyHex]?.dataCBORHex ?? ""
                 )
                 guard let found = try script(hash: policy, what: "the policy \(policyHex)") else { continue }
@@ -179,7 +180,7 @@ public enum RecipeImporter {
                 var item = try CertificateFile.draft(certificate, network: network)
                 if case .registerPool(var pool) = item {
                     if let parameters {
-                        pool.isUpdate = CIP21Rebuild.lovelaceLeftOver(body, spending: spent) < parameters.stakePoolDeposit
+                        pool.isUpdate = CIP21Rebuild.lovelaceLeftOver(body, spending: spent) < BigInt(parameters.stakePoolDeposit)
                         notes.append(ImportNote(
                             kind: .recomputed,
                             message: pool.isUpdate
@@ -296,10 +297,13 @@ public enum RecipeImporter {
     /// An output as the form gives it. A datum hash whose datum is among
     /// `datums`, the transaction's witnesses, keeps the datum with it.
     static func draft(_ output: TransactionOutput, datums: [PlutusData] = []) throws -> OutputDraft {
-        var draft = OutputDraft(address: try output.address.toBech32(), lovelace: UInt64(output.amount.coin))
+        guard let lovelace = UInt64(exactly: output.amount.coin) else {
+            throw ImportError.malformed("An output holds \(output.amount.coin) lovelace, more than a ledger Word64.")
+        }
+        var draft = OutputDraft(address: try output.address.toBech32(), lovelace: lovelace)
         for (policy, assets) in output.amount.multiAsset.data.sorted(by: { $0.key.payload.hex < $1.key.payload.hex }) {
             for (name, quantity) in assets.data {
-                draft.assets.append(AssetDraft(policyID: policy.payload.hex, assetNameHex: name.payload.hex, quantity: quantity))
+                draft.assets.append(AssetDraft(policyID: policy.payload.hex, assetNameHex: name.payload.hex, quantity: try Self.quantity(quantity)))
             }
         }
         if case .data(let data)? = output.datumOption?.datum {
@@ -320,6 +324,14 @@ public enum RecipeImporter {
     static func datumHash(of output: TransactionOutput) -> DatumHash? {
         if case .datumHash(let hash)? = output.datumOption?.datum { return hash }
         return output.datumHash
+    }
+
+    /// A token quantity as the build form holds it, a signed 64-bit number.
+    static func quantity(_ value: BigInt) throws -> Int64 {
+        guard let quantity = Int64(exactly: value) else {
+            throw ImportError.unsupported(["a token quantity of \(value), more than the build form holds (\(Int64.max))"])
+        }
+        return quantity
     }
 
     static func draft(_ script: ScriptType) throws -> ScriptDraft {

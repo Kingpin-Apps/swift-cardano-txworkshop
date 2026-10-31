@@ -1,3 +1,4 @@
+import BigInt
 import Foundation
 import SwiftCardanoCore
 import SwiftCardanoTxValidator
@@ -51,7 +52,7 @@ public struct InputDetail: Sendable, Equatable, Identifiable {
 public struct OutputDetail: Sendable, Equatable, Identifiable {
     public let index: Int
     public let address: AddressDetail
-    public let lovelace: Int64
+    public let lovelace: UInt64
     public let assets: [AssetDetail]
     public internal(set) var datum: DatumReference?
     public let referenceScript: ScriptDetail?
@@ -82,7 +83,11 @@ public struct AssetDetail: Sendable, Equatable, Identifiable {
     /// The asset name as text, when it is printable UTF-8.
     public let assetName: String?
     public let fingerprint: String?
-    public let quantity: Int64
+    /// Exact: an output holds up to a ledger `Word64` of a token, and `mint`
+    /// a signed `Int64`.
+    public let quantity: BigInt
+    /// ``quantity`` as a `Decimal`, which holds every ledger quantity exactly.
+    public var quantityValue: Decimal { Decimal(string: quantity.description) ?? 0 }
     /// A name from CIP-25 metadata or the token registry.
     public let displayName: String?
     public let nameSource: NameSource?

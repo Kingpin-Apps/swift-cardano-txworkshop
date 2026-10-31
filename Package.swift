@@ -26,24 +26,24 @@ let package = Package(
         .library(name: "TxWorkshopDirect", targets: ["TxWorkshopDirect"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.8.5"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.10.0"),
         // NodeSocket adds the local-node chain context, on macOS only. Not CLIBackends: that brings
         // swift-cardano-utils, whose swift-configuration needs a swift-collections the Keystone pin
         // below rules out. The cardano-cli provider runs cardano-cli itself instead.
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-chain.git", from: "0.13.0", traits: [.defaults, "NodeSocket"]),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-chain.git", from: "0.14.0", traits: [.defaults, "NodeSocket"]),
         .package(url: "https://github.com/apple/swift-system.git", from: "1.8.1"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txvalidator.git", from: "0.5.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txvalidator.git", from: "0.6.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-explorers.git", from: "0.1.1"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cddl.git", from: "0.2.3"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-uplc.git", from: "0.8.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cddl.git", from: "0.3.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-uplc.git", from: "0.8.1"),
         .package(url: "https://github.com/attaswift/BigInt.git", from: "6.0.0"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txbuilder.git", from: "1.3.1"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-cips.git", from: "0.4.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txbuilder.git", from: "2.0.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-cips.git", from: "0.4.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-token-registry.git", from: "0.2.1"),
         // swift-cardano-hw-wallet's Keystone SDK brings a target named `SortedCollections`, as
         // swift-collections does from 1.2: two same-named targets are an SPM error, so hold 1.1.x.
         .package(url: "https://github.com/apple/swift-collections.git", "1.1.0" ..< "1.2.0"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-hw-wallet.git", from: "0.2.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-hw-wallet.git", from: "0.2.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-nacl.git", .upToNextMinor(from: "1.0.2")),
     ],
     targets: [

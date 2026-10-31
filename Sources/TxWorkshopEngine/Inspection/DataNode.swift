@@ -27,9 +27,36 @@ public struct DataNode: Sendable, Equatable, Identifiable {
     public internal(set) var typeName: String? = nil
     /// For a root read through a blueprint, the validator it is for.
     public internal(set) var validator: String? = nil
+    /// Whether the node has children the tree leaves out because it is nested
+    /// ``maxDepth`` deep: data can nest as deep as a transaction's size allows,
+    /// and a tree that deep could not be shown or even freed safely.
+    public internal(set) var childrenOmitted = false
+
+    /// How deep the tree goes, as the CBOR outline does. Deeper data is rare on chain.
+    public static let maxDepth = 256
+
+    /// How deep the node at `path` is: its path's steps after the root.
+    static func depth(of path: String) -> Int {
+        path.reduce(0) { $1 == "." ? $0 + 1 : $0 }
+    }
+
+    /// A container left without its children, at ``maxDepth``.
+    static func omitted(_ kind: Kind, label: String, path: String) -> DataNode {
+        var node = DataNode(id: path, label: label, kind: kind, value: nil, text: nil, children: nil)
+        node.childrenOmitted = true
+        return node
+    }
 
     /// A one-line summary: the leaf value, or the node's kind and size.
     public var summary: String {
+        if childrenOmitted {
+            let what = switch kind {
+            case .constructor(let tag): typeName ?? "Constr \(tag)"
+            case .map: typeName ?? "map"
+            default: typeName ?? "list"
+            }
+            return "\(what) · nested deeper than \(Self.maxDepth) levels"
+        }
         let count = children?.count ?? 0
         let fields = count == 1 ? "1 field" : "\(count) fields"
         switch kind {
@@ -49,6 +76,14 @@ public struct DataNode: Sendable, Equatable, Identifiable {
 extension DataNode {
     /// The tree of Plutus data.
     public static func plutus(_ data: PlutusData, label: String = "", path: String = "$") -> DataNode {
+        if depth(of: path) >= maxDepth {
+            switch data {
+            case .constructor(let constr): return omitted(.constructor(UInt64(constr.tag ?? 0)), label: label, path: path)
+            case .map, .indefiniteMap: return omitted(.map, label: label, path: path)
+            case .array, .indefiniteArray: return omitted(.list, label: label, path: path)
+            case .bigInt, .bytes: break
+            }
+        }
         switch data {
         case .constructor(let constr):
             let tag = UInt64(constr.tag ?? 0)
@@ -64,7 +99,7 @@ extension DataNode {
                 }
             )
         case .array(let items):
-            return list(items, label: label, path: path)
+            return list(items.array, label: label, path: path)
         case .indefiniteArray(let items):
             return list(items.getAll(), label: label, path: path)
         case .bigInt(let integer):
@@ -99,6 +134,13 @@ extension DataNode {
 
     /// The tree of a transaction metadatum.
     public static func metadatum(_ value: TransactionMetadatum, label: String = "", path: String = "$") -> DataNode {
+        if depth(of: path) >= maxDepth {
+            switch value {
+            case .map: return omitted(.map, label: label, path: path)
+            case .list: return omitted(.list, label: label, path: path)
+            case .int, .bigInt, .bytes, .text: break
+            }
+        }
         switch value {
         case .map(let pairs):
             return DataNode(
@@ -114,6 +156,8 @@ extension DataNode {
             )
         case .int(let integer):
             return DataNode(id: path, label: label, kind: .integer, value: String(integer), text: nil, children: nil)
+        case .bigInt(let integer):
+            return DataNode(id: path, label: label, kind: .integer, value: integer.description, text: nil, children: nil)
         case .bytes(let data):
             return bytesNode(data, label: label, path: path)
         case .text(let text):
@@ -125,6 +169,7 @@ extension DataNode {
         switch key {
         case .text(let text): text
         case .int(let integer): String(integer)
+        case .bigInt(let integer): integer.description
         case .bytes(let data): "#\(hex(data))"
         default: metadatum(key).summary
         }

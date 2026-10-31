@@ -1,3 +1,4 @@
+import BigInt
 import Foundation
 import SwiftCardanoChain
 import SwiftCardanoCore
@@ -134,7 +135,7 @@ public enum CIP21Rebuild {
         // A pool registration pays the pool deposit only the first time: the
         // old transaction paid it if what it spent leaves room for it.
         if body.certificates?.asList.contains(where: { if case .poolRegistration = $0 { true } else { false } }) == true {
-            builder.initialStakePoolRegistration = lovelaceLeftOver(body, spending: spent) >= parameters.stakePoolDeposit
+            builder.initialStakePoolRegistration = lovelaceLeftOver(body, spending: spent) >= BigInt(parameters.stakePoolDeposit)
         }
 
         let built: TransactionBody
@@ -161,12 +162,12 @@ public enum CIP21Rebuild {
 
     /// Lovelace the inputs and withdrawals bring that the outputs, fee and
     /// donation do not take: what deposits took.
-    static func lovelaceLeftOver(_ body: TransactionBody, spending spent: [UTxO]) -> Int64 {
-        let inputs = spent.reduce(Int64(0)) { $0 + $1.output.amount.coin }
-        let withdrawn = body.withdrawals?.data.values.reduce(Int64(0)) { $0 + Int64($1) } ?? 0
-        let outputs = body.outputs.reduce(Int64(0)) { $0 + $1.amount.coin }
-        let donation = body.treasuryDonation.map { Int64($0.value) } ?? 0
-        return inputs + withdrawn - outputs - Int64(body.fee) - donation
+    static func lovelaceLeftOver(_ body: TransactionBody, spending spent: [UTxO]) -> BigInt {
+        let inputs = spent.reduce(BigInt(0)) { $0 + $1.output.amount.coin }
+        let withdrawn = body.withdrawals?.data.values.reduce(BigInt(0)) { $0 + BigInt($1) } ?? 0
+        let outputs = body.outputs.reduce(BigInt(0)) { $0 + $1.amount.coin }
+        let donation = body.treasuryDonation.map { BigInt($0.value) } ?? 0
+        return inputs + withdrawn - outputs - BigInt(body.fee) - donation
     }
 }
 

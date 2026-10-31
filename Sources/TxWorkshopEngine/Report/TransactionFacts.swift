@@ -53,7 +53,7 @@ extension TransactionInspection {
             add(.outputs, "\(key).address", "\(name) address", output.address.text)
             add(.outputs, "\(key).ada", "\(name) ada", TWFormat.ada(output.lovelace))
             for asset in output.assets {
-                add(.outputs, "\(key).asset.\(asset.id)", "\(name) \(Self.name(asset))", String(asset.quantity))
+                add(.outputs, "\(key).asset.\(asset.id)", "\(name) \(Self.name(asset))", asset.quantity.description)
             }
             switch output.datum {
             case .hash(let hash)?: add(.outputs, "\(key).datum", "\(name) datum hash", hash)
@@ -66,7 +66,7 @@ extension TransactionInspection {
         }
 
         for asset in mint {
-            add(.mint, asset.id, Self.name(asset), String(asset.quantity))
+            add(.mint, asset.id, Self.name(asset), asset.quantity.description)
         }
         for withdrawal in view.withdrawals {
             add(.withdrawals, withdrawal.rewardAddress, withdrawal.rewardAddress, TWFormat.ada(withdrawal.lovelace))

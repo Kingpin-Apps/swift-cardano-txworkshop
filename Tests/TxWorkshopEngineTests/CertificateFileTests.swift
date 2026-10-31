@@ -71,7 +71,7 @@ struct CertificateFileTests {
         let stake = try GovernanceBuildingTests.stakeAddress()
         let address = try Address(from: .string(stake))
         guard case .verificationKeyHash(let hash)? = address.stakingPart else { Issue.record("No stake key"); return }
-        let certificate = Certificate.register(Register(
+        let certificate = Certificate.register(try Register(
             stakeCredential: StakeCredential(credential: .verificationKeyHash(hash)), coin: 2_000_000
         ))
         #expect(try CertificateFile.draft(from: envelope(certificate), network: .preprod) == .registerStake(stakeAddress: stake))
@@ -95,12 +95,12 @@ struct CertificateFileTests {
     func refused() throws {
         let stake = try Address(from: .string(try GovernanceBuildingTests.stakeAddress()))
         guard case .verificationKeyHash(let hash)? = stake.stakingPart else { return }
-        let certificate = Certificate.register(Register(stakeCredential: StakeCredential(credential: .verificationKeyHash(hash)), coin: 2_000_000))
+        let certificate = Certificate.register(try Register(stakeCredential: StakeCredential(credential: .verificationKeyHash(hash)), coin: 2_000_000))
         #expect(throws: CertificateFileError.needsNetwork) { try CertificateFile.draft(from: envelope(certificate), network: nil) }
         #expect(throws: CertificateFileError.notACertificate) { try CertificateFile.draft(from: Data("{\"type\":\"Tx\"}".utf8), network: .preprod) }
         #expect(throws: CertificateFileError.notACertificate) { try CertificateFile.draft(from: Data("hello".utf8), network: .preprod) }
         // A pool retirement needs no network.
-        let retirement = Certificate.poolRetirement(PoolRetirement(
+        let retirement = Certificate.poolRetirement(try PoolRetirement(
             poolKeyHash: PoolKeyHash(payload: Data(repeating: 0xAB, count: 28)), epoch: 300
         ))
         #expect(try CertificateFile.draft(from: envelope(retirement), network: nil) == .retirePool(pool: pool, epoch: 300))

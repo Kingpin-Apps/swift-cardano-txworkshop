@@ -1,3 +1,5 @@
+import OrderedCollections
+import BigInt
 import Foundation
 import SwiftCardanoCore
 import SwiftCardanoTxValidator
@@ -82,7 +84,7 @@ struct InspectionBuilder {
         OutputDetail(
             index: index,
             address: address(output.address),
-            lovelace: output.amount.coin,
+            lovelace: UInt64(clamping: output.amount.coin),
             assets: assets(output.amount.multiAsset),
             datum: datum(output),
             referenceScript: output.script.map(script)
@@ -235,11 +237,13 @@ struct InspectionBuilder {
 
     static func metadataEntries(of transaction: Transaction) -> [UInt64: TransactionMetadatum] {
         guard let auxiliary = transaction.auxiliaryData else { return [:] }
+        let entries: OrderedDictionary<UInt64, TransactionMetadatum>
         switch auxiliary.data {
-        case .metadata(let metadata): return metadata.data
-        case .shelleyMaryMetadata(let metadata): return metadata.metadata.data
-        case .alonzoMetadata(let metadata): return metadata.metadata?.data ?? [:]
+        case .metadata(let metadata): entries = metadata.data
+        case .shelleyMaryMetadata(let metadata): entries = metadata.metadata.data
+        case .alonzoMetadata(let metadata): entries = metadata.metadata?.data ?? [:]
         }
+        return Dictionary(uniqueKeysWithValues: entries.map { ($0.key, $0.value) })
     }
 
     private func metadata() -> [MetadataEntry] {

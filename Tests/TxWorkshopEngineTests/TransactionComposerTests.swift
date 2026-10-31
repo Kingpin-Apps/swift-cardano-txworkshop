@@ -67,7 +67,7 @@ struct TransactionComposerTests {
         let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
         #expect(built.inputs == [InputResolver.id(utxo.input)])
         #expect(built.fee.total > 150_000)
-        #expect(built.totalIn == built.totalOut + Int64(built.fee.total))
+        #expect(built.totalIn == built.totalOut + built.fee.total)
         #expect(built.change != nil)
 
         let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
@@ -246,7 +246,7 @@ struct GovernanceBuildingTests {
         let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
         let parameters = try #require(TransactionValidation.protocolParameters(snapshot))
         #expect(built.deposits == parameters.stakeAddressDeposit)
-        #expect(built.totalIn == built.totalOut + Int64(built.fee.total) + built.deposits)
+        #expect(built.totalIn == built.totalOut + built.fee.total + built.deposits)
         let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
         #expect(inspection.view.certificates.count == 3)
         let outcome = try await TransactionValidation().validate(built.transaction, snapshot: snapshot, network: .preprod, mode: .asWritten)
@@ -260,7 +260,7 @@ struct GovernanceBuildingTests {
             utxos: [try utxo.toCBORData().hex], outputs: [OutputDraft(address: address)], changeAddress: address, donation: 1_000_000
         )
         let built = try await TransactionComposer().compose(recipe, snapshot: snapshot, network: .preprod)
-        #expect(built.totalIn == built.totalOut + Int64(built.fee.total) + 1_000_000)
+        #expect(built.totalIn == built.totalOut + built.fee.total + 1_000_000)
         let inspection = try await TransactionInspector().inspection(of: built.transaction, network: .preprod)
         #expect(inspection.view.treasuryDonation == 1_000_000)
     }

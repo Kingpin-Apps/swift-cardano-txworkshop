@@ -139,7 +139,8 @@ extension Blueprint {
     /// title. Parts that do not fit fall back to the plain tree.
     public func dataNode(_ data: PlutusData, as schema: BlueprintSchema, label: String = "", path: String = "$") -> DataNode {
         let plain = DataNode.plutus(data, label: label, path: path)
-        guard let resolved = try? resolve(schema) else { return plain }
+        // At the depth the plain tree stops, the labelled one stops too.
+        guard DataNode.depth(of: path) < DataNode.maxDepth, let resolved = try? resolve(schema) else { return plain }
         let type = typeName(schema)
 
         func typed(_ node: DataNode, _ name: String?) -> DataNode {
@@ -206,7 +207,7 @@ extension Blueprint {
 
     private static func elements(_ data: PlutusData) -> [PlutusData]? {
         switch data {
-        case .array(let items): items
+        case .array(let items): items.array
         case .indefiniteArray(let items): items.getAll()
         default: nil
         }

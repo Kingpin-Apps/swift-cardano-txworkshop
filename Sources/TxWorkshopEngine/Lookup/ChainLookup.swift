@@ -178,7 +178,9 @@ public struct ChainLookup: Sendable {
         case .expired?: .expired
         default: .open
         }
-        return GovernanceAction(kind: Self.kind(of: info.govAction), status: status, expiresAfter: info.expiresAfter)
+        // The node keeps a proposal's body only while it is live.
+        let kind = info.govAction.map { Self.kind(of: $0) } ?? "Unknown: the node no longer holds it"
+        return GovernanceAction(kind: kind, status: status, expiresAfter: info.expiresAfter)
     }
 
     /// The governance actions open for votes, as the provider sees them. The

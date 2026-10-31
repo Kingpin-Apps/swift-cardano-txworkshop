@@ -84,8 +84,8 @@ struct LiveNodeTests {
             let composition = try await TransactionComposer().compose(recipe, snapshot: nil, network: .mainnet, provider: provider)
             print("\(provider.kind): \(composition.id) fee \(composition.fee.total) inputs \(composition.inputs.count) in \(composition.totalIn) out \(composition.totalOut)")
             let fee = Int64(composition.fee.total)
-            let spent: Int64 = composition.totalOut + fee + composition.deposits - composition.refunds
-            #expect(composition.totalIn == spent)
+            let spent = Int64(composition.totalOut) + fee + Int64(composition.deposits) - Int64(composition.refunds)
+            #expect(Int64(composition.totalIn) == spent)
             fees.append(fee)
         }
         #expect(fees.allSatisfy { $0 > 150_000 && $0 < 500_000 })
