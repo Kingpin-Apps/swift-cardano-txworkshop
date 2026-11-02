@@ -1,1 +1,8 @@
-First release.
+• Build fills in what it can from the chain: the next epoch for a pool retirement, a stake address's rewards for a withdrawal, whether a stake address is registered, and the open governance actions you can vote on.
+• Deregistering a stake address that still has rewards now warns you and offers to add the withdrawal.
+• Start a new transaction from scratch, right from the Overview.
+• Chain Data asks you to choose a network when the document has none.
+• On Mac, document windows open large enough to show the whole Overview.
+• Amounts and protocol parameters are held exactly, and transactions, metadata and Plutus data of any depth now open safely.
+• Indefinite Plutus maps show as maps.
+• Built on the latest Cardano libraries, with many fixes to how keys, scripts and governance data are read.
