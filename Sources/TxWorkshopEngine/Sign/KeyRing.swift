@@ -45,7 +45,7 @@ public struct KeyRing: Sendable {
                 for (role, index) in derivations {
                     let path = "m/1852'/1815'/\(account)'/\(role)/\(index)"
                     let child = try wallet.derive(fromPath: path)
-                    let key = SigningKeyType.extendedSigningKey(PaymentExtendedSigningKey(
+                    let key = SigningKeyType.extendedSigningKey(try PaymentExtendedSigningKey(
                         payload: child.xPrivateKey + child.publicKey + child.chainCode,
                         type: PaymentExtendedSigningKey.TYPE, description: PaymentExtendedSigningKey.DESCRIPTION
                     ))

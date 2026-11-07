@@ -279,8 +279,9 @@ struct InspectionBuilder {
         default: nil
         }
         func date(_ slot: SlotNumber?) -> Date? {
-            guard let slot, let timeline else { return nil }
-            return Date(timeIntervalSince1970: Double(timeline.milliseconds(forSlot: UInt64(slot))) / 1000)
+            guard let slot, let timeline,
+                  let milliseconds = timeline.milliseconds(forSlot: UInt64(slot)) else { return nil }
+            return Date(timeIntervalSince1970: Double(milliseconds) / 1000)
         }
         return ValidityWindow(
             startSlot: start.map { UInt64($0) }, endSlot: end.map { UInt64($0) },
