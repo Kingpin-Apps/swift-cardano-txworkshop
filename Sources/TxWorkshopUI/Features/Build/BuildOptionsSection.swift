@@ -1,11 +1,13 @@
 import SwiftUI
 import TxWorkshopCore
 
-/// Change, coin selection, validity, message, signers and fee buffer.
+/// Change, coin selection, validity interval, message, signers and fee buffer.
 struct BuildOptionsSection: View {
     @Binding var recipe: BuildRecipe
+    let document: TxWorkshopDocument
 
     var body: some View {
+        ValidityIntervalSection(recipe: $recipe, document: document)
         Section {
             ValueField(kind: .address, text: $recipe.changeAddress, prompt: Text("Change address (first source address if empty)", bundle: #bundle))
             Picker(selection: $recipe.coinSelection) {
@@ -14,10 +16,6 @@ struct BuildOptionsSection: View {
             } label: {
                 Text("Coin selection", bundle: #bundle)
             }
-            TWLabeledField(Text("Valid from slot", bundle: #bundle), value: $recipe.validFrom, format: .number)
-            .font(TWFont.figure)
-            TWLabeledField(Text("Valid until slot", bundle: #bundle), value: $recipe.validUntil, format: .number)
-            .font(TWFont.figure)
             TWLabeledField(Text("Extra fee (lovelace)", bundle: #bundle), value: $recipe.feeBuffer, format: .number)
             .font(TWFont.figure)
         } header: {

@@ -68,7 +68,7 @@ struct BuildView: View {
                     NetworkSuggestion(document: document, hint: hint, source: Text("The addresses here", bundle: #bundle))
                 }
             }
-            SourcesSection(recipe: $recipe, provider: provider, spent: lastSpent)
+            SourcesSection(recipe: $recipe, provider: provider, document: document, spent: lastSpent)
             ForEach($recipe.outputs) { $output in
                 OutputDraftSection(output: $output, blueprints: $recipe.blueprints, applied: BlueprintCatalog.appliedScripts(in: recipe)) {
                     recipe.outputs.removeAll { $0.id == output.id }
@@ -167,7 +167,7 @@ struct BuildView: View {
                 TWLabeledField(Text("Treasury donation (lovelace)", bundle: #bundle), value: $recipe.donation, format: .number)
                 .font(TWFont.figure)
             }
-            BuildOptionsSection(recipe: $recipe)
+            BuildOptionsSection(recipe: $recipe, document: document)
             DocumentBlueprintsSection(recipe: $recipe)
             Section {
                 if provider != nil {

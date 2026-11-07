@@ -215,6 +215,12 @@ public struct TransactionComposer: Sendable {
 
     // MARK: Drafts to ledger values
 
+    /// Whether every line is a whole address, so fetching from them now will
+    /// not catch one half typed.
+    public static func areAddresses(_ lines: [String]) -> Bool {
+        !lines.isEmpty && lines.allSatisfy { (try? address($0)) != nil }
+    }
+
     static func address(_ text: String) throws -> Address {
         let value = try ValueReader.value(.address, text) { _ in ComposeError.badAddress(text) }
         do {
@@ -401,6 +407,32 @@ extension TransactionComposer {
             throw ComposeError.builder("\(value) lovelace does not fit a ledger Word64")
         }
         return lovelace
+    }
+
+    /// One token a UTxO holds.
+    public struct HeldToken: Sendable, Hashable, Identifiable {
+        public let policyID: String
+        /// The asset name as hex.
+        public let nameHex: String
+        /// The asset name as text, when it is printable UTF-8.
+        public let name: String?
+        public let quantity: String
+
+        public var id: String { policyID + "." + nameHex }
+    }
+
+    /// The tokens in a UTxO, by policy then name, for showing what it holds.
+    public static func tokens(utxoHex: String) -> [HeldToken] {
+        guard let utxo = try? utxo(utxoHex) else { return [] }
+        return utxo.output.amount.multiAsset.data
+            .flatMap { policy, asset in
+                asset.data.map { name, quantity in
+                    let text = String(data: name.payload, encoding: .utf8)
+                        .flatMap { $0.unicodeScalars.allSatisfy { !CharacterSet.controlCharacters.contains($0) } && !$0.isEmpty ? $0 : nil }
+                    return HeldToken(policyID: policy.payload.hex, nameHex: name.payload.hex, name: text, quantity: String(quantity))
+                }
+            }
+            .sorted { ($0.policyID, $0.nameHex) < ($1.policyID, $1.nameHex) }
     }
 
     static func assetCount(_ utxo: UTxO) -> Int {
