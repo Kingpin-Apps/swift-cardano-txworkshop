@@ -1,8 +1,3 @@
-• Build fills in what it can from the chain: the next epoch for a pool retirement, a stake address's rewards for a withdrawal, whether a stake address is registered, and the open governance actions you can vote on.
-• Deregistering a stake address that still has rewards now warns you and offers to add the withdrawal.
-• Start a new transaction from scratch, right from the Overview.
-• Chain Data asks you to choose a network when the document has none.
-• On Mac, document windows open large enough to show the whole Overview.
-• Amounts and protocol parameters are held exactly, and transactions, metadata and Plutus data of any depth now open safely.
-• Indefinite Plutus maps show as maps.
-• Built on the latest Cardano libraries, with many fixes to how keys, scripts and governance data are read.
+• Choose when a transaction is valid by time, not slot: "From now", "Until tomorrow", "A week" and more. Build shows the slots it works out and warns when an interval has already closed.
+• Adding a source address fetches its UTxOs on its own, along with the chain data when it is missing or from an earlier epoch.
+• Built on the latest Cardano libraries, with their security fixes for signing data, metadata and COSE messages.
