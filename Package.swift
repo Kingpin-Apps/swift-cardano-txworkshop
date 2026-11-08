@@ -26,7 +26,7 @@ let package = Package(
         .library(name: "TxWorkshopDirect", targets: ["TxWorkshopDirect"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.11.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-core.git", from: "0.11.2"),
         // NodeSocket adds the local-node chain context, on macOS only. Not CLIBackends: that brings
         // swift-cardano-utils, whose swift-configuration needs a swift-collections the Keystone pin
         // below rules out. The cardano-cli provider runs cardano-cli itself instead.
@@ -37,13 +37,13 @@ let package = Package(
         .package(url: "https://github.com/Kingpin-Apps/swift-cddl.git", from: "0.3.0"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-uplc.git", from: "0.8.3"),
         .package(url: "https://github.com/attaswift/BigInt.git", from: "6.0.0"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txbuilder.git", from: "2.0.5"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-cips.git", from: "0.4.3"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-txbuilder.git", from: "2.0.6"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-cips.git", from: "0.5.2"),
         .package(url: "https://github.com/Kingpin-Apps/swift-cardano-token-registry.git", from: "0.2.4"),
         // swift-cardano-hw-wallet's Keystone SDK brings a target named `SortedCollections`, as
         // swift-collections does from 1.2: two same-named targets are an SPM error, so hold 1.1.x.
         .package(url: "https://github.com/apple/swift-collections.git", "1.1.0" ..< "1.2.0"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-hw-wallet.git", from: "0.3.0"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-hw-wallet.git", from: "0.3.1"),
         .package(url: "https://github.com/Kingpin-Apps/swift-nacl.git", .upToNextMinor(from: "2.0.0")),
     ],
     targets: [
