@@ -1,5 +1,5 @@
 {
-  "originHash" : "18416555ed3f4290aa947e80d6f9d4fee77d51071650bca2e402d9482d4fa905",
+  "originHash" : "2a59e4524250a3ea9e5ab317731bfe0dd30d1cd68f19639fe33a24c983e3e87a",
   "pins" : [
     {
       "identity" : "base32",
@@ -240,8 +240,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Kingpin-Apps/swift-cardano-hw-wallet.git",
       "state" : {
-        "revision" : "1f0237e9293712a1d30ebee2c9a8aa6c3146ee9d",
-        "version" : "0.2.5"
+        "revision" : "3f19e66edf1ec59341e08ef3e816e50fe94beb4b",
+        "version" : "0.2.6"
       }
     },
     {
@@ -267,8 +267,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Kingpin-Apps/swift-cardano-txbuilder.git",
       "state" : {
-        "revision" : "f03e6a42916475539887da827b4d6d1bea233bd0",
-        "version" : "2.0.4"
+        "revision" : "b76da992d05fa06aac1713b419ce7968e9792be1",
+        "version" : "2.0.5"
       }
     },
     {
