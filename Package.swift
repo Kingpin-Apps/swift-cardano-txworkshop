@@ -43,7 +43,7 @@ let package = Package(
         // swift-cardano-hw-wallet's Keystone SDK brings a target named `SortedCollections`, as
         // swift-collections does from 1.2: two same-named targets are an SPM error, so hold 1.1.x.
         .package(url: "https://github.com/apple/swift-collections.git", "1.1.0" ..< "1.2.0"),
-        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-hw-wallet.git", from: "0.2.6"),
+        .package(url: "https://github.com/Kingpin-Apps/swift-cardano-hw-wallet.git", from: "0.3.0"),
         .package(url: "https://github.com/Kingpin-Apps/swift-nacl.git", .upToNextMinor(from: "2.0.0")),
     ],
     targets: [

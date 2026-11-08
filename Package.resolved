@@ -1,5 +1,5 @@
 {
-  "originHash" : "2a59e4524250a3ea9e5ab317731bfe0dd30d1cd68f19639fe33a24c983e3e87a",
+  "originHash" : "0343fbf830d2603ce7d5f3ca597a1af20ea52322ef6818a79d538c43c403bccf",
   "pins" : [
     {
       "identity" : "base32",
@@ -89,15 +89,6 @@
       "state" : {
         "revision" : "83f5cdb2f8b4c7b57ed9419c6f4f6380b683500e",
         "version" : "2.5.0"
-      }
-    },
-    {
-      "identity" : "hw-transport-ios-ble",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/LedgerHQ/hw-transport-ios-ble.git",
-      "state" : {
-        "revision" : "4df8fff21c1738a1dff4d2ee19175dd3263d6c5f",
-        "version" : "1.0.1"
       }
     },
     {
@@ -240,8 +231,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Kingpin-Apps/swift-cardano-hw-wallet.git",
       "state" : {
-        "revision" : "3f19e66edf1ec59341e08ef3e816e50fe94beb4b",
-        "version" : "0.2.6"
+        "revision" : "762eb1ce1e376008cf6b590a24e5832ff36f332f",
+        "version" : "0.3.0"
       }
     },
     {
