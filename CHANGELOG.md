@@ -1,3 +1,13 @@
+## v0.5.0 (2026-11-08)
+
+### Feat
+
+- pick the validity interval by time and fetch chain data with UTxOs
+
+### Fix
+
+- adapt key ring and validity dates to swift-cardano-core 0.11
+
 ## v0.4.0 (2026-10-31)
 
 ### Feat
