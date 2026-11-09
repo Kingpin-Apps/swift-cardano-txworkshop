@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Banner</title>
+<style>
+  :root {
+    --bg: #f6f4ef;
+    --ink: #2d2924;
+    --muted: #6b645b;
+    --amber: #a45c14;
+  }
+  html, body { margin: 0; padding: 0; }
+  /* Tilted devices run past the bottom edge; never let the page canvas show below them. */
+  html { overflow: hidden; background: var(--bg); }
+  body {
+    width: var(--w); height: var(--h); overflow: hidden; position: relative;
+    background: radial-gradient(ellipse at 50% 35%, #FFFFFF 0%, var(--bg) 55%, #ECE7DD 100%);
+    font-family: -apple-system, "SF Pro Display", system-ui, sans-serif;
+  }
+  /* A faint transaction graph behind everything: UTxOs flowing into transactions and out again. */
+  #graph { position: absolute; inset: 0; z-index: 1; }
+
+  .headline {
+    position: absolute; left: 0; right: 0; top: var(--headline-top); text-align: center; z-index: 10;
+    font-weight: 700; color: var(--ink);
+    font-size: var(--headline-size); line-height: 1; letter-spacing: -0.022em;
+  }
+  .headline em { font-style: normal; color: var(--amber); }
+  .sub {
+    margin-top: calc(var(--headline-size) * 0.28);
+    font-weight: 500; color: var(--muted); letter-spacing: -0.01em;
+    font-size: calc(var(--headline-size) * 0.36);
+  }
+
+  .device {
+    position: absolute; z-index: 5; top: var(--top); width: var(--dw);
+    background: #1b1d21; padding: calc(var(--dw) * var(--bezel));
+    border-radius: calc(var(--dw) * var(--radius));
+    box-shadow: 0 calc(var(--h) * .03) calc(var(--h) * .07) rgba(45, 41, 36, .24);
+  }
+  .device img { width: 100%; display: block; border-radius: calc(var(--dw) * (var(--radius) - var(--bezel))); }
+  .phone { --bezel: 0.035; --radius: 0.16; }
+  .tablet { --bezel: 0.022; --radius: 0.06; }
+
+  [data-only]:not([data-only~="all"]) { display: none; }
+</style>
+</head>
+<body>
+  <svg id="graph"></svg>
+
+  <div class="headline"><span id="headline"></span><div class="sub" id="sub"></div></div>
+
+  <!-- Header: an iPad explaining a transaction, iPhones validating and tracing it either side. -->
+  <div class="device phone" data-only="header" id="h-left"><img src="../../fastlane/screenshots/en-US/iPhone-03_Validate.png" alt=""></div>
+  <div class="device tablet" data-only="header" id="h-mid"><img src="../../fastlane/screenshots/en-US/iPad-01_Overview.png" alt=""></div>
+  <div class="device phone" data-only="header" id="h-right"><img src="../../fastlane/screenshots/en-US/iPhone-04_Trace.png" alt=""></div>
+
+  <!-- Search: what it is, plainly — a transaction explained, and checked — on two phones. -->
+  <div class="device phone" data-only="search" id="s-left"><img src="../../fastlane/screenshots/en-US/iPhone-01_Overview.png" alt=""></div>
+  <div class="device phone" data-only="search" id="s-right"><img src="../../fastlane/screenshots/en-US/iPhone-03_Validate.png" alt=""></div>
+
+  <script>
+    // ?layout=header (21:9, 3840x1646) or ?layout=search (3:2, 3840x2560).
+    const layout = new URLSearchParams(location.search).get("layout") || "header";
+    const L = {
+      header: { w: 3840, h: 1646, headline: 'Every transaction, <em>explained.</em>', sub: '',
+                headlineTop: 150, headlineSize: 190,
+                devices: {
+                  "h-mid":   { top: 470, w: 1060, x: 0 },
+                  "h-left":  { top: 640, w: 560, x: -980, rot: -5 },
+                  "h-right": { top: 640, w: 560, x: 980, rot: 5 },
+                } },
+      search: { w: 3840, h: 2560, headline: 'Cardano transactions, <em>explained.</em>',
+                sub: 'Inspect, build, sign and submit, on Mac, iPhone and iPad.',
+                headlineTop: 210, headlineSize: 220,
+                devices: {
+                  "s-left":  { top: 900, w: 900, x: -520, rot: -4 },
+                  "s-right": { top: 900, w: 900, x: 520, rot: 4 },
+                } },
+    }[layout];
+    document.querySelectorAll(`[data-only="${layout}"]`).forEach(el => el.dataset.only = "all");
+    document.getElementById("headline").innerHTML = L.headline;
+    document.getElementById("sub").textContent = L.sub;
+    if (!L.sub) document.getElementById("sub").remove();
+    const s = document.documentElement.style;
+    for (const [k, v] of Object.entries({ w: L.w, h: L.h, "headline-top": L.headlineTop, "headline-size": L.headlineSize }))
+      s.setProperty("--" + k, v + "px");
+    for (const [id, d] of Object.entries(L.devices)) {
+      const el = document.getElementById(id);
+      el.style.setProperty("--top", d.top + "px");
+      el.style.setProperty("--dw", d.w + "px");
+      el.style.left = `calc(50% + ${d.x}px - ${d.w / 2}px)`;
+      el.style.transform = `rotate(${d.rot || 0}deg)`;
+      el.style.zIndex = d.rot ? 4 : 5;
+    }
+
+    // Deterministic faint graph: charcoal UTxO dots, amber rounded squares for transactions, thin links.
+    let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const svg = document.getElementById("graph");
+    svg.setAttribute("viewBox", `0 0 ${L.w} ${L.h}`);
+    const ns = "http://www.w3.org/2000/svg", nodes = [];
+    for (let i = 0; i < 46; i++) {
+      // Keep the middle (headline and devices) clearer: push nodes towards the sides.
+      let x = rnd() * L.w; const y = rnd() * L.h;
+      if (Math.abs(x - L.w / 2) < L.w * 0.18) x += (x < L.w / 2 ? -1 : 1) * L.w * 0.18;
+      // and keep the headline band free of them entirely.
+      if (y < L.h * 0.38 && Math.abs(x - L.w / 2) < L.w * 0.40) continue;
+      nodes.push({ x, y, hub: rnd() < 0.2 });
+    }
+    const add = (tag, attrs) => { const e = document.createElementNS(ns, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); };
+    nodes.forEach((a, i) => {
+      const near = nodes.map((b, j) => [Math.hypot(a.x - b.x, a.y - b.y), j]).filter(p => p[1] !== i).sort((p, q) => p[0] - q[0]);
+      near.slice(0, a.hub ? 4 : 2).forEach(([d, j]) => {
+        if (d < L.w * 0.16) add("line", { x1: a.x, y1: a.y, x2: nodes[j].x, y2: nodes[j].y, stroke: "#2d2924", "stroke-opacity": .07, "stroke-width": 4 });
+      });
+    });
+    const u = L.h / 100;
+    nodes.forEach(n => {
+      if (n.hub) {
+        const r = u * 1.7;
+        add("rect", { x: n.x - r, y: n.y - r, width: r * 2, height: r * 2, rx: r * 0.35, fill: "#a45c14", "fill-opacity": .26 });
+      } else {
+        add("circle", { cx: n.x, cy: n.y, r: u * (0.6 + rnd() * 0.6), fill: "#2d2924", "fill-opacity": .12 });
+      }
+    });
+  </script>
+</body>
+</html>
