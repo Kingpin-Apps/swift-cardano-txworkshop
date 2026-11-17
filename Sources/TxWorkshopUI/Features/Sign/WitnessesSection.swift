@@ -9,6 +9,9 @@ struct WitnessesSection: View {
     let onImport: () -> Void
     @Environment(\.undoManager) private var undoManager
     @State private var problem: String?
+    @State private var file = ReportFile()
+    @State private var fileName = ""
+    @State private var isExporting = false
 
     var body: some View {
         Section {
@@ -24,6 +27,7 @@ struct WitnessesSection: View {
                     }
                     .accessibilityElement(children: .combine)
                     Spacer()
+                    WitnessExportMenu(witness: witness, save: save, onProblem: { problem = $0 })
                     Button(role: .destructive) {
                         remove(witness)
                     } label: {
@@ -48,16 +52,28 @@ struct WitnessesSection: View {
                 }
             }
             if let bytes = document.content.transaction {
-                ShareTransactionLink(transaction: bytes, envelope: document.content.envelope)
+                CoSigningExportMenu(document: document, transaction: bytes, save: save, onProblem: { problem = $0 })
             }
         } header: {
             Text("Witnesses", bundle: #bundle)
         } footer: {
-            Text("Share the transaction with co-signers, then add the witnesses they send back.", bundle: #bundle)
+            Text("Share the transaction with co-signers, then add the witnesses they send back. To have someone else assemble it, save the unsigned transaction and each witness file for cardano-cli transaction assemble.", bundle: #bundle)
+        }
+        .fileExporter(isPresented: $isExporting, document: file, contentType: file.contentType, defaultFilename: fileName) { result in
+            if case .failure(let error) = result { problem = String(describing: error) }
         }
         if let problem {
-            TWErrorText(problem)
+            Section { TWErrorText(problem) }
         }
+    }
+
+    /// Saves `data` as `type` through the save panel, suggesting `name`.
+    private func save(_ data: Data, as type: UTType, name: String) {
+        file.data = data
+        file.contentType = type
+        fileName = name
+        problem = nil
+        isExporting = true
     }
 
     /// Takes the witness out of the transaction, and off the list.

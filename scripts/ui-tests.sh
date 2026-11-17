@@ -19,7 +19,7 @@ CLASS=TransactionEditorUITests
 TESTS=("$@")
 if [ ${#TESTS[@]} -eq 0 ]; then
   TESTS=(testConfirmedSubmissionLinksToTheExplorer testEditInBuildBuildsTheTransactionAgain
-    testEditWithoutChainDataPointsToChainData testSigningKeyFile testStartOverClearsTheForm)
+    testEditWithoutChainDataPointsToChainData testSigningKeyFile testStartOverClearsTheForm testWitnessExport)
 fi
 
 udid=$(xcrun simctl list devices available \

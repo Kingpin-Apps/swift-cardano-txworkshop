@@ -12,6 +12,8 @@ extension UTType {
     public static let cardanoTransactionCBOR = UTType(exportedAs: "com.kingpinapps.cardano-txworkshop.transaction-cbor")
     /// A transaction's CBOR written as hex text (`.hex`).
     public static let cardanoTransactionHex = UTType(exportedAs: "com.kingpinapps.cardano-txworkshop.transaction-hex")
+    /// A cardano-cli text envelope holding one key witness (`.witness`).
+    public static let cardanoWitness = UTType(exportedAs: "com.kingpinapps.cardano-txworkshop.witness")
 }
 
 /// The file formats a document is read from and written to.

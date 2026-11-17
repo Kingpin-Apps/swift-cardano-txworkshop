@@ -14,11 +14,12 @@ struct ExportShareMenu: View {
     @State private var file = ReportFile()
     @State private var isExporting = false
     @State private var problem: String?
+    @State private var pendingShare: PendingShare?
 
     var body: some View {
         Menu {
             if let envelope {
-                ShareLink(item: envelope, preview: SharePreview(Text(verbatim: fileName))) {
+                ShareFileItem(file: envelope, pending: $pendingShare) {
                     Label {
                         Text("Share Transaction…", bundle: #bundle)
                     } icon: {
@@ -104,6 +105,7 @@ struct ExportShareMenu: View {
                 Image(systemName: "square.and.arrow.up")
             }
         }
+        .sharePicker($pendingShare, barItemTitle: String(localized: "Export & Share", bundle: #bundle))
         .help(Text("Share the transaction, copy its CBOR, or export it as a text envelope, CBOR or a report", bundle: #bundle))
         .accessibilityIdentifier("exportShare")
         .fileExporter(isPresented: $isExporting, document: file, contentType: file.contentType, defaultFilename: fileName) { result in
@@ -155,12 +157,16 @@ struct ExportShareMenu: View {
 }
 
 /// A transaction as a `.tx` file, to share.
-struct TextEnvelopeFile: Transferable {
+struct TextEnvelopeFile: ShareableFile {
     let data: Data
     let name: String
+    var fileName: String { name + ".tx" }
 
     static var transferRepresentation: some TransferRepresentation {
-        DataRepresentation(exportedContentType: .cardanoTextEnvelope) { $0.data }
-            .suggestedFileName { $0.name + ".tx" }
+        // A named file, not bare data: Mail, Messages and AirDrop otherwise
+        // send it untitled, without the `.tx` cardano-cli needs.
+        FileRepresentation(exportedContentType: .cardanoTextEnvelope) { file in
+            SentTransferredFile(try TransferredFileDraft.write(file.data, named: file.fileName))
+        }
     }
 }

@@ -90,6 +90,11 @@ documentTypes: &documentTypes
       UTTypeConformsTo: [public.plain-text]
       UTTypeTagSpecification:
         public.filename-extension: [hex, txhex]
+    - UTTypeIdentifier: com.kingpinapps.cardano-txworkshop.witness
+      UTTypeDescription: Cardano Transaction Witness
+      UTTypeConformsTo: [public.json, public.data]
+      UTTypeTagSpecification:
+        public.filename-extension: [witness]
 
 targets:
   TxWorkshop:

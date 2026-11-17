@@ -120,6 +120,52 @@ struct SigningTests {
         #expect(throws: WitnessError.unreadable) { _ = try WitnessAssembler.witnesses(from: "zz") }
     }
 
+    @Test("A witness exports as a cardano-cli witness file, CBOR or hex, and each reads back")
+    func exportWitness() async throws {
+        let bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let wallet = try Self.testWallet()
+        let key = wallet.ring.keys[wallet.keyHash]!
+        let witness = VerificationKeyWitness(
+            vkey: try key.toVerificationKeyType(),
+            signature: try key.sign(data: try TransactionValidation.decode(bytes).id!.payload)
+        )
+        let record = CollectedWitness(
+            label: "Alice / Treasury", keyHash: try WitnessAssembler.keyHash(witness),
+            witnessCBOR: try WitnessAssembler.cborHex(witness), addedAt: .now
+        )
+        let restored = try WitnessExport.witness(record)
+        #expect(restored == witness)
+
+        // cardano-cli 10+: a TxWitness ConwayEra envelope over the bare [vkey, signature].
+        let envelope = try WitnessExport.file(restored, format: .textEnvelope)
+        let json = try #require(try JSONSerialization.jsonObject(with: envelope) as? [String: String])
+        #expect(json["type"] == "TxWitness ConwayEra")
+        #expect(json["description"] == "Key Witness ShelleyEra")
+        #expect(json["cborHex"] == record.witnessCBOR)
+        #expect(try WitnessAssembler.witnesses(from: String(decoding: envelope, as: UTF8.self)) == [witness])
+
+        let cbor = try WitnessExport.file(restored, format: .cbor)
+        #expect(try WitnessAssembler.witnesses(from: TxDocumentCodec.hex(cbor)) == [witness])
+        let hex = try WitnessExport.file(restored, format: .hex)
+        #expect(try WitnessAssembler.witnesses(from: String(decoding: hex, as: UTF8.self)) == [witness])
+
+        // Every witness as one set reads back too.
+        #expect(try WitnessAssembler.witnesses(from: try WitnessExport.witnessSetHex([witness])) == [witness])
+        #expect(WitnessExport.fileName(for: "Alice / Treasury") == "Alice - Treasury")
+        #expect(WitnessExport.fileName(for: "  ") == "witness")
+    }
+
+    @Test("The unsigned transaction keeps the id, and the witnesses merge back to the signed bytes")
+    func unsignedForAssembly() async throws {
+        let bytes = try TransactionInspectionTests.bytes("conway-tx")
+        let unsigned = try WitnessExport.unsigned(bytes)
+        #expect(try WitnessAssembler.existing(in: unsigned).isEmpty)
+        #expect(try await TransactionInspector().inspect(unsigned).id == (try await TransactionInspector().inspect(bytes).id))
+        #expect(try WitnessAssembler.merge(unsigned, adding: try WitnessAssembler.existing(in: bytes)) == bytes)
+        // Already unsigned: unchanged.
+        #expect(try WitnessExport.unsigned(unsigned) == unsigned)
+    }
+
     @Test("A signing key envelope loads, and bad material is refused")
     func materials() throws {
         #expect(throws: KeyRingError.badMnemonic) { _ = try KeyRing(.mnemonic(words: "not a phrase", passphrase: "")) }

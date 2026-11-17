@@ -1,10 +1,10 @@
 import XCTest
 
 /// A transaction opened from a file is edited in Build and built again; Build
-/// starts over; a confirmed submission links to the explorer; and a signing
-/// key is read from its file. Needs "Edit Me.txworkshop" and "Needs Chain
-/// Data.txworkshop" (scripts/screenshot-sample), and a `payment.skey`, in the
-/// app's Documents.
+/// starts over; a confirmed submission links to the explorer; a signing key
+/// is read from its file; and a co-signer's witness is added and exported.
+/// Needs "Edit Me.txworkshop" and "Needs Chain Data.txworkshop"
+/// (scripts/screenshot-sample), and a `payment.skey`, in the app's Documents.
 final class TransactionEditorUITests: XCTestCase {
     /// The sample's transaction, built from "Choose UTxOs".
     static let transactionID = "885c0cc0707fa360bc428ca8b99b1983638a9a2dee84fbcff5f99124abf8950a"
@@ -170,7 +170,72 @@ final class TransactionEditorUITests: XCTestCase {
         wait(for: [gone], timeout: 10)
     }
 
+    /// A co-signer's witness for the sample's transaction, made with
+    /// cardano-cli from a throwaway key that was deleted straight after.
+    static let coSignerWitness = "825820713606ad439770dfb5d787a61c6d311f6a56da56a5478725e9dfb8d6f65ca28f5840475fb6b41838da46f4d6b99cd2f811918d5dd245ee34b6394580194a940d7b2d020341fa31b03cf40cebbdff3f0b754327d26c45ab1f1e65e9617711fd227a01"
+    static let coSignerKeyHash = "d758c5e41cf5c6b9f769a5e924c304c0c0eefdb34c55eddb5304a65a"
+
+    @MainActor
+    func testWitnessExport() throws {
+        let app = launch()
+        open("Edit Me", in: app)
+        go(to: "Sign & Submit", in: app)
+
+        // A co-signer's witness, pasted in.
+        let add = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Add a Co-signer'")).firstMatch
+        scroll(app, toReveal: add)
+        add.tap()
+        let name = app.textFields["Who it is from"].firstMatch
+        XCTAssertTrue(name.waitForExistence(timeout: 10), "No name field in Add Witness.")
+        focus(name)
+        name.typeText("Bob")
+        let contents = app.textViews["Witness"].firstMatch
+        XCTAssertTrue(contents.waitForExistence(timeout: 5), "No field for the witness.")
+        focus(contents)
+        contents.typeText(Self.coSignerWitness)
+        app.buttons["Add"].firstMatch.tap()
+
+        // Its own menu: share, copy, or save as a witness file, CBOR or hex.
+        let witnessMenu = app.buttons["exportWitness-\(Self.coSignerKeyHash)"].firstMatch
+        scroll(app, toReveal: witnessMenu)
+        XCTAssertTrue(witnessMenu.exists, "The witness was not added, or has no export menu.")
+        witnessMenu.tap()
+        for item in ["Share Witness…", "Copy CBOR Hex", "Witness File (.witness)", "CBOR (.cbor)", "CBOR Hex (.hex)"] {
+            XCTAssertTrue(app.buttons[item].firstMatch.waitForExistence(timeout: 5), "No \(item) in the witness menu.")
+        }
+        save("witness-menu")
+        app.buttons["Witness File (.witness)"].firstMatch.tap()
+        closeSavePanel(in: app, shot: "witness-save-panel")
+
+        // The co-signers' menu: the transaction as it is or without its
+        // signatures, and every witness as one set.
+        let coSigning = app.buttons["coSigningExport"].firstMatch
+        scroll(app, toReveal: coSigning)
+        coSigning.tap()
+        for item in ["Share Transaction…", "Transaction for Co-signers (.tx)", "Unsigned Transaction (.tx)", "Copy All Witnesses as a Witness Set"] {
+            XCTAssertTrue(app.buttons[item].firstMatch.waitForExistence(timeout: 5), "No \(item) in the co-signers' menu.")
+        }
+        save("co-signing-menu")
+        app.buttons["Unsigned Transaction (.tx)"].firstMatch.tap()
+        closeSavePanel(in: app, shot: "unsigned-save-panel")
+    }
+
     // MARK: - Helpers
+
+    /// Waits for the save panel, keeps a shot of it, and closes it without
+    /// saving: iOS 27's closes with a swipe; older ones have Cancel.
+    @MainActor
+    private func closeSavePanel(in app: XCUIApplication, shot: String) {
+        let saveButton = app.buttons["Save"].firstMatch.exists ? app.buttons["Save"].firstMatch : app.buttons["Move"].firstMatch
+        XCTAssertTrue(saveButton.waitForExistence(timeout: 10) || app.navigationBars.firstMatch.waitForExistence(timeout: 2), "No save panel.")
+        save(shot)
+        if app.buttons["Cancel"].firstMatch.exists {
+            app.buttons["Cancel"].firstMatch.tap()
+        } else {
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.08)).press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.95)))
+        }
+        sleep(2)
+    }
 
     @MainActor
     private func launch() -> XCUIApplication {

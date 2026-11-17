@@ -156,6 +156,24 @@
 				</array>
 			</dict>
 		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.json</string>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Cardano Transaction Witness</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.kingpinapps.cardano-txworkshop.witness</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>witness</string>
+				</array>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>
