@@ -1,3 +1,3 @@
-• Choose when a transaction is valid by time, not slot: "From now", "Until tomorrow", "A week" and more. Build shows the slots it works out and warns when an interval has already closed.
-• Adding a source address fetches its UTxOs on its own, along with the chain data when it is missing or from an earlier epoch.
-• Built on the latest Cardano libraries, with their security fixes for signing data, metadata and COSE messages.
+• Export each witness for whoever assembles the transaction: share it, copy its CBOR, or save it as a cardano-cli witness file, CBOR or hex.
+• Share & Export for Co-signers sends the transaction to the people who still have to sign it, or saves it without its signatures for cardano-cli transaction assemble.
+• Shared files keep their name and extension, and the share sheet opens next to the button you used on Mac and iPad.
