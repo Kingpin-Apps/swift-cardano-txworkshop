@@ -1,3 +1,9 @@
+## v0.6.0 (2026-11-17)
+
+### Feat
+
+- **sign**: export witnesses and an unsigned transaction for co-signers
+
 ## v0.5.0 (2026-11-08)
 
 ### Feat
